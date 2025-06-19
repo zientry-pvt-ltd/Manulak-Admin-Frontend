@@ -7,6 +7,7 @@ import stockData from "./api/stockData";
 import DynamicTable from "@/components/ui/custom/DynamicTable";
 import { Separator } from "@/components/ui/separator";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import DynamicBreadCrumb from "@/components/ui/custom/DynamicBreadCrumb";
 
 interface StockFromValues {
   items: string[];
@@ -49,49 +50,52 @@ export default function StockFeature() {
   const onFilterChange = () => {}
   
   return (
-    <div className="p-8 bg-background rounded-sm">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onFilterChange)} className="flex flex-col content-between">
-          <div>
-            <div className="flex flex-row mb-4">
-              <SearchBar />
+    <div>
+      <DynamicBreadCrumb breadCrumbPaths={[{'path':'/stocks', 'name':'Stock'}]} />
+      <div className="py-8 px-16 bg-background rounded-sm">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onFilterChange)} className="flex flex-col content-between">
+            <div>
+              <div className="flex flex-row mb-4">
+                <SearchBar />
+              </div>
+              <div className="flex flex-row justify-between mb-8">
+                <CheckBoxFilter
+                  control={form.control}
+                  name="items"
+                  items={items}
+                  description="Display items in:"
+                />
+                <FormDescription className='select-none'><span>Last updated date: {updatedDate}</span></FormDescription>
+              </div>
+              <DynamicTable columns={tableColumns} records={tableRecords} />
             </div>
-            <div className="flex flex-row justify-between mb-8">
-              <CheckBoxFilter
-                control={form.control}
-                name="items"
-                items={items}
-                description="Display items in:"
-              />
-              <FormDescription className='select-none'><span>Last updated date: {updatedDate}</span></FormDescription>
-            </div>
-            <DynamicTable columns={tableColumns} records={tableRecords} />
-          </div>
-          <Separator className="mt-16 mb-4" />
-          <Pagination className="justify-end">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </form>
-      </Form>
+            <Separator className="mt-16 mb-4" />
+            <Pagination className="justify-center sm:justify-end">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#" isActive>2</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext href="#" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
