@@ -1,4 +1,5 @@
 import './App.css'
+import Footer from './components/ui/custom/Footer'
 import StockFeature from './features/stock-feature/StockFeature'
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
   return (
     <>
       <StockFeature />
+      <Footer />
     </>
   )
 }
