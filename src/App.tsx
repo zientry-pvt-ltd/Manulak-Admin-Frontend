@@ -1,5 +1,5 @@
 import './App.css'
-import StockFeature from './features/StockFeature'
+import StockFeature from './features/stock-feature/StockFeature'
 
 function App() {
 
