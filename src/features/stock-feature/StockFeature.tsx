@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { Form, FormDescription } from "@/components/ui/form";
 import SearchBar from "@/components/ui/custom/SearchBar";
 import CheckBoxFilter from "@/components/ui/custom/CheckBoxFilter";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import stockData from "./api/stockData";
+import DynamicTable from "@/components/ui/custom/DynamicTable";
 
 interface StockFromValues {
   items: string[];
@@ -62,31 +62,7 @@ export default function StockFeature() {
             />
             <FormDescription className='select-none'><span>Last updated date: {updatedDate}</span></FormDescription>
           </div>
-          {/* ------------------------------------------ */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {tableColumns.length > 0 
-                  ? tableColumns.map((column, index) => (<TableHead key={index}>{column}</TableHead>))
-                  : []}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tableRecords.length > 0 
-                ? tableRecords.map((record, index) => (
-                  <TableRow key={index}>
-                    {Object.keys(record).length 
-                    ? Object.keys(record).map((key, cellIndex) => (<TableCell key={cellIndex}>{(record as any)[key]}</TableCell>))
-                    : []}
-                  </TableRow>
-                ))
-                : 
-                  <TableRow>
-                    <TableCell colSpan={tableColumns.length}>No records found.</TableCell>
-                  </TableRow>
-                }
-            </TableBody>
-          </Table>
+          <DynamicTable columns={tableColumns} records={tableRecords} />
         </div>
       </form>
     </Form>
