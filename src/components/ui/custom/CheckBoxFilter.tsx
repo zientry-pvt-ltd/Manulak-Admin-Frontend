@@ -17,7 +17,7 @@ interface CheckBoxFilterProps <TFormValues extends FieldValues> {
 export default function CheckBoxFilter<TFormValues extends FieldValues>
 ({ control, name, items, description }: CheckBoxFilterProps<TFormValues>) {
   return (
-    <div className="flex flex-row justify-start ms-8 gap-16">
+    <div className="flex flex-col md:flex-row justify-start ms-8 gap-1 md:gap-16">
         {description && <FormDescription className='select-none'>{description}</FormDescription>}
             {items.map((item) => (
             <FormField
@@ -30,7 +30,7 @@ export default function CheckBoxFilter<TFormValues extends FieldValues>
                 return (
                     <FormItem
                         key={item.id}
-                        className="flex flex-row items-center gap-2"
+                        className="flex flex-row md:flex-row items-center gap-2"
                     >
                         <FormControl>
                             <Checkbox

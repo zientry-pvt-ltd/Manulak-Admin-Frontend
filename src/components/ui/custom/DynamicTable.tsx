@@ -11,7 +11,7 @@ const DynamicTable = ({columns, records}: DynamicTableProps) => {
             <TableHeader>
               <TableRow>
                 {columns.length > 0 
-                  ? columns.map((column, index) => (<TableHead key={index}>{column}</TableHead>))
+                  ? columns.map((column, index) => (<TableHead key={index} className="bg-secondary text-center">{column}</TableHead>))
                   : []}
               </TableRow>
             </TableHeader>
