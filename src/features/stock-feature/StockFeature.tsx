@@ -5,6 +5,8 @@ import SearchBar from "@/components/ui/custom/SearchBar";
 import CheckBoxFilter from "@/components/ui/custom/CheckBoxFilter";
 import stockData from "./api/stockData";
 import DynamicTable from "@/components/ui/custom/DynamicTable";
+import { Separator } from "@/components/ui/separator";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface StockFromValues {
   items: string[];
@@ -48,7 +50,7 @@ export default function StockFeature() {
   
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onFilterChange)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onFilterChange)} className="flex flex-col content-between">
         <div>
           <div className="flex flex-row mb-4">
             <SearchBar />
@@ -64,6 +66,29 @@ export default function StockFeature() {
           </div>
           <DynamicTable columns={tableColumns} records={tableRecords} />
         </div>
+        <Separator className="mt-16 mb-4" />
+        <Pagination className="justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+             <PaginationItem>
+              <PaginationLink href="#">1</PaginationLink>
+            </PaginationItem>
+             <PaginationItem>
+              <PaginationLink href="#" isActive>2</PaginationLink>
+            </PaginationItem>
+             <PaginationItem>
+              <PaginationLink href="#">3</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </form>
     </Form>
   );
