@@ -1,20 +1,13 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Command, CommandInput } from "@/components/ui/command"
-import SearchBar from "@/components/ui/custom/SearchBar"
+} from "@/components/ui/form";
+import SearchBar from "@/components/ui/custom/SearchBar";
+import CheckBoxFilter from "@/components/ui/custom/CheckBoxFilter";
 
 const items = [
   {
@@ -54,57 +47,18 @@ export default function StockFeature() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="items"
-          render={() => (
-            <FormItem>
-              <div className="flex flex-row mb-4">
-                <SearchBar />
-              </div>
-              <div className="flex flex-row justify-start ms-8 gap-16">
-              <FormDescription>
-                Display items in: 
-              </FormDescription>
-              {items.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="items"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-center gap-2"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
+        <div>
+          <div className="flex flex-row mb-4">
+            <SearchBar />
+          </div>
+          <CheckBoxFilter
+            control={form.control}
+            name="items"
+            items={items}
+            description="Display items in:"
+          />
+          <FormMessage  />
+        </div>
       </form>
     </Form>
   );

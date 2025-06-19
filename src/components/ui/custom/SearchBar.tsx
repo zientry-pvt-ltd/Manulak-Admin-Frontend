@@ -1,5 +1,4 @@
-import React from 'react';
-import { Command, CommandInput } from "../command";
+import { Command, CommandInput } from "@/components/ui/command";
 
 const SearchBar = () => {
   return (
