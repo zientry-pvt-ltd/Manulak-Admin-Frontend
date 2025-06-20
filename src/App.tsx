@@ -2,18 +2,19 @@ import "./App.css";
 
 import { useState } from "react";
 
-import reactLogo from "./assets/react.svg";
+import { selectApp } from "@/store/selectors/appSelectors";
+import { toggleDarkMode } from "@/store/slices/appSlice";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 function App() {
   const [count, setCount] = useState(0);
+  const dispatch = useAppDispatch();
+  const { darkMode } = useAppSelector(selectApp);
 
   return (
     <>
       <div>
         <a href="https://vite.dev" target="_blank"></a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
@@ -27,6 +28,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <button onClick={() => dispatch(toggleDarkMode())}>
+        {darkMode ? "Dark" : "Light"}
+      </button>
     </>
   );
 }
