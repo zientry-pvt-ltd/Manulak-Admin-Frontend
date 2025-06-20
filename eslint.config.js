@@ -1,14 +1,12 @@
 import js from "@eslint/js";
-import parserTypeScript from "@typescript-eslint/parser";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import reactHooks from "eslint-plugin-react-hooks";
+import parserTypeScript from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import prettierPlugin from "eslint-plugin-prettier";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import sonarjs from "eslint-plugin-sonarjs";
-import reactRefresh from "eslint-plugin-react-refresh";
-import prettierPlugin from "eslint-plugin-prettier";
-// optional: remove if not using etc
-// import etc from "eslint-plugin-etc";
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -31,21 +29,17 @@ export default [
       sonarjs: sonarjs,
       "react-refresh": reactRefresh,
       prettier: prettierPlugin,
-      // etc: etc,
     },
     rules: {
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
       ],
-
       "import/first": "error",
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
-
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
-
       "sonarjs/no-identical-expressions": "error",
       "sonarjs/non-existent-operator": "error",
       "sonarjs/no-use-of-empty-return-value": "error",
@@ -53,14 +47,9 @@ export default [
       "sonarjs/no-extra-arguments": "error",
       "sonarjs/no-useless-catch": "error",
       "sonarjs/prefer-immediate-return": "error",
-
-      // "etc/no-commented-out-code": "error", // uncomment if using `etc` plugin
       "react-hooks/exhaustive-deps": "error",
-
-      "no-console": "warn",
       "sonarjs/no-duplicate-string": "off",
       "sonarjs/cognitive-complexity": "off",
-
       "@typescript-eslint/no-restricted-imports": [
         "error",
         {
@@ -74,6 +63,16 @@ export default [
           ],
         },
       ],
+
+      "no-undef": "off",
+    },
+
+    settings: {
+      "import/resolver": {
+        typescript: {
+          project: ["./tsconfig.json"],
+        },
+      },
     },
   },
 ];
