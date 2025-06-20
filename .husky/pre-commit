@@ -1,17 +1,3 @@
-# Get the current branch name
-CURRENT_BRANCH=$(git branch --show-current)
-
-# Block pushing to main
-if [ "$CURRENT_BRANCH" = "main" ]; then
-  echo " "
-  echo "❌ ERROR: Direct pushes to the 'main' branch are not allowed!"
-  echo "✋ Please create a pull request instead."
-  echo "💡 Switch to a new branch using: git checkout -b your-branch-name"
-  exit 1
-fi
-
-echo "✅ Committed to branch: $CURRENT_BRANCH"
-
 # Run lint checks
 echo "🛠️  Running lint checks..."
 npm run lint
