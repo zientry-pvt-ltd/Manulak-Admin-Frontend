@@ -1,37 +1,32 @@
-import "./App.css";
+import "./index.css";
 
-import { useState } from "react";
-
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { toggleDarkMode } from "@/store/slices/appSlice";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 function App() {
-  const [count, setCount] = useState(0);
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSelector(selectApp);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank"></a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <button onClick={() => dispatch(toggleDarkMode())}>
+    <div>
+      <Button onClick={() => dispatch(toggleDarkMode())}>
         {darkMode ? "Dark" : "Light"}
-      </button>
-    </>
+      </Button>
+
+      {/* tabs */}
+      <Tabs defaultValue="account" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          Make changes to your account here.
+        </TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
