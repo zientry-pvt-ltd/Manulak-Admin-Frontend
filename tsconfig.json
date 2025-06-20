@@ -7,6 +7,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@theme/*": ["src/theme/*"],
@@ -19,7 +20,8 @@
       "@contexts/*": ["src/contexts/*"],
       "@features/*": ["src/features/*"],
       "@services/*": ["src/services/*"],
-      "@provider/*": ["src/provider/*"]
+      "@lib/*": ["src/lib/*"],
+      "@providers/*": ["src/providers/*"]
     }
   }
 }
