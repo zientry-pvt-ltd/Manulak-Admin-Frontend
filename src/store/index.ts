@@ -12,15 +12,17 @@ import {
 import storage from "redux-persist/lib/storage";
 
 import appReducer from "./slices/appSlice";
+import authReducer from "./slices/authSlice";
 
 const rootReducer = combineReducers({
   app: appReducer,
+  auth: authReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["app"], // Only persist `app` slice
+  whitelist: [], // Only persist `app` slice
   blacklist: [], // Add slices to exclude here
 };
 

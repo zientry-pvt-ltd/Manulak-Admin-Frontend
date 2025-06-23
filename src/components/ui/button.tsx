@@ -1,5 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -55,4 +56,5 @@ function Button({
   );
 }
 
-export default Button;
+// eslint-disable-next-line react-refresh/only-export-components
+export { Button, buttonVariants };

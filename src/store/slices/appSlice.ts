@@ -1,11 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface AppState {
-  darkMode: boolean;
-}
+import type { IAppState } from "@/customTypes/app.types";
 
-const initialState: AppState = {
+const initialState: IAppState = {
+  appName: "Manulak Agro",
+  appDescription: "A modern web application",
+  appLogo: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
+  faviconUrl: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
   darkMode: false,
+  appVersion: "1.0.0",
 };
 
 const appSlice = createSlice({
