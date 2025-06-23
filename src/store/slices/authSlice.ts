@@ -4,18 +4,9 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 
-export interface AuthState {
-  user: {
-    name: string;
-    role: string;
-  } | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
+import type { IAuthState } from "@/customTypes/auth.types";
 
-const initialState: AuthState = {
+const initialState: IAuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
