@@ -1,8 +1,10 @@
 import { SplinePointer } from "lucide-react";
 import { type ReactNode, Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
+import { MainErrorFallback } from "@/components/errors/main";
 import { persistor, store } from "@/store";
 
 type AppProviderProps = {
@@ -18,11 +20,13 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         </div>
       }
     >
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          {children}
-        </PersistGate>
-      </Provider>
+      <ErrorBoundary FallbackComponent={MainErrorFallback}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            {children}
+          </PersistGate>
+        </Provider>
+      </ErrorBoundary>
     </Suspense>
   );
 };
