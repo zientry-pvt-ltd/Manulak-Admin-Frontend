@@ -1,62 +1,50 @@
 import { memo, useState } from "react";
 
 import defaultLogo from "@/assets/landscape-placeholder.svg";
-import { Avatar, AvatarFallback, AvatarImage, Skeleton } from "@/components";
+import { Skeleton } from "@/components";
 import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
-type AppTitleProps = {
-  titleVisible?: boolean;
-};
-
-const AppTitle = ({ titleVisible = false }: AppTitleProps) => {
-  const { appLogo, appSmallLogo, appName } = useAppSelector(selectApp);
+const AppTitle = () => {
+  const { appSmallLogo, appName } = useAppSelector(selectApp);
   const { state } = useSidebar();
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   const isCollapsed = state === "collapsed";
 
-  const getAppNameTwoLetters = () => {
-    const words = appName.split(" ");
-    if (words.length === 0) return "NA";
-    if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
-    return words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase();
-  };
-
   return (
-    <div className="flex items-center gap-x-1 mt-2 mx-2">
-      {isCollapsed ? (
-        <Avatar className="rounded-lg">
-          <AvatarImage src={appSmallLogo || defaultLogo} alt="App Logo" />
-          <AvatarFallback>{getAppNameTwoLetters()}</AvatarFallback>
-        </Avatar>
-      ) : (
-        <>
-          {!isLoaded && !hasError && (
-            <Skeleton className="w-8 h-8 rounded-full" />
-          )}
-          <img
-            src={hasError ? defaultLogo : appLogo}
-            alt="App Logo"
-            className={cn(
-              "inline-block h-8 rounded-full transition-opacity duration-300",
-              isLoaded ? "opacity-100" : "opacity-0",
-            )}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => {
-              setHasError(true);
-              setIsLoaded(true);
-            }}
-          />
-        </>
+    <div
+      className={cn(
+        "flex items-center gap-x-2",
+        isCollapsed && "justify-center",
       )}
+    >
+      {!isLoaded && !hasError && <Skeleton className="w-6 h-6 rounded-full" />}
+      <img
+        src={hasError ? defaultLogo : appSmallLogo}
+        alt="App Logo"
+        className={cn(
+          "h-6 aspect-square rounded-full transition-opacity duration-300",
+          isLoaded ? "opacity-100" : "opacity-0",
+        )}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          setHasError(true);
+          setIsLoaded(true);
+        }}
+      />
 
-      {titleVisible && !isCollapsed && (
-        <span className="text-xs font-semibold">{appName}</span>
-      )}
+      <span
+        className={cn(
+          "text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis",
+          isCollapsed ? "hidden" : "block",
+        )}
+      >
+        {appName}
+      </span>
     </div>
   );
 };

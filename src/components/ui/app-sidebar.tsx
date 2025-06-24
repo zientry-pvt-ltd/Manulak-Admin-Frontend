@@ -8,16 +8,17 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
-import { AppTitle } from "@/components";
 import {
+  AppTitle,
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components";
 import { paths } from "@/config/paths";
 import { ROLES, useAuthorization } from "@/lib/authorization";
 
@@ -61,7 +62,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <AppTitle />
+      <SidebarHeader>
+        <AppTitle />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -75,7 +78,7 @@ export function AppSidebar() {
                     <NavLink
                       key={item.name}
                       to={item.to}
-                      end={item.name !== "Discussions"}
+                      className="whitespace-nowrap overflow-hidden text-ellipsis"
                     >
                       <item.icon />
                       {item.name}
