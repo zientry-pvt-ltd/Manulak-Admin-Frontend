@@ -1,4 +1,11 @@
-import { Boxes, LayoutDashboard, Package } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Boxes,
+  Calculator,
+  LayoutDashboard,
+  Package,
+  Settings,
+} from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
 import { AppTitle } from "@/components";
@@ -7,7 +14,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -36,6 +42,21 @@ export function AppSidebar() {
       to: paths.app.stocks.getHref(),
       icon: Boxes,
     },
+    {
+      name: "Sales",
+      to: paths.app.sales.getHref(),
+      icon: BadgeDollarSign,
+    },
+    {
+      name: "Bill Calculation",
+      to: paths.app.billCalculation.getHref(),
+      icon: Calculator,
+    },
+    {
+      name: "Settings",
+      to: paths.app.settings.getHref(),
+      icon: Settings,
+    },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
@@ -43,7 +64,6 @@ export function AppSidebar() {
       <AppTitle />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Home</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item) => (
@@ -64,13 +84,6 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Document</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{/* add content */}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

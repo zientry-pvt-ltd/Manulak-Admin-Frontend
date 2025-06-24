@@ -52,6 +52,27 @@ export const createAppRouter = () =>
             return { Component: mod.default };
           },
         },
+        {
+          path: paths.app.sales.path,
+          lazy: async () => {
+            const mod = await import("./routes/app/sales");
+            return { Component: mod.default };
+          },
+        },
+        {
+          path: paths.app.billCalculation.path,
+          lazy: async () => {
+            const mod = await import("./routes/app/bill-calculation");
+            return { Component: mod.default };
+          },
+        },
+        {
+          path: paths.app.settings.path,
+          lazy: async () => {
+            const mod = await import("./routes/app/settings");
+            return { Component: mod.default };
+          },
+        },
       ],
     },
     {
