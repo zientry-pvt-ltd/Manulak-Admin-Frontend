@@ -1,3 +1,5 @@
+import { MainErrorFallback } from "@/components/errors/main";
+import { AppMetadata } from "@/components/seo/app-metadata";
 import AppTitle from "@/components/ui/app-title";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export {
+  AppMetadata,
   AppTitle,
   Button,
   Card,
@@ -22,6 +25,7 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  MainErrorFallback,
   Skeleton,
   Tabs,
   TabsContent,
