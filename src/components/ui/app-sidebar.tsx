@@ -60,7 +60,7 @@ export function AppSidebar() {
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <AppTitle />
       <SidebarContent>
         <SidebarGroup>
