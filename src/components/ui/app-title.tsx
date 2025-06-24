@@ -1,9 +1,7 @@
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { memo, useState } from "react";
 
 import defaultLogo from "@/assets/landscape-placeholder.svg";
-import { Skeleton } from "@/components";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage, Skeleton } from "@/components";
 import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
