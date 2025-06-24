@@ -4,6 +4,5 @@ export interface IAppState {
   appVersion: string;
   appDescription: string;
   appLogo: string;
-  appSmallLogo: string;
   faviconUrl: string;
 }

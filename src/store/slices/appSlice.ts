@@ -5,8 +5,7 @@ import type { IAppState } from "@/customTypes/app.types";
 const initialState: IAppState = {
   appName: "Manulak Agro",
   appDescription: "A modern web application",
-  appLogo: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
-  appSmallLogo:
+  appLogo:
     "https://wordpress.validthemes.net/agrica/wp-content/uploads/2024/01/cropped-favicon-270x270.png",
   faviconUrl: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
   darkMode: false,

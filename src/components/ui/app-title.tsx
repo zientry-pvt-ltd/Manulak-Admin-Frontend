@@ -8,7 +8,7 @@ import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
 const AppTitle = () => {
-  const { appSmallLogo, appName } = useAppSelector(selectApp);
+  const { appLogo, appName } = useAppSelector(selectApp);
   const { state } = useSidebar();
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -24,7 +24,7 @@ const AppTitle = () => {
     >
       {!isLoaded && !hasError && <Skeleton className="w-6 h-6 rounded-full" />}
       <img
-        src={hasError ? defaultLogo : appSmallLogo}
+        src={hasError ? defaultLogo : appLogo}
         alt="App Logo"
         className={cn(
           "h-6 aspect-square rounded-full transition-opacity duration-300",
