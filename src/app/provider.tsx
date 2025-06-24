@@ -4,7 +4,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { MainErrorFallback } from "@/components/errors/main";
+import { AppMetadata, MainErrorFallback } from "@/components";
 import { persistor, store } from "@/store";
 
 type AppProviderProps = {
@@ -23,6 +23,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
+            <AppMetadata />
             {children}
           </PersistGate>
         </Provider>

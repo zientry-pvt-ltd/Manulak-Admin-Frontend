@@ -1,17 +1,24 @@
-import { Boxes, LayoutDashboard, Package } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Boxes,
+  Calculator,
+  LayoutDashboard,
+  Package,
+  Settings,
+} from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
-import { AppTitle } from "@/components";
 import {
+  AppTitle,
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components";
 import { paths } from "@/config/paths";
 import { ROLES, useAuthorization } from "@/lib/authorization";
 
@@ -36,14 +43,30 @@ export function AppSidebar() {
       to: paths.app.stocks.getHref(),
       icon: Boxes,
     },
+    {
+      name: "Sales",
+      to: paths.app.sales.getHref(),
+      icon: BadgeDollarSign,
+    },
+    {
+      name: "Bill Calculation",
+      to: paths.app.billCalculation.getHref(),
+      icon: Calculator,
+    },
+    {
+      name: "Settings",
+      to: paths.app.settings.getHref(),
+      icon: Settings,
+    },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
-    <Sidebar>
-      <AppTitle />
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <AppTitle />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Home</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item) => (
@@ -55,7 +78,7 @@ export function AppSidebar() {
                     <NavLink
                       key={item.name}
                       to={item.to}
-                      end={item.name !== "Discussions"}
+                      className="whitespace-nowrap overflow-hidden text-ellipsis"
                     >
                       <item.icon />
                       {item.name}
@@ -64,13 +87,6 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Document</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{/* add content */}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

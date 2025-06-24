@@ -34,6 +34,18 @@ export const paths = {
       path: "stocks",
       getHref: () => "/app/stocks",
     },
+    sales: {
+      path: "sales",
+      getHref: () => "/app/sales",
+    },
+    billCalculation: {
+      path: "bill-calculation",
+      getHref: () => "/app/bill-calculation",
+    },
+    settings: {
+      path: "settings",
+      getHref: () => "/app/settings",
+    },
     discussions: {
       path: "discussions",
       getHref: () => "/app/discussions",

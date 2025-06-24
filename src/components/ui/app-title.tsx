@@ -2,27 +2,32 @@ import { memo, useState } from "react";
 
 import defaultLogo from "@/assets/landscape-placeholder.svg";
 import { Skeleton } from "@/components";
+import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
-type AppTitleProps = {
-  titleVisible?: boolean;
-};
-
-const AppTitle = ({ titleVisible = false }: AppTitleProps) => {
-  const app = useAppSelector(selectApp);
+const AppTitle = () => {
+  const { appLogo, appName } = useAppSelector(selectApp);
+  const { state } = useSidebar();
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  const isCollapsed = state === "collapsed";
+
   return (
-    <div className="flex items-center gap-x-1 mt-2 mx-2">
-      {!isLoaded && !hasError && <Skeleton className="w-8 h-8 rounded-full" />}
+    <div
+      className={cn(
+        "flex items-center gap-x-2",
+        isCollapsed && "justify-center",
+      )}
+    >
+      {!isLoaded && !hasError && <Skeleton className="w-6 h-6 rounded-full" />}
       <img
-        src={hasError ? defaultLogo : app.appLogo}
+        src={hasError ? defaultLogo : appLogo}
         alt="App Logo"
         className={cn(
-          "inline-block h-8 transition-opacity duration-300",
+          "h-6 aspect-square rounded-full transition-opacity duration-300",
           isLoaded ? "opacity-100" : "opacity-0",
         )}
         onLoad={() => setIsLoaded(true)}
@@ -31,10 +36,17 @@ const AppTitle = ({ titleVisible = false }: AppTitleProps) => {
           setIsLoaded(true);
         }}
       />
-      {titleVisible && (
-        <span className="text-xs font-semibold">{app.appName}</span>
-      )}
+
+      <span
+        className={cn(
+          "text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis",
+          isCollapsed ? "hidden" : "block",
+        )}
+      >
+        {appName}
+      </span>
     </div>
   );
 };
+
 export default memo(AppTitle);
