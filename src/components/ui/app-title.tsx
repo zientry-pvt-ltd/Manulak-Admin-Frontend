@@ -22,7 +22,7 @@ const AppTitle = ({ titleVisible = false }: AppTitleProps) => {
         src={hasError ? defaultLogo : app.appLogo}
         alt="App Logo"
         className={cn(
-          "inline-block h-8 transition-opacity duration-300",
+          "inline-block h-8 rounded-full transition-opacity duration-300",
           isLoaded ? "opacity-100" : "opacity-0",
         )}
         onLoad={() => setIsLoaded(true)}
