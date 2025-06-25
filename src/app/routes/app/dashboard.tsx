@@ -11,8 +11,7 @@ const UsersRoute = () => {
 
   const fetchData = async () => {
     try {
-      const user = await dispatch(fetchUserProfile());
-      console.log("Fetched user:", user);
+      await dispatch(fetchUserProfile());
     } catch (err) {
       console.error("Error fetching user:", err);
     }
