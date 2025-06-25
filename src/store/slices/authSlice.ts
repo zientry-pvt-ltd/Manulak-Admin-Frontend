@@ -4,61 +4,137 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 
-import type { IAuthState } from "@/customTypes/auth.types";
+import type { CommonResponseDTO } from "@/customTypes/api.types";
+import type {
+  IAuthState,
+  ILoginResponsePayload,
+} from "@/customTypes/auth.types";
+import { AxiosPrivateService } from "@/services/AxiosPrivateService";
+import { AxiosPublicService } from "@/services/AxiosPublicService";
+import { SLICE_ACTIONS } from "@/store/constants/actionTypes";
+import { ENDPOINTS } from "@/store/constants/apiTypes";
 
 const initialState: IAuthState = {
-  user: null,
-  token: null,
+  userInfo: null,
+  refreshToken: null,
   isAuthenticated: false,
-  status: "idle",
   error: null,
 };
+export const login = createAsyncThunk<
+  ILoginResponsePayload,
+  { email: string; password: string },
+  { rejectValue: string }
+>(SLICE_ACTIONS.AUTH.LOGIN, async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await AxiosPublicService.getInstance().post<
+      CommonResponseDTO<ILoginResponsePayload>
+    >("/auth/login", credentials);
 
-export const login = createAsyncThunk(
-  "auth/login",
-  async (credentials: { username: string; password: string }) => {
-    console.log("Logging in with credentials:", credentials);
-    return {
-      user: { name: "John Doe", role: "ADMIN" },
-      token: "fake-jwt-token",
-    };
-  },
-);
+    const { refreshToken } = response.data.data;
+    if (!refreshToken) return rejectWithValue("No refresh token received");
+
+    AxiosPrivateService.updateToken(refreshToken);
+    return response.data.data;
+  } catch (error: any) {
+    let message = "Login failed";
+
+    if (error.response && error.response.data) {
+      message = error.response.data.message || message;
+    } else if (error.message) {
+      message = error.message;
+    }
+
+    return rejectWithValue(message);
+  }
+});
+
+export const fetchUserProfile = createAsyncThunk<
+  { fullName: string; email: string; role: string }, // Return type
+  void, // No arguments needed
+  { rejectValue: string }
+>(SLICE_ACTIONS.AUTH.FETCH_PROFILE, async (_, { rejectWithValue }) => {
+  try {
+    const response = await AxiosPrivateService.getInstance().get<
+      CommonResponseDTO<{ fullName: string; email: string; role: string }>
+    >(ENDPOINTS.AUTH.FETCH_PROFILE);
+
+    return response.data.data;
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to fetch profile";
+    return rejectWithValue(message);
+  }
+});
+
+export const refreshAccessToken = createAsyncThunk<
+  string,
+  void,
+  { rejectValue: string }
+>(SLICE_ACTIONS.AUTH.REFRESH_TOKEN, async (_, { rejectWithValue }) => {
+  try {
+    const response = await AxiosPublicService.getInstance().get<
+      CommonResponseDTO<string>
+    >(ENDPOINTS.AUTH.REFRESH_TOKEN);
+    const accessToken = response.data.data;
+
+    if (!accessToken) return rejectWithValue("No access token received");
+    AxiosPrivateService.updateToken(accessToken);
+
+    return accessToken;
+  } catch (error: any) {
+    let message = "Failed to refresh access token";
+    if (error.response && error.response.data) {
+      message = error.response.data.message || message;
+    } else if (error.message) {
+      message = error.message;
+    }
+
+    return rejectWithValue(message);
+  }
+});
 
 const authSlice = createSlice({
-  name: "auth",
+  name: SLICE_ACTIONS.AUTH.SLICE,
   initialState,
   reducers: {
     logout(state) {
-      state.user = null;
-      state.token = null;
+      state.userInfo = null;
+      state.refreshToken = null;
       state.isAuthenticated = false;
-      state.status = "idle";
       state.error = null;
     },
     setError(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
+    setAuth(state, action: PayloadAction<boolean>) {
+      state.isAuthenticated = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(login.pending, () => {})
       .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        const { refreshToken, userInfo } = action.payload;
+        state.userInfo = userInfo;
+        state.refreshToken = refreshToken;
         state.isAuthenticated = true;
-        state.status = "succeeded";
-        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Login failed";
+        state.error = action.payload ?? null;
+      })
+
+      .addCase(refreshAccessToken.pending, () => {})
+      .addCase(refreshAccessToken.fulfilled, (state, action) => {
+        state.refreshToken = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(refreshAccessToken.rejected, (state, action) => {
+        state.error = action.payload ?? null;
       });
   },
 });
 
-export const { logout, setError } = authSlice.actions;
+export const { logout, setError, setAuth } = authSlice.actions;
 export default authSlice.reducer;

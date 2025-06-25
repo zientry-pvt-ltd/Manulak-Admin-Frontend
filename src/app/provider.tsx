@@ -4,7 +4,9 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { AppMetadata, MainErrorFallback } from "@/components";
+import { AppMetadata, MainErrorFallback, Toaster } from "@/components";
+import useOnlineStatus from "@/hooks/use-online-status";
+import { AuthRefreshProvider } from "@/providers/auth-refresh-provider";
 import { persistor, store } from "@/store";
 
 type AppProviderProps = {
@@ -12,6 +14,8 @@ type AppProviderProps = {
 };
 
 export const AppProvider = ({ children }: AppProviderProps) => {
+  useOnlineStatus();
+
   return (
     <Suspense
       fallback={
@@ -23,8 +27,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
+            <AuthRefreshProvider>{children}</AuthRefreshProvider>
+            <Toaster />
             <AppMetadata />
-            {children}
           </PersistGate>
         </Provider>
       </ErrorBoundary>

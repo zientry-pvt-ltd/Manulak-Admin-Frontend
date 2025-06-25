@@ -1,7 +1,8 @@
 import { ContentLayout } from "@/components/layouts";
-import { Authorization, ROLES } from "@/lib/authorization";
+import { ROLES } from "@/constants";
+import { Authorization } from "@/lib/authorization";
 
-const UsersRoute = () => {
+const Products = () => {
   return (
     <ContentLayout title="Products">
       <Authorization
@@ -14,4 +15,4 @@ const UsersRoute = () => {
   );
 };
 
-export default UsersRoute;
+export default Products;
