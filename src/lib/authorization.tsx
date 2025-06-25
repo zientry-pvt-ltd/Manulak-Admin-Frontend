@@ -1,10 +1,20 @@
+import type { IRoleTypes } from "@/customTypes/auth.types";
 import { selectAuth } from "@/store/selectors/authSelectors";
 import { useAppSelector } from "@/store/utils";
 
-export const ROLES = {
-  ADMIN: "ADMIN",
-  USER: "USER",
-} as const;
+type AuthorizationProps = {
+  forbiddenFallback?: React.ReactNode;
+  children: React.ReactNode;
+} & (
+  | {
+      allowedRoles: IRoleTypes[];
+      policyCheck?: never;
+    }
+  | {
+      allowedRoles?: never;
+      policyCheck: boolean;
+    }
+);
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuthorization = () => {
@@ -16,12 +26,12 @@ export const useAuthorization = () => {
 
   const checkAccess = ({ allowedRoles }: { allowedRoles: string[] }) => {
     if (allowedRoles && allowedRoles.length > 0 && auth) {
-      return allowedRoles.includes(auth.user?.role || "");
+      return allowedRoles.includes(auth.userInfo?.role || "");
     }
     return true;
   };
 
-  return { checkAccess, role: auth.user?.role || "guest" };
+  return { checkAccess, role: auth.userInfo?.role };
 };
 
 export const Authorization = ({
@@ -44,19 +54,3 @@ export const Authorization = ({
 
   return <>{canAccess ? children : forbiddenFallback}</>;
 };
-
-type AuthorizationProps = {
-  forbiddenFallback?: React.ReactNode;
-  children: React.ReactNode;
-} & (
-  | {
-      allowedRoles: RoleTypes[];
-      policyCheck?: never;
-    }
-  | {
-      allowedRoles?: never;
-      policyCheck: boolean;
-    }
-);
-
-type RoleTypes = keyof typeof ROLES;
