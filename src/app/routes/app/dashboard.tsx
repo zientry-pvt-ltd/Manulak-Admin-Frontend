@@ -1,7 +1,23 @@
+import { Button } from "@/components";
 import { ContentLayout } from "@/components/layouts";
-import { Authorization, ROLES } from "@/lib/authorization";
+import { ROLES } from "@/constants";
+import { Authorization } from "@/lib/authorization";
+import { fetchUserProfile, logout, setError } from "@/store/slices/authSlice";
+import { useAppDispatch, useAppDispatchAll } from "@/store/utils";
 
 const UsersRoute = () => {
+  const dispatch = useAppDispatch();
+  const dispatchAll = useAppDispatchAll();
+
+  const fetchData = async () => {
+    try {
+      const user = await dispatch(fetchUserProfile());
+      console.log("Fetched user:", user);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    }
+  };
+
   return (
     <ContentLayout title="Dashboard">
       <Authorization
@@ -10,6 +26,18 @@ const UsersRoute = () => {
       >
         <span>Dashboard Content</span>
       </Authorization>
+
+      <Button onClick={fetchData} title="Fetch">
+        Fetch User Profile
+      </Button>
+
+      <Button
+        onClick={() => {
+          dispatchAll([logout(), setError("error message")]);
+        }}
+      >
+        Log out
+      </Button>
     </ContentLayout>
   );
 };

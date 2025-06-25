@@ -1,5 +1,6 @@
 import { ContentLayout } from "@/components/layouts";
-import { Authorization, ROLES } from "@/lib/authorization";
+import { ROLES } from "@/constants";
+import { Authorization } from "@/lib/authorization";
 
 const Sales = () => {
   return (
