@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { AppMetadata, MainErrorFallback } from "@/components";
+import { AuthRefreshProvider } from "@/providers/auth-refresh-provider";
 import { persistor, store } from "@/store";
 
 type AppProviderProps = {
@@ -24,7 +25,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <AppMetadata />
-            {children}
+            <AuthRefreshProvider>{children}</AuthRefreshProvider>
           </PersistGate>
         </Provider>
       </ErrorBoundary>
