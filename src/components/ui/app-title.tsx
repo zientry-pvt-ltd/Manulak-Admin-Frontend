@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
 
 import defaultLogo from "@/assets/landscape-placeholder.svg";
-import { Skeleton } from "@/components";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
@@ -27,8 +27,8 @@ const AppTitle = () => {
         src={hasError ? defaultLogo : appLogo}
         alt="App Logo"
         className={cn(
-          "h-6 aspect-square rounded-full transition-opacity duration-300",
-          isLoaded ? "opacity-100" : "opacity-0",
+          "h-6 aspect-square rounded-ful hidden",
+          isLoaded && "block",
         )}
         onLoad={() => setIsLoaded(true)}
         onError={() => {
