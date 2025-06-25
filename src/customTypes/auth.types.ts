@@ -1,10 +1,18 @@
+import type { ROLES } from "@/constants";
+
 export interface IAuthState {
-  user: {
-    name: string;
-    role: string;
+  userInfo: {
+    firstName: string;
+    lastName: string;
+    role: IRoleTypes;
   } | null;
-  token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
+export type ILoginResponsePayload = Pick<
+  IAuthState,
+  "userInfo" | "refreshToken"
+>;
+
+export type IRoleTypes = keyof typeof ROLES;
