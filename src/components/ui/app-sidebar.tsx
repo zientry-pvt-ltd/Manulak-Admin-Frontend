@@ -20,7 +20,8 @@ import {
   SidebarMenuItem,
 } from "@/components";
 import { paths } from "@/config/paths";
-import { ROLES, useAuthorization } from "@/lib/authorization";
+import { ROLES } from "@/constants";
+import { useAuthorization } from "@/lib/authorization";
 
 type SideNavigationItem = {
   name: string;
@@ -38,7 +39,7 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     { name: "Products", to: paths.app.products.getHref(), icon: Package },
-    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
+    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
       name: "Stocks",
       to: paths.app.stocks.getHref(),
       icon: Boxes,
