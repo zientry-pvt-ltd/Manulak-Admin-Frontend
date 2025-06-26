@@ -9,6 +9,7 @@ import {
 import { NavLink, useLocation } from "react-router";
 
 import {
+  AppText,
   AppTitle,
   Sidebar,
   SidebarContent,
@@ -76,13 +77,11 @@ export function AppSidebar() {
                     asChild
                     isActive={location.pathname === item.to}
                   >
-                    <NavLink
-                      key={item.name}
-                      to={item.to}
-                      className="whitespace-nowrap overflow-hidden text-ellipsis"
-                    >
+                    <NavLink key={item.name} to={item.to}>
                       <item.icon />
-                      {item.name}
+                      <AppText as="span" variant="label">
+                        {item.name}
+                      </AppText>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

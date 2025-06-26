@@ -15,7 +15,11 @@ import { SLICE_ACTIONS } from "@/store/constants/actionTypes";
 import { ENDPOINTS } from "@/store/constants/apiTypes";
 
 const initialState: IAuthState = {
-  userInfo: null,
+  userInfo: {
+    firstName: "Arun",
+    lastName: "Deshan",
+    role: "ADMIN",
+  },
   refreshToken: null,
   isAuthenticated: false,
   error: null,

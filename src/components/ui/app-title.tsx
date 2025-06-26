@@ -1,50 +1,33 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 
-import defaultLogo from "@/assets/landscape-placeholder.svg";
-import { useSidebar } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AppImage, AppText, useSidebar } from "@/components";
 import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
 const AppTitle = () => {
-  const { appLogo, appName } = useAppSelector(selectApp);
+  const { appName, appLogo } = useAppSelector(selectApp);
   const { state } = useSidebar();
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   const isCollapsed = state === "collapsed";
 
   return (
     <div
       className={cn(
-        "flex items-center gap-x-2",
-        isCollapsed && "justify-center",
+        "flex items-center gap-x-2 px-2",
+        isCollapsed && "justify-center px-0",
       )}
     >
-      {!isLoaded && !hasError && <Skeleton className="w-6 h-6 rounded-full" />}
-      <img
-        src={hasError ? defaultLogo : appLogo}
-        alt="App Logo"
-        className={cn(
-          "h-6 aspect-square rounded-ful hidden",
-          isLoaded && "block",
-        )}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => {
-          setHasError(true);
-          setIsLoaded(true);
-        }}
-      />
+      <AppImage imageUrl={appLogo} alt="App Logo" />
 
-      <span
-        className={cn(
-          "text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis",
-          isCollapsed ? "hidden" : "block",
-        )}
+      <AppText
+        as="span"
+        variant="label"
+        ellipsis
+        className={cn(isCollapsed ? "hidden" : "block")}
       >
         {appName}
-      </span>
+      </AppText>
     </div>
   );
 };
