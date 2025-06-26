@@ -49,7 +49,7 @@ const AppSelect: React.FC<AppSelectProps> = ({
   return (
     <div
       className={cn(
-        "space-y-1.5",
+        "space-y-1",
         fullWidth ? "w-full" : "w-fit",
         "min-w-[200px]",
       )}
