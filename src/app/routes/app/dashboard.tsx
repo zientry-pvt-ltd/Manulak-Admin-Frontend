@@ -8,7 +8,7 @@ import { Authorization } from "@/lib/authorization";
 
 const UsersRoute = () => {
   return (
-    <ContentLayout title="Dashboard">
+    <ContentLayout>
       <Authorization
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
