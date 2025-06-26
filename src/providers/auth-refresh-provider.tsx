@@ -12,6 +12,9 @@ export const AuthRefreshProvider = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    //TODO: Remove this line after implementing proper authentication flow
+    dispatch(setAuth(true));
+
     const initAuth = async () => {
       const accessTokenResponse = await dispatch(refreshAccessToken());
 
