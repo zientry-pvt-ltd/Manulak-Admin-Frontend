@@ -47,13 +47,7 @@ const AppSelect: React.FC<AppSelectProps> = ({
   disabled,
 }) => {
   return (
-    <div
-      className={cn(
-        "space-y-1",
-        fullWidth ? "w-full" : "w-fit",
-        "min-w-[200px]",
-      )}
-    >
+    <div className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]")}>
       {label && (
         <label className="text-sm font-medium text-foreground">{label}</label>
       )}

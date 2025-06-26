@@ -56,7 +56,7 @@ const AppSwitch = React.forwardRef<
     );
 
     return (
-      <div className="space-y-1">
+      <div>
         <div className="flex items-center gap-2">
           {labelPosition === "left" && labelEl}
 
