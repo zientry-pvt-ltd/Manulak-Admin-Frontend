@@ -1,4 +1,5 @@
 import { ContentLayout } from "@/components/layouts";
+import AppChipShowcase from "@/components/temp/AppChipShowcase";
 import AppInputShowcase from "@/components/temp/AppInputShowcase";
 import AppSelectShowcase from "@/components/temp/AppSelectShowcase";
 import AppTextareaShowcase from "@/components/temp/AppTextareaShowcase";
@@ -24,6 +25,8 @@ const Products = () => {
             <AppSwitch defaultChecked size="lg" />
             <AppSwitch defaultChecked size="md" />
           </div>
+
+          <AppChipShowcase />
         </div>
       </Authorization>
     </ContentLayout>
