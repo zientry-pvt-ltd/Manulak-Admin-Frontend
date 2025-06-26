@@ -1,5 +1,6 @@
 import { ContentLayout } from "@/components/layouts";
 import AppIconButtonShowcase from "@/components/temp/AppIconButtonShowcase";
+import AppIconShowcase from "@/components/temp/AppIconShowcase";
 import AppTextShowcase from "@/components/temp/AppTextShowcase";
 import ButtonShowcase from "@/components/temp/ButtonShowcase";
 import { ROLES } from "@/constants";
@@ -16,6 +17,7 @@ const UsersRoute = () => {
           <ButtonShowcase />
           <AppTextShowcase />
           <AppIconButtonShowcase />
+          <AppIconShowcase />
         </div>
       </Authorization>
     </ContentLayout>

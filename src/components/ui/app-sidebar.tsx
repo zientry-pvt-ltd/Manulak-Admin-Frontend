@@ -3,12 +3,14 @@ import {
   Boxes,
   Calculator,
   LayoutDashboard,
+  type LucideProps,
   Package,
   Settings,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
 import {
+  AppIcon,
   AppText,
   AppTitle,
   Sidebar,
@@ -27,7 +29,9 @@ import { useAuthorization } from "@/lib/authorization";
 type SideNavigationItem = {
   name: string;
   to: string;
-  icon: React.ComponentType<{}>;
+  icon: React.ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+  >;
 };
 
 export function AppSidebar() {
@@ -78,8 +82,8 @@ export function AppSidebar() {
                     isActive={location.pathname === item.to}
                   >
                     <NavLink key={item.name} to={item.to}>
-                      <item.icon />
-                      <AppText as="span" variant="label">
+                      <AppIcon Icon={item.icon} />
+                      <AppText as="span" variant="caption">
                         {item.name}
                       </AppText>
                     </NavLink>
