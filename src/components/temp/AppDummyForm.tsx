@@ -2,6 +2,7 @@ import { Send } from "lucide-react";
 import * as React from "react";
 
 import AppButton from "@/components/ui/app-button";
+import AppCheckbox from "@/components/ui/app-checkbox";
 import AppInput from "@/components/ui/app-input";
 import AppSelect from "@/components/ui/app-select";
 import AppSwitch from "@/components/ui/app-switch";
@@ -23,6 +24,7 @@ const AppDummyForm = () => {
     bio: "",
     fruit: "",
     agree: false,
+    subscribe: false,
   });
 
   const [submitted, setSubmitted] = React.useState(false);
@@ -98,6 +100,16 @@ const AppDummyForm = () => {
         labelPosition="left"
         error={
           submitted && !form.agree ? "You must agree to continue" : undefined
+        }
+      />
+
+      <AppCheckbox
+        size="sm"
+        label="Subscribe to newsletter"
+        checked={form.subscribe}
+        onCheckedChange={(val) => handleChange("subscribe", val)}
+        error={
+          submitted && !form.subscribe ? "You must accept the terms" : undefined
         }
       />
 
