@@ -70,7 +70,7 @@ const variantClasses: Record<TextVariant, string> = {
 const colorClasses: Record<TextColor, string> = {
   primary: "text-primary",
   secondary: "text-secondary",
-  muted: "text-muted",
+  muted: "text-muted-foreground",
   accent: "text-accent",
   destructive: "text-destructive",
   success: "text-success",
