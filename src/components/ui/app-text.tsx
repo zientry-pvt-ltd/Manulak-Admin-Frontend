@@ -15,32 +15,24 @@ export type FontSize =
   | "text-sm"
   | "text-base"
   | "text-lg"
-  | "text-xl"
-  | "text-2xl"
-  | "text-3xl"
-  | "text-4xl";
+  | "text-2xl";
 
 type FontWeight =
   | "font-thin"
   | "font-light"
-  | "font-normal"
   | "font-medium"
   | "font-semibold"
-  | "font-bold"
-  | "font-extrabold"
-  | "font-black";
+  | "font-bold";
 
 type TextAlign = "left" | "center" | "right" | "justify";
 
 export type TextColor =
   | "primary"
+  | "primaryForeground"
   | "secondary"
   | "muted"
-  | "accent"
   | "destructive"
-  | "success"
-  | "foreground"
-  | "inherit";
+  | "success";
 
 export interface AppTextProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
@@ -68,14 +60,12 @@ const variantClasses: Record<TextVariant, string> = {
 };
 
 const colorClasses: Record<TextColor, string> = {
-  primary: "text-primary",
-  secondary: "text-secondary",
+  primary: "text-foreground",
+  primaryForeground: "text-primary-foreground",
+  secondary: "text-primary",
   muted: "text-muted-foreground",
-  accent: "text-accent",
   destructive: "text-destructive",
   success: "text-success",
-  foreground: "text-foreground",
-  inherit: "text-inherit",
 };
 
 const AppText = ({
@@ -84,7 +74,7 @@ const AppText = ({
   variant = "body",
   size,
   weight,
-  color = "foreground",
+  color = "primary",
   truncate = false,
   italic = false,
   underline = false,
