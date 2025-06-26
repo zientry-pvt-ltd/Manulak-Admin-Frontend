@@ -1,5 +1,6 @@
 import { MainErrorFallback } from "@/components/errors/main";
 import { AppMetadata } from "@/components/seo/app-metadata";
+import AppButton from "@/components/ui/app-button";
 import AppImage from "@/components/ui/app-image";
 import AppText from "@/components/ui/app-text";
 import AppTitle from "@/components/ui/app-title";
@@ -31,6 +32,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export {
+  AppButton,
   AppImage,
   AppMetadata,
   AppText,
