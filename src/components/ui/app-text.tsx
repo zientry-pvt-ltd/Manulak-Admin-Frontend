@@ -10,7 +10,7 @@ type TextVariant =
   | "overline"
   | "label";
 
-type FontSize =
+export type FontSize =
   | "text-xs"
   | "text-sm"
   | "text-base"
@@ -32,7 +32,7 @@ type FontWeight =
 
 type TextAlign = "left" | "center" | "right" | "justify";
 
-type TextColor =
+export type TextColor =
   | "primary"
   | "secondary"
   | "muted"
@@ -42,7 +42,7 @@ type TextColor =
   | "foreground"
   | "inherit";
 
-interface AppTextProps extends React.HTMLAttributes<HTMLElement> {
+export interface AppTextProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
   as?: keyof JSX.IntrinsicElements;
   variant?: TextVariant;
