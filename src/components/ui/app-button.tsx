@@ -1,5 +1,5 @@
 import type { VariantProps } from "class-variance-authority";
-import { Loader2, type LucideProps } from "lucide-react";
+import { Loader, type LucideProps } from "lucide-react";
 import type {
   ButtonHTMLAttributes,
   ForwardRefExoticComponent,
@@ -62,18 +62,19 @@ const AppButton = ({
     NonNullable<AppButtonProps["variant"]>,
     TextColor
   > = {
-    default: "accent",
     outline: "primary",
     ghost: "primary",
     link: "primary",
-    destructive: "accent",
+    destructive: "destructive",
     secondary: "primary",
+    success: "success",
+    default: "primaryForeground",
   };
 
   const roundedClass = rounded === "full" ? "rounded-full" : "rounded-md";
 
   const baseClasses = cn(
-    "inline-flex items-center justify-center gap-2",
+    "inline-flex items-center justify-center gap-1.5",
     sizeClasses[size],
     roundedClass,
     fullWidth && "w-full",
@@ -93,7 +94,7 @@ const AppButton = ({
       {...props}
     >
       {isLoading ? (
-        <Loader2
+        <Loader
           strokeWidth={1.3}
           className={cn("animate-spin", iconSizeMap[size])}
         />
