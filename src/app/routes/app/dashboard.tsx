@@ -1,4 +1,6 @@
-import { Button } from "@/components";
+import { PlusCircle } from "lucide-react";
+
+import { AppButton, AppText } from "@/components";
 import { ContentLayout } from "@/components/layouts";
 import { ROLES } from "@/constants";
 import { Authorization } from "@/lib/authorization";
@@ -23,20 +25,34 @@ const UsersRoute = () => {
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
       >
-        <span>Dashboard Content</span>
+        <AppText variant="caption">Dashboard Content</AppText>
+
+        <div className="flex gap-4 mt-3">
+          <AppButton
+            rounded="full"
+            size="sm"
+            onClick={fetchData}
+            variant="default"
+          >
+            Fetch User Profile
+          </AppButton>
+
+          <AppButton
+            variant={"outline"}
+            size="sm"
+            rounded="full"
+            onClick={() => {
+              dispatchAll([logout(), setError("error message")]);
+            }}
+          >
+            Log out
+          </AppButton>
+
+          <AppButton Icon={PlusCircle} size="sm" variant="outline">
+            Add Item
+          </AppButton>
+        </div>
       </Authorization>
-
-      <Button onClick={fetchData} title="Fetch">
-        Fetch User Profile
-      </Button>
-
-      <Button
-        onClick={() => {
-          dispatchAll([logout(), setError("error message")]);
-        }}
-      >
-        Log out
-      </Button>
     </ContentLayout>
   );
 };
