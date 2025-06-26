@@ -53,11 +53,11 @@ export interface AppTextProps extends React.HTMLAttributes<HTMLElement> {
   italic?: boolean;
   underline?: boolean;
   align?: TextAlign;
+  ellipsis?: boolean;
   className?: string;
   skeletonWidth?: number | string;
   skeletonHeight?: number | string;
 }
-
 const variantClasses: Record<TextVariant, string> = {
   heading: "text-2xl font-bold",
   subheading: "text-xl font-semibold",
@@ -89,6 +89,7 @@ const AppText = ({
   italic = false,
   underline = false,
   align,
+  ellipsis = false,
   className = "",
   ...rest
 }: AppTextProps) => {
@@ -100,6 +101,7 @@ const AppText = ({
     truncate && "truncate",
     italic && "italic",
     underline && "underline",
+    ellipsis && "whitespace-nowrap overflow-hidden text-ellipsis",
     align && `text-${align}`,
     className,
   );
