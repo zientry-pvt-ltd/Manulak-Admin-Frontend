@@ -15,6 +15,7 @@ import {
   AppTitle,
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -22,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { paths } from "@/config/paths";
 import { ROLES } from "@/constants";
 import { useAuthorization } from "@/lib/authorization";
@@ -94,6 +96,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarTrigger />
+      </SidebarFooter>
     </Sidebar>
   );
 }
