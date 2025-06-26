@@ -4,9 +4,9 @@ const AppFooter = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer>
-      <AppText variant="caption" color="muted" className="px-2 pb-1">
-        Copyright © {currentYear} - All right reserved by NexPhere Solutions
+    <footer className="flex w-full justify-end">
+      <AppText size="text-xs" color="muted" className="px-2 pb-2">
+        © {currentYear}, NexPhere Solutions
       </AppText>
     </footer>
   );
