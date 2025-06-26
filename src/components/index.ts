@@ -1,6 +1,7 @@
 import { MainErrorFallback } from "@/components/errors/main";
 import { AppMetadata } from "@/components/seo/app-metadata";
 import AppButton from "@/components/ui/app-button";
+import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
 import AppText from "@/components/ui/app-text";
@@ -34,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export {
   AppButton,
+  AppIcon,
   AppIconButton,
   AppImage,
   AppMetadata,
