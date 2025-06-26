@@ -1,4 +1,5 @@
 import { ContentLayout } from "@/components/layouts";
+import AppDummyForm from "@/components/temp/AppDummyForm";
 import { ROLES } from "@/constants";
 import { Authorization } from "@/lib/authorization";
 
@@ -10,6 +11,7 @@ const Sales = () => {
         allowedRoles={[ROLES.ADMIN]}
       >
         <span>Sales Content</span>
+        <AppDummyForm />
       </Authorization>
     </ContentLayout>
   );
