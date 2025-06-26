@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils";
 export interface AppSwitchProps
   extends React.ComponentProps<typeof SwitchPrimitive.Root> {
   size?: "sm" | "md" | "lg";
+  label?: React.ReactNode;
+  labelPosition?: "left" | "right";
+  error?: string;
+  id?: string;
 }
 
 const switchSizeClasses: Record<
@@ -29,32 +33,65 @@ const switchSizeClasses: Record<
 const AppSwitch = React.forwardRef<
   React.ComponentRef<typeof SwitchPrimitive.Root>,
   AppSwitchProps
->(({ size = "md", className, ...props }, ref) => {
-  const { root, thumb } = switchSizeClasses[size];
+>(
+  (
+    {
+      size = "md",
+      className,
+      label,
+      labelPosition = "right",
+      error,
+      id,
+      ...props
+    },
+    ref,
+  ) => {
+    const { root, thumb } = switchSizeClasses[size];
+    const switchId = id ?? React.useId();
 
-  return (
-    <SwitchPrimitive.Root
-      ref={ref}
-      className={cn(
-        "peer inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-colors outline-none",
-        "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
-        "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50",
-        root,
-        className,
-      )}
-      {...props}
-    >
-      <SwitchPrimitive.Thumb
-        className={cn(
-          "pointer-events-none block rounded-full bg-background ring-0 transition-transform",
-          "data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
-          "dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground",
-          thumb,
-        )}
-      />
-    </SwitchPrimitive.Root>
-  );
-});
+    const labelEl = label && (
+      <label htmlFor={switchId} className="text-sm">
+        {label}
+      </label>
+    );
+
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          {labelPosition === "left" && labelEl}
+
+          <SwitchPrimitive.Root
+            id={switchId}
+            ref={ref}
+            aria-invalid={!!error}
+            className={cn(
+              "peer inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-colors outline-none",
+              "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
+              "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50",
+              error && "border-destructive",
+              root,
+              className,
+            )}
+            {...props}
+          >
+            <SwitchPrimitive.Thumb
+              className={cn(
+                "pointer-events-none block rounded-full bg-background ring-0 transition-transform",
+                "data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
+                "dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground",
+                thumb,
+              )}
+            />
+          </SwitchPrimitive.Root>
+
+          {labelPosition === "right" && labelEl}
+        </div>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </div>
+    );
+  },
+);
 
 AppSwitch.displayName = "AppSwitch";
 
