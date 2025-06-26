@@ -4,7 +4,10 @@ import AppButton from "@/components/ui/app-button";
 import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
+import AppInput from "@/components/ui/app-input";
+import AppSelect from "@/components/ui/app-select";
 import AppText from "@/components/ui/app-text";
+import AppTextarea from "@/components/ui/app-textarea";
 import AppTitle from "@/components/ui/app-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -38,8 +41,11 @@ export {
   AppIcon,
   AppIconButton,
   AppImage,
+  AppInput,
   AppMetadata,
+  AppSelect,
   AppText,
+  AppTextarea,
   AppTitle,
   Avatar,
   AvatarFallback,
