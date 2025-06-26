@@ -1,5 +1,7 @@
 import { MainErrorFallback } from "@/components/errors/main";
 import { AppMetadata } from "@/components/seo/app-metadata";
+import AppImage from "@/components/ui/app-image";
+import AppText from "@/components/ui/app-text";
 import AppTitle from "@/components/ui/app-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,13 +24,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export {
+  AppImage,
   AppMetadata,
+  AppText,
   AppTitle,
   Avatar,
   AvatarFallback,
@@ -57,4 +62,5 @@ export {
   TabsList,
   TabsTrigger,
   Toaster,
+  useSidebar,
 };
