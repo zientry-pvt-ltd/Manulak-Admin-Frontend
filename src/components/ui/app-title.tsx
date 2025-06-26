@@ -15,14 +15,15 @@ const AppTitle = () => {
     <div
       className={cn(
         "flex items-center gap-x-2 px-2",
-        isCollapsed && "justify-center",
+        isCollapsed && "justify-center px-0",
       )}
     >
       <AppImage imageUrl={appLogo} alt="App Logo" />
 
       <AppText
         as="span"
-        variant="caption"
+        variant="label"
+        ellipsis
         className={cn(isCollapsed ? "hidden" : "block")}
       >
         {appName}
