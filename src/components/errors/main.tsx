@@ -1,5 +1,4 @@
-import AppButton from "@/components/ui/app-button";
-import AppText from "@/components/ui/app-text";
+import { AppButton, AppText } from "@/components";
 
 export const MainErrorFallback = () => {
   return (
