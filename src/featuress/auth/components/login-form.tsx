@@ -18,13 +18,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = (data: z.infer<typeof loginInputSchema>) => {
-    toast("Submitted values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    console.log(data);
+    toast.success("Event has been created");
   };
 
   return (
