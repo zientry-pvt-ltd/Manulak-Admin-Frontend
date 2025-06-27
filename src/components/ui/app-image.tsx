@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 type RoundedVariant =
+  | "rounded-none"
   | "rounded-2xl"
   | "rounded-3xl"
   | "rounded-4xl"
