@@ -5,6 +5,7 @@ export interface IAuthState {
     firstName: string;
     lastName: string;
     role: IRoleTypes;
+    profileUrl: string | null;
   } | null;
   refreshToken: string | null;
   isAuthenticated: boolean;

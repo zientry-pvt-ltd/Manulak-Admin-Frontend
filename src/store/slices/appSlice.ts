@@ -6,8 +6,10 @@ import { SLICE_ACTIONS } from "@/store/constants/actionTypes";
 const initialState: IAppState = {
   appName: "Manulak Agro",
   appDescription: "A modern web application",
-  appLogo:
+  appLogo: [
     "https://wordpress.validthemes.net/agrica/wp-content/uploads/2024/01/cropped-favicon-270x270.png",
+    "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
+  ],
   faviconUrl: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
   darkMode: false,
   appVersion: "1.0.0",
