@@ -2,6 +2,7 @@ import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
 import AppIcon from "@/components/ui/app-icon";
+import AppText, { type FontSize } from "@/components/ui/app-text";
 import { cn } from "@/lib/utils";
 
 export interface AppInputProps
@@ -24,6 +25,15 @@ const sizeClasses: Record<NonNullable<AppInputProps["size"]>, string> = {
   sm: "h-8 text-sm px-2",
   md: "h-10 text-base px-3",
   lg: "h-12 text-lg px-4",
+};
+
+const errorTextFontSize: Record<
+  NonNullable<AppInputProps["size"]>,
+  FontSize
+> = {
+  sm: "text-xs",
+  md: "text-sm",
+  lg: "text-base",
 };
 
 const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
@@ -100,7 +110,14 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           )}
         </div>
 
-        {error && <p className="text-sm text-destructive mt-0.5">{error}</p>}
+        {error && (
+          <AppText
+            size={errorTextFontSize[size]}
+            className="text-destructive mt-0.5"
+          >
+            {error}
+          </AppText>
+        )}
       </div>
     );
   },
