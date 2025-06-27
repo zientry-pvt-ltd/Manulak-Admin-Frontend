@@ -1,5 +1,7 @@
+import ProfileCard from "@/components/card/profile-card";
 import { MainErrorFallback } from "@/components/errors/main";
 import { AppMetadata } from "@/components/seo/app-metadata";
+import AppAvatar from "@/components/ui/app-avatar";
 import AppButton from "@/components/ui/app-button";
 import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
@@ -20,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import * as DropDown from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +40,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export {
+  AppAvatar,
   AppButton,
   AppIcon,
   AppIconButton,
@@ -58,7 +62,9 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  DropDown,
   MainErrorFallback,
+  ProfileCard,
   Sidebar,
   SidebarContent,
   SidebarFooter,
