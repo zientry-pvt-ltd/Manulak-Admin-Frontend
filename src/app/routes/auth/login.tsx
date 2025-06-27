@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
-import { Button } from "@/components";
+import { AppText } from "@/components";
+import { AuthLayout } from "@/components/layouts/auth-layout";
 import { paths } from "@/config/paths";
+import LoginForm from "@/featuress/auth/components/login-form";
 import { selectAuth } from "@/store/selectors/authSelectors";
 import { login } from "@/store/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
@@ -26,10 +28,12 @@ const LoginRoute = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div>
-      Log in
-      <Button onClick={handleLogin}>Login</Button>
-    </div>
+    <AuthLayout title="Log in to your account">
+      <AppText onClick={handleLogin} className="hidden">
+        Login
+      </AppText>
+      <LoginForm />
+    </AuthLayout>
   );
 };
 
