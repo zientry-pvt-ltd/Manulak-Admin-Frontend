@@ -1,5 +1,6 @@
 import { ContentLayout } from "@/components/layouts";
 import AppDummyForm from "@/components/temp/AppDummyForm";
+import ShowcaseImage from "@/components/temp/ShowcaseImage";
 import { ROLES } from "@/constants";
 import { Authorization } from "@/lib/authorization";
 
@@ -11,6 +12,7 @@ const Sales = () => {
         allowedRoles={[ROLES.ADMIN]}
       >
         <AppDummyForm />
+        <ShowcaseImage />
       </Authorization>
     </ContentLayout>
   );
