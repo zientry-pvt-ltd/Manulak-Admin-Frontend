@@ -13,6 +13,7 @@ import {
   AppIcon,
   AppText,
   AppTitle,
+  ProfileCard,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -98,6 +99,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarTrigger />
+        <ProfileCard />
       </SidebarFooter>
     </Sidebar>
   );

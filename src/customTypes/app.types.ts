@@ -3,6 +3,6 @@ export interface IAppState {
   appName: string;
   appVersion: string;
   appDescription: string;
-  appLogo: string;
+  appLogo: string[];
   faviconUrl: string;
 }

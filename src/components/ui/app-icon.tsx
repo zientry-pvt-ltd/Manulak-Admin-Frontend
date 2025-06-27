@@ -19,7 +19,10 @@ const AppIcon = ({ Icon, size = "md", className }: AppIconProps) => {
   };
 
   return (
-    <Icon strokeWidth={1.3} className={cn(iconSizeMap[size], className)} />
+    <Icon
+      strokeWidth={1.4}
+      className={cn(iconSizeMap[size], "text-foreground", className)}
+    />
   );
 };
 

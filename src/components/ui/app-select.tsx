@@ -1,5 +1,7 @@
+import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
+import AppIcon from "@/components/ui/app-icon";
 import {
   Select,
   SelectContent,
@@ -24,6 +26,9 @@ export interface AppSelectProps {
   // eslint-disable-next-line no-unused-vars
   onValueChange?: (value: string) => void;
   disabled?: boolean;
+  startIcon?: React.ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+  >;
 }
 
 const sizeClasses: Record<NonNullable<AppSelectProps["size"]>, string> = {
@@ -45,6 +50,7 @@ const AppSelect: React.FC<AppSelectProps> = ({
   defaultValue,
   onValueChange,
   disabled,
+  startIcon,
 }) => {
   return (
     <div className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]")}>
@@ -61,6 +67,7 @@ const AppSelect: React.FC<AppSelectProps> = ({
         <SelectTrigger
           size={size === "sm" ? "sm" : "default"}
           className={cn(
+            "flex items-center",
             sizeClasses[size],
             variant === "fill" ? "bg-muted/30" : "bg-transparent",
             error
@@ -71,6 +78,13 @@ const AppSelect: React.FC<AppSelectProps> = ({
           )}
           aria-invalid={!!error}
         >
+          {startIcon && (
+            <AppIcon
+              Icon={startIcon}
+              size={size}
+              className="text-muted-foreground"
+            />
+          )}
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
