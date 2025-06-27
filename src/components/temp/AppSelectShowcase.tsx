@@ -1,3 +1,4 @@
+import { BananaIcon, EggFried } from "lucide-react";
 import { useState } from "react";
 
 import AppSelect from "@/components/ui/app-select";
@@ -23,6 +24,7 @@ const AppSelectShowcase = () => {
           items={FRUITS}
           variant="outline"
           placeholder="Pick a fruit"
+          startIcon={EggFried}
         />
         <AppSelect
           label="Fill Variant"
@@ -40,6 +42,7 @@ const AppSelectShowcase = () => {
           items={FRUITS}
           size="sm"
           placeholder="Small size"
+          startIcon={BananaIcon}
         />
         <AppSelect
           label="Medium"
