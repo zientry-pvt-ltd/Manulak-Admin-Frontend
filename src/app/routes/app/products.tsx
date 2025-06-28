@@ -1,9 +1,10 @@
 import { ContentLayout } from "@/components/layouts";
 import AppChipShowcase from "@/components/temp/AppChipShowcase";
 import AppInputShowcase from "@/components/temp/AppInputShowcase";
+import AppMultiSelectShowcase from "@/components/temp/AppMultiSelectShowcase";
 import AppSelectShowcase from "@/components/temp/AppSelectShowcase";
+import AppSwitchShowcase from "@/components/temp/AppSwitchShowcase";
 import AppTextareaShowcase from "@/components/temp/AppTextareaShowcase";
-import AppSwitch from "@/components/ui/app-switch";
 import { ROLES } from "@/constants";
 import { Authorization } from "@/lib/authorization";
 
@@ -14,18 +15,12 @@ const Products = () => {
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
       >
-        <div className="flex flex-col gap-8">
+        <div className="flex gap-4 flex-wrap my-2">
           <AppInputShowcase />
-          <AppTextareaShowcase />
-
           <AppSelectShowcase />
-
-          <div className="flex gap-4">
-            <AppSwitch defaultChecked size="sm" />
-            <AppSwitch defaultChecked size="lg" />
-            <AppSwitch defaultChecked size="md" />
-          </div>
-
+          <AppMultiSelectShowcase />
+          <AppTextareaShowcase />
+          <AppSwitchShowcase />
           <AppChipShowcase />
         </div>
       </Authorization>

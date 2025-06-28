@@ -2,6 +2,7 @@ import { BananaIcon, EggFried } from "lucide-react";
 import { useState } from "react";
 
 import AppSelect from "@/components/ui/app-select";
+import AppText from "@/components/ui/app-text";
 
 const FRUITS = [
   { label: "Apple", value: "apple" },
@@ -13,8 +14,10 @@ const FRUITS = [
 
 const AppSelectShowcase = () => {
   return (
-    <div className="space-y-10 p-6 max-w-3xl">
-      <h2 className="text-2xl font-semibold">AppSelect Showcase</h2>
+    <div className="space-y-4 max-w-md border p-4 rounded-lg">
+      <AppText variant="subheading" className="font-semibold">
+        AppSelect Showcase
+      </AppText>
 
       {/* Variants */}
       <section className="space-y-4">

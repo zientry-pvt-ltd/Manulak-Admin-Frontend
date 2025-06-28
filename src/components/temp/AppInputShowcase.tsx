@@ -1,11 +1,14 @@
 import { Eye, Lock, Mail, User } from "lucide-react";
 
 import AppInput from "@/components/ui/app-input";
+import AppText from "@/components/ui/app-text";
 
 const AppInputShowcase = () => {
   return (
-    <div className="space-y-8 p-6 max-w-3xl">
-      <h2 className="text-xl font-semibold">AppInput Showcase</h2>
+    <div className="space-y-4 max-w-md border p-4 rounded-lg">
+      <AppText variant="subheading" className="font-semibold">
+        AppInput Showcase
+      </AppText>
 
       {/* Sizes */}
       <div className="space-y-4">

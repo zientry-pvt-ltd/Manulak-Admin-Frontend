@@ -1,9 +1,11 @@
-import { AppTextarea } from "@/components";
+import { AppText, AppTextarea } from "@/components";
 
 const AppTextareaShowcase = () => {
   return (
-    <div>
-      <h2 className="text-xl font-semibold">AppTextarea Showcase</h2>
+    <div className="space-y-4 max-w-md border p-4 rounded-lg">
+      <AppText variant="subheading" className="font-semibold">
+        AppTextarea Showcase
+      </AppText>
 
       {/* Variants */}
       <div className="space-y-4">

@@ -8,7 +8,7 @@ export const AppMetadata = () => {
     <>
       <title>{app.appName || "Loading..."}</title>
       <meta name="application-name" content={app.appName} />
-      <link rel="icon" href={app.appLogo} />
+      <link rel="icon" href={app.appLogo[0]} />
     </>
   );
 };

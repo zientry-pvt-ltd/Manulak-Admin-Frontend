@@ -28,7 +28,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <AuthRefreshProvider>{children}</AuthRefreshProvider>
-            <Toaster />
+            <Toaster expand theme="light" richColors closeButton />
             <AppMetadata />
           </PersistGate>
         </Provider>

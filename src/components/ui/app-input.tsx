@@ -2,6 +2,7 @@ import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
 import AppIcon from "@/components/ui/app-icon";
+import AppText, { type FontSize } from "@/components/ui/app-text";
 import { cn } from "@/lib/utils";
 
 export interface AppInputProps
@@ -21,9 +22,15 @@ export interface AppInputProps
 }
 
 const sizeClasses: Record<NonNullable<AppInputProps["size"]>, string> = {
-  sm: "h-8 text-sm px-2",
-  md: "h-10 text-base px-3",
-  lg: "h-12 text-lg px-4",
+  sm: "h-8 w-[200px] px-2",
+  md: "h-10 w-[250px] px-3",
+  lg: "h-12 w-[320px] px-4",
+};
+
+const fontSizeMap: Record<NonNullable<AppInputProps["size"]>, FontSize> = {
+  sm: "text-xs",
+  md: "text-sm",
+  lg: "text-base",
 };
 
 const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
@@ -47,12 +54,15 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
     return (
       <div className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]")}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="text-sm font-medium text-foreground"
+          <AppText
+            as="label"
+            variant="label"
+            size={fontSizeMap[size]}
+            className="block mb-1"
+            {...(typeof label === "string" ? { htmlFor: inputId } : {})}
           >
             {label}
-          </label>
+          </AppText>
         )}
 
         <div
@@ -81,11 +91,7 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
             ref={ref}
             className={cn(
               "flex-1 bg-transparent outline-none border-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-              size === "sm"
-                ? "text-sm"
-                : size === "lg"
-                  ? "text-lg"
-                  : "text-base",
+              fontSizeMap[size],
             )}
             aria-invalid={!!error}
             {...props}
@@ -100,7 +106,15 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           )}
         </div>
 
-        {error && <p className="text-sm text-destructive mt-0.5">{error}</p>}
+        {error && (
+          <AppText
+            size={fontSizeMap[size]}
+            color="destructive"
+            className="mt-0.5"
+          >
+            {error}
+          </AppText>
+        )}
       </div>
     );
   },

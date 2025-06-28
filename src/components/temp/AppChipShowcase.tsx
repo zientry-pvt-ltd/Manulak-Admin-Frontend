@@ -1,11 +1,15 @@
 import { Ban, CheckCircle, Info, Star } from "lucide-react";
 
 import AppChip from "@/components/ui/app-chip"; // Adjust the import path as needed
-import { cn } from "@/lib/utils";
+import AppText from "@/components/ui/app-text";
 
 const AppChipShowcase = () => {
   return (
-    <div className={cn("flex flex-wrap gap-3")}>
+    <div className="space-y-4 max-w-md border p-4 rounded-lg">
+      <AppText variant="subheading" className="font-semibold">
+        AppChips Showcase
+      </AppText>
+
       <AppChip size="sm" label="Outline" variant="outline" />
       <AppChip size="sm" label="Primary" variant="primary" icon={Star} />
       <AppChip size="sm" label="Secondary" variant="secondary" />

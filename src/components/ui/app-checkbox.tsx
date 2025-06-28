@@ -21,9 +21,9 @@ const sizeMap: Record<
     label: FontSize;
   }
 > = {
-  sm: { box: "size-3", icon: "size-2.5", label: "text-sm" },
-  md: { box: "size-4", icon: "size-3.5", label: "text-base" },
-  lg: { box: "size-5", icon: "size-4", label: "text-lg" },
+  sm: { box: "size-3", icon: "size-2.5", label: "text-xs" },
+  md: { box: "size-4", icon: "size-3.5", label: "text-sm" },
+  lg: { box: "size-5", icon: "size-4", label: "text-base" },
 };
 
 const AppCheckbox = React.forwardRef<
@@ -67,7 +67,7 @@ const AppCheckbox = React.forwardRef<
       </div>
 
       {error && (
-        <AppText as="p" size="text-xs" color="destructive">
+        <AppText size={labelSize} color="destructive">
           {error}
         </AppText>
       )}

@@ -2,6 +2,7 @@ import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
 import AppIcon from "@/components/ui/app-icon";
+import AppText, { type FontSize } from "@/components/ui/app-text";
 import {
   Select,
   SelectContent,
@@ -32,9 +33,15 @@ export interface AppSelectProps {
 }
 
 const sizeClasses: Record<NonNullable<AppSelectProps["size"]>, string> = {
-  sm: "h-8 text-sm",
-  md: "h-10 text-base",
-  lg: "h-12 text-lg",
+  sm: "h-8 w-[200px] px-2",
+  md: "h-10 w-[250px] px-3",
+  lg: "h-12 w-[320px] px-4",
+};
+
+const fontSizeMap: Record<NonNullable<AppSelectProps["size"]>, FontSize> = {
+  sm: "text-xs",
+  md: "text-sm",
+  lg: "text-base",
 };
 
 const AppSelect: React.FC<AppSelectProps> = ({
@@ -55,9 +62,15 @@ const AppSelect: React.FC<AppSelectProps> = ({
   return (
     <div className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]")}>
       {label && (
-        <label className="text-sm font-medium text-foreground">{label}</label>
+        <AppText
+          as="label"
+          variant="label"
+          size={fontSizeMap[size]}
+          className="block mb-1"
+        >
+          {label}
+        </AppText>
       )}
-
       <Select
         value={value}
         defaultValue={defaultValue}
@@ -78,28 +91,43 @@ const AppSelect: React.FC<AppSelectProps> = ({
           )}
           aria-invalid={!!error}
         >
-          {startIcon && (
-            <AppIcon
-              Icon={startIcon}
-              size={size}
-              className="text-muted-foreground"
+          <div className="flex items-center gap-2">
+            {startIcon && (
+              <AppIcon
+                Icon={startIcon}
+                size={size}
+                className="text-muted-foreground"
+              />
+            )}
+            <SelectValue
+              placeholder={
+                <AppText size={fontSizeMap[size]} color="muted">
+                  {placeholder}
+                </AppText>
+              }
             />
-          )}
-          <SelectValue placeholder={placeholder} />
+          </div>
         </SelectTrigger>
 
         <SelectContent>
           <SelectGroup>
             {items.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                <AppText size={fontSizeMap[size]}>{item.label}</AppText>
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
-
-      {error && <p className="text-sm text-destructive mt-0.5">{error}</p>}
+      {error && (
+        <AppText
+          size={fontSizeMap[size]}
+          color="destructive"
+          className="mt-0.5"
+        >
+          {error}
+        </AppText>
+      )}
     </div>
   );
 };
