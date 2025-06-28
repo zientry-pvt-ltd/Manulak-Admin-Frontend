@@ -43,11 +43,6 @@ const fontSizeMap: Record<
   md: "text-sm",
   lg: "text-base",
 };
-// const widthMap: Record<NonNullable<AppMultiSelectProps["size"]>, string> = {
-//   sm: "w-[200px]",
-//   md: "w-[250px]",
-//   lg: "w-[320px]",
-// };
 
 const AppMultiSelect: React.FC<AppMultiSelectProps> = ({
   label,

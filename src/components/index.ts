@@ -7,6 +7,7 @@ import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
 import AppInput from "@/components/ui/app-input";
+import AppMultiSelect from "@/components/ui/app-multi-select";
 import AppSelect from "@/components/ui/app-select";
 import AppText from "@/components/ui/app-text";
 import AppTextarea from "@/components/ui/app-textarea";
@@ -47,6 +48,7 @@ export {
   AppImage,
   AppInput,
   AppMetadata,
+  AppMultiSelect,
   AppSelect,
   AppText,
   AppTextarea,
