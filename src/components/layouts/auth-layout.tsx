@@ -28,14 +28,13 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   }, [user.isAuthenticated, navigate, redirectTo]);
 
   return (
-    <>
-      <div className="flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <AppText variant="heading">{title}</AppText>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md border rounded-md p-6 sm:p-8">
+        <div className="mb-6 text-center">
+          <AppText variant="subheading">{title}</AppText>
         </div>
-
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">{children}</div>
+        {children}
       </div>
-    </>
+    </div>
   );
 };
