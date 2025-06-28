@@ -24,13 +24,14 @@ const LoginForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-3">
         <AppInput
           label="Username"
-          size="sm"
+          size="md"
           type="text"
           placeholder="Username"
           startIcon={User}
+          fullWidth
           error={form.formState.errors.userName?.message}
           {...form.register("userName")}
         />
@@ -38,14 +39,15 @@ const LoginForm = () => {
         <AppInput
           label="Password"
           type="password"
-          size="sm"
+          size="md"
           placeholder="••••••"
           startIcon={Lock}
+          fullWidth
           error={form.formState.errors.password?.message}
           {...form.register("password")}
         />
 
-        <AppButton type="submit" size="sm" className="mt-4">
+        <AppButton type="submit" size="md" className="mt-6" fullWidth>
           Login
         </AppButton>
       </form>
