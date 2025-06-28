@@ -1,123 +1,184 @@
-import { Send } from "lucide-react";
-import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
-import AppButton from "@/components/ui/app-button";
+import {
+  AppButton,
+  AppInput,
+  AppMultiSelect,
+  AppSelect,
+  AppTextarea,
+} from "@/components";
 import AppCheckbox from "@/components/ui/app-checkbox";
-import AppInput from "@/components/ui/app-input";
-import AppSelect from "@/components/ui/app-select";
 import AppSwitch from "@/components/ui/app-switch";
-import AppText from "@/components/ui/app-text";
-import AppTextarea from "@/components/ui/app-textarea";
 
-const FRUITS = [
-  { label: "Apple", value: "apple" },
-  { label: "Banana", value: "banana" },
-  { label: "Blueberry", value: "blueberry" },
-  { label: "Grapes", value: "grapes" },
-  { label: "Pineapple", value: "pineapple" },
+export const productInputSchema = z.object({
+  productName: z.string().min(1, "Product name is required"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  price: z
+    .number({ invalid_type_error: "Price is required" })
+    .positive("Price must be a positive number"),
+  category: z.string().min(1, "Please select a category"),
+  tags: z.array(z.string()).optional(),
+  inStock: z.boolean(),
+  sku: z.string().optional(),
+  isFeatured: z.boolean().optional(),
+});
+const CATEGORIES = [
+  { label: "Electronics", value: "electronics" },
+  { label: "Clothing", value: "clothing" },
+  { label: "Books", value: "books" },
 ];
 
-const AppDummyForm = () => {
-  const [form, setForm] = React.useState({
-    name: "",
-    email: "",
-    bio: "",
-    fruit: "",
-    agree: false,
-    subscribe: false,
+const TAGS = [
+  { label: "New", value: "new" },
+  { label: "Popular", value: "popular" },
+  { label: "Sale", value: "sale" },
+];
+
+type FormValues = z.infer<typeof productInputSchema>;
+
+const ProductForm = () => {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(productInputSchema),
+    defaultValues: {
+      productName: "",
+      description: "",
+      price: 0,
+      category: "",
+      tags: [],
+      inStock: false,
+      sku: "",
+      isFeatured: false,
+    },
   });
 
-  const [submitted, setSubmitted] = React.useState(false);
-
-  const handleChange = (key: keyof typeof form, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
+  const onSubmit = (data: FormValues) => {
+    console.log(data);
+    toast.success("Product created successfully!");
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="max-w-xl space-y-4 rounded-lg border p-6 mt-4"
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="grid grid-cols-1 md:grid-cols-2 gap-6 w-[500px] border p-4 rounded-lg"
     >
-      <AppText variant="heading">Dummy Form</AppText>
-
       <AppInput
-        label="Name"
-        size="sm"
+        label="Product Name"
+        size="md"
         variant="outline"
-        placeholder="Your name"
+        placeholder="Enter product name"
         fullWidth
-        value={form.name}
-        onChange={(e) => handleChange("name", e.target.value)}
-        error={submitted && !form.name ? "Name is required" : undefined}
+        error={form.formState.errors.productName?.message}
+        {...form.register("productName")}
       />
 
       <AppInput
-        label="Email"
-        size="sm"
+        label="Price"
+        type="number"
+        size="md"
         variant="outline"
-        placeholder="Your email"
+        placeholder="Enter price"
         fullWidth
-        type="email"
-        value={form.email}
-        onChange={(e) => handleChange("email", e.target.value)}
-        error={submitted && !form.email ? "Email is required" : undefined}
+        error={form.formState.errors.price?.message}
+        {...form.register("price", { valueAsNumber: true })}
       />
 
-      <AppTextarea
-        label="Bio"
-        size="sm"
+      <Controller
+        control={form.control}
+        name="category"
+        render={({ field }) => (
+          <AppSelect
+            label="Category"
+            size="md"
+            variant="outline"
+            items={CATEGORIES}
+            placeholder="Select category"
+            fullWidth
+            value={field.value}
+            onValueChange={field.onChange}
+            error={form.formState.errors.category?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={form.control}
+        name="tags"
+        render={({ field }) => (
+          <AppMultiSelect
+            label="Tags"
+            items={TAGS}
+            selectedValues={field.value ?? []}
+            fullWidth
+            onChange={field.onChange}
+            placeholder="Select tags"
+            size="md"
+            error={form.formState.errors.tags?.message}
+          />
+        )}
+      />
+
+      <AppInput
+        label="SKU"
+        size="md"
         variant="outline"
-        placeholder="Tell us about yourself"
-        rows={4}
+        placeholder="Optional SKU"
         fullWidth
-        value={form.bio}
-        onChange={(e) => handleChange("bio", e.target.value)}
-        error={submitted && !form.bio ? "Bio is required" : undefined}
+        error={form.formState.errors.sku?.message}
+        {...form.register("sku")}
       />
 
-      <AppSelect
-        label="Favorite Fruit"
-        size="sm"
-        variant="outline"
-        placeholder="Pick a fruit"
-        items={FRUITS}
-        fullWidth
-        value={form.fruit}
-        onValueChange={(val) => handleChange("fruit", val)}
-        error={submitted && !form.fruit ? "Please select a fruit" : undefined}
+      <Controller
+        control={form.control}
+        name="inStock"
+        render={({ field }) => (
+          <AppSwitch
+            label="In Stock"
+            labelPosition="left"
+            size="sm"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+            error={form.formState.errors.inStock?.message}
+          />
+        )}
       />
 
-      <AppSwitch
-        size="sm"
-        checked={form.agree}
-        onCheckedChange={(val) => handleChange("agree", val)}
-        label="Agree to terms"
-        labelPosition="left"
-        error={
-          submitted && !form.agree ? "You must agree to continue" : undefined
-        }
+      <Controller
+        control={form.control}
+        name="isFeatured"
+        render={({ field }) => (
+          <AppCheckbox
+            label="Mark as Featured"
+            size="md"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+            error={form.formState.errors.isFeatured?.message}
+          />
+        )}
       />
 
-      <AppCheckbox
-        size="sm"
-        label="Subscribe to newsletter"
-        checked={form.subscribe}
-        onCheckedChange={(val) => handleChange("subscribe", val)}
-        error={
-          submitted && !form.subscribe ? "You must accept the terms" : undefined
-        }
-      />
+      <div className="md:col-span-2">
+        <AppTextarea
+          label="Description"
+          size="md"
+          variant="outline"
+          placeholder="Product description"
+          rows={5}
+          fullWidth
+          error={form.formState.errors.description?.message}
+          {...form.register("description")}
+        />
+      </div>
 
-      <AppButton size="sm" Icon={Send} iconPosition="left" type="submit">
-        Submit
-      </AppButton>
+      <div className="md:col-span-2">
+        <AppButton type="submit" size="md" className="mt-4" fullWidth>
+          Create Product
+        </AppButton>
+      </div>
     </form>
   );
 };
 
-export default AppDummyForm;
+export default ProductForm;
