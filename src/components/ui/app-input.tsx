@@ -67,7 +67,7 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
 
         <div
           className={cn(
-            "flex items-center rounded-md border transition-colors",
+            "flex items-center rounded-md border transition-colors mt-1",
             sizeClasses[size],
             variant === "fill" ? "bg-muted/30" : "bg-transparent",
             error
