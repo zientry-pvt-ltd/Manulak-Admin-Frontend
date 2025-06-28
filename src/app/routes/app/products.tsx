@@ -15,7 +15,7 @@ const Products = () => {
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
       >
-        <div className="flex flex-col gap-8">
+        <div className="flex gap-4 flex-wrap my-2">
           <AppInputShowcase />
           <AppSelectShowcase />
           <AppMultiSelectShowcase />
