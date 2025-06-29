@@ -11,12 +11,14 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import appReducer from "./slices/appSlice";
-import authReducer from "./slices/authSlice";
+import authReducer from "@/features/auth/store/slices/authSlice";
+import userReducer from "@/features/auth/store/slices/userSlice";
+import appConfigReducer from "@/features/settings/store/slices/appConfigSlice";
 
 const rootReducer = combineReducers({
-  app: appReducer,
   auth: authReducer,
+  user: userReducer,
+  appConfig: appConfigReducer,
 });
 
 const persistConfig = {
@@ -40,6 +42,5 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-// Types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

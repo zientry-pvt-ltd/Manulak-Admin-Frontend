@@ -2,8 +2,8 @@ import type { AxiosInstance } from "axios";
 import axios from "axios";
 
 import { env } from "@/config/env";
+import { refreshAccessToken } from "@/features/auth";
 import { store } from "@/store";
-import { refreshAccessToken } from "@/store/slices/authSlice";
 import Logger from "@/utils/Logger";
 
 export class AxiosPrivateService {

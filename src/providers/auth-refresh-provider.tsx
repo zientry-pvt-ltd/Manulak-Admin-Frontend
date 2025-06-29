@@ -1,33 +1,23 @@
 import { useEffect, useState } from "react";
 
-import { refreshAccessToken, setAuth } from "@/store/slices/authSlice";
-import { useAppDispatch } from "@/store/utils";
+import { useAuth } from "@/features/auth";
 
 export const AuthRefreshProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
+  const { handleRefreshAccessToken } = useAuth();
 
   useEffect(() => {
-    //TODO: Remove this line after implementing proper authentication flow
-    dispatch(setAuth(true));
-
     const initAuth = async () => {
-      const accessTokenResponse = await dispatch(refreshAccessToken());
-
-      if (refreshAccessToken.fulfilled.match(accessTokenResponse)) {
-        dispatch(setAuth(true));
-      } else {
-        console.error("Failed to refresh token:", accessTokenResponse.payload);
-      }
+      await handleRefreshAccessToken();
       setLoading(false);
     };
-
     initAuth();
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (

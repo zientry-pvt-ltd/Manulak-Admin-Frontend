@@ -10,7 +10,7 @@ import {
 } from "@/components";
 import { useUser } from "@/features/auth";
 
-const ProfileCard = () => {
+const UserProfileCard = () => {
   const { userInfo } = useUser();
   const { state, setOpen } = useSidebar();
 
@@ -84,4 +84,4 @@ const ProfileCard = () => {
   );
 };
 
-export default memo(ProfileCard);
+export default memo(UserProfileCard);

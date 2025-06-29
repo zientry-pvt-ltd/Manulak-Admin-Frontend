@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { IAppState } from "@/customTypes/app.types";
-import { SLICE_ACTIONS } from "@/store/constants/actionTypes";
+import { APP_CONFIG_SLICE } from "@/features/settings/constants";
+import type { IAppState } from "@/features/settings/types/appConfig.type";
 
 const initialState: IAppState = {
   appName: "Manulak Agro",
@@ -16,7 +16,7 @@ const initialState: IAppState = {
 };
 
 const appSlice = createSlice({
-  name: SLICE_ACTIONS.APP.SLICE,
+  name: APP_CONFIG_SLICE.NAME,
   initialState,
   reducers: {
     toggleDarkMode: (state) => {

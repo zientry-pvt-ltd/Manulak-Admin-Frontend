@@ -13,7 +13,6 @@ import {
   AppIcon,
   AppText,
   AppTitle,
-  ProfileCard,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -27,6 +26,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { paths } from "@/config/paths";
 import { ROLES } from "@/constants";
+import { UserProfileCard } from "@/features/auth";
 import { useAuthorization } from "@/lib/authorization";
 
 type SideNavigationItem = {
@@ -99,7 +99,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarTrigger />
-        <ProfileCard />
+        <UserProfileCard />
       </SidebarFooter>
     </Sidebar>
   );

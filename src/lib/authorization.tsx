@@ -1,6 +1,4 @@
-import type { IRoleTypes } from "@/customTypes/auth.types";
-import { selectAuth } from "@/store/selectors/authSelectors";
-import { useAppSelector } from "@/store/utils";
+import { type IRoleTypes, useAuth, useUser } from "@/features/auth";
 
 type AuthorizationProps = {
   forbiddenFallback?: React.ReactNode;
@@ -18,20 +16,21 @@ type AuthorizationProps = {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuthorization = () => {
-  const auth = useAppSelector(selectAuth);
+  const { isAuthenticated } = useAuth();
+  const { userInfo } = useUser();
 
-  if (!auth.isAuthenticated) {
+  if (!isAuthenticated) {
     throw Error("User does not exist!");
   }
 
   const checkAccess = ({ allowedRoles }: { allowedRoles: string[] }) => {
-    if (allowedRoles && allowedRoles.length > 0 && auth) {
-      return allowedRoles.includes(auth.userInfo?.role || "");
+    if (allowedRoles && allowedRoles.length > 0 && isAuthenticated) {
+      return allowedRoles.includes(userInfo?.role || "");
     }
     return true;
   };
 
-  return { checkAccess, role: auth.userInfo?.role };
+  return { checkAccess, role: userInfo?.role };
 };
 
 export const Authorization = ({

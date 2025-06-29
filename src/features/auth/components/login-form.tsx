@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { AppButton, AppInput } from "@/components";
 import { Form } from "@/components/ui/form";
-import { loginInputSchema } from "@/featuress/auth/schema";
+import { loginInputSchema } from "@/features/auth/schema";
 
 const LoginForm = () => {
   const form = useForm<z.infer<typeof loginInputSchema>>({
