@@ -1,4 +1,10 @@
-import { EllipsisVertical, LogOut, Settings, User } from "lucide-react";
+import {
+  EllipsisVertical,
+  LogOut,
+  Settings,
+  SunMoon,
+  User,
+} from "lucide-react";
 import { memo, useCallback } from "react";
 
 import {
@@ -13,10 +19,13 @@ import {
   DropdownMenuTrigger,
   useSidebar,
 } from "@/components";
+import AppSwitch from "@/components/ui/app-switch";
 import { useUser } from "@/features/auth";
+import { useTheme } from "@/providers/theme-provider";
 
 const UserProfileCard = () => {
   const { userInfo } = useUser();
+  const { theme, setTheme } = useTheme();
   const { state, setOpen } = useSidebar();
 
   const isCollapsed = state === "collapsed";
@@ -36,6 +45,14 @@ const UserProfileCard = () => {
   const handleLogout = useCallback(() => {
     console.log("Logging out...");
   }, []);
+
+  const handleThemeToggle = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setTheme(theme === "dark" ? "light" : "dark");
+    },
+    [setTheme, theme],
+  );
 
   const renderUserDetails = (
     <div className="flex items-center gap-x-2 cursor-default">
@@ -61,23 +78,30 @@ const UserProfileCard = () => {
       <DropdownMenuTrigger asChild>{renderUserDetails}</DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="start">
-        <DropdownMenuLabel>{renderUserDetails}</DropdownMenuLabel>
+        <DropdownMenuLabel>Account</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={handleProfile}>
-          <AppIcon Icon={User} size="sm" />
+          <AppIcon Icon={User} />
           <AppText variant="caption">Profile</AppText>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSettings}>
-          <AppIcon Icon={Settings} size="sm" />
+          <AppIcon Icon={SunMoon} />
+          <AppText variant="caption" className="mr-auto">
+            Dark Mode
+          </AppText>
+          <AppSwitch checked={theme === "dark"} onClick={handleThemeToggle} />
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSettings}>
+          <AppIcon Icon={Settings} />
           <AppText variant="caption">Settings</AppText>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={handleLogout}>
-          <AppIcon Icon={LogOut} size="sm" />
+          <AppIcon Icon={LogOut} />
           <AppText variant="caption">Log out</AppText>
         </DropdownMenuItem>
       </DropdownMenuContent>
