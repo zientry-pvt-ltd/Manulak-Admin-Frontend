@@ -13,3 +13,5 @@ export type DateFormat =
   | "dddd, MMMM Do YYYY";
 
 export type DateFormatKey = keyof typeof DateFormatPatterns;
+
+export type TimeFormat = "12" | "24";

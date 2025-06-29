@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { DateFormatPatterns } from "@/constants";
-import { type DateFormat } from "@/customTypes/date.types";
+import type { DateFormat, TimeFormat } from "@/customTypes/date.types";
 
 export const formatDate = (
   date: moment.MomentInput,
@@ -69,3 +69,19 @@ export const getEndOfWeek = (date: Date) => moment(date).endOf("week");
 export const getStartOfMonth = (date: Date) => moment(date).startOf("month");
 
 export const getEndOfMonth = (date: Date) => moment(date).endOf("month");
+
+export const getCurrentDateParts = () => {
+  const now = moment();
+  return {
+    year: now.year(),
+    month: now.month() + 1,
+    day: now.date(),
+    hour: function (timeFormat: TimeFormat = "24") {
+      const formattedHour =
+        timeFormat === "12" ? now.format("hh") : now.format("HH");
+      return parseInt(formattedHour, 10);
+    },
+    minute: now.minute(),
+    period: moment().format("A") as "AM" | "PM",
+  };
+};
