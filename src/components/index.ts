@@ -11,33 +11,15 @@ import AppSelect from "@/components/ui/app-select";
 import AppText from "@/components/ui/app-text";
 import AppTextarea from "@/components/ui/app-textarea";
 import AppTitle from "@/components/ui/app-title";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import * as DropDown from "@/components/ui/dropdown-menu";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Toaster } from "@/components/ui/sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export * from "@/components/ui/avatar";
+export * from "@/components/ui/card";
+export * from "@/components/ui/dropdown-menu";
+export * from "@/components/ui/sidebar";
+export * from "@/components/ui/sonner";
+export * from "@/components/ui/tabs";
 
 export {
   AppAvatar,
@@ -52,33 +34,7 @@ export {
   AppText,
   AppTextarea,
   AppTitle,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
   Button,
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  DropDown,
   MainErrorFallback,
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   Skeleton,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Toaster,
-  useSidebar,
 };

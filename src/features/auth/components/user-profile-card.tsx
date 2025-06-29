@@ -5,7 +5,12 @@ import {
   AppAvatar,
   AppIcon,
   AppText,
-  DropDown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   useSidebar,
 } from "@/components";
 import { useUser } from "@/features/auth";
@@ -52,35 +57,31 @@ const UserProfileCard = () => {
   );
 
   return (
-    <DropDown.DropdownMenu>
-      <DropDown.DropdownMenuTrigger asChild>
-        {renderUserDetails}
-      </DropDown.DropdownMenuTrigger>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{renderUserDetails}</DropdownMenuTrigger>
 
-      <DropDown.DropdownMenuContent className="w-56" align="start">
-        <DropDown.DropdownMenuLabel>
-          {renderUserDetails}
-        </DropDown.DropdownMenuLabel>
+      <DropdownMenuContent className="w-56" align="start">
+        <DropdownMenuLabel>{renderUserDetails}</DropdownMenuLabel>
 
-        <DropDown.DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
-        <DropDown.DropdownMenuItem onClick={handleProfile}>
+        <DropdownMenuItem onClick={handleProfile}>
           <AppIcon Icon={User} size="sm" />
           <AppText variant="caption">Profile</AppText>
-        </DropDown.DropdownMenuItem>
-        <DropDown.DropdownMenuItem onClick={handleSettings}>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSettings}>
           <AppIcon Icon={Settings} size="sm" />
           <AppText variant="caption">Settings</AppText>
-        </DropDown.DropdownMenuItem>
+        </DropdownMenuItem>
 
-        <DropDown.DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
-        <DropDown.DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleLogout}>
           <AppIcon Icon={LogOut} size="sm" />
           <AppText variant="caption">Log out</AppText>
-        </DropDown.DropdownMenuItem>
-      </DropDown.DropdownMenuContent>
-    </DropDown.DropdownMenu>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

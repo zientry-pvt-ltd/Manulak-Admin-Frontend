@@ -22,8 +22,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { paths } from "@/config/paths";
 import { ROLES } from "@/constants";
 import { UserProfileCard } from "@/features/auth";
