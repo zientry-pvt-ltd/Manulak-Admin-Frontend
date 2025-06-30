@@ -28,7 +28,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md border rounded-md p-6 sm:p-8">
+      <div className="w-full max-w-md border rounded-md p-6 sm:px-8 sm:py-14">
         <div className="mb-6 text-center">
           <AppText variant="subheading">{title}</AppText>
         </div>
