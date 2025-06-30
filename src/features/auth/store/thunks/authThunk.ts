@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import type { ILoginResponsePayload } from "@/features/auth";
 import { AUTH_ENDPOINTS, AUTH_SLICE } from "@/features/auth/constants";
+import { setAuth } from "@/features/auth/store/slices/authSlice";
 import { setUserProfile } from "@/features/auth/store/slices/userSlice";
 import { AxiosPrivateService } from "@/services/AxiosPrivateService";
 import { AxiosPublicService } from "@/services/AxiosPublicService";
@@ -19,12 +20,22 @@ export const login = createAsyncThunk<
         CommonResponseDTO<ILoginResponsePayload>
       >(AUTH_ENDPOINTS.LOGIN, credentials);
 
-      const { refreshToken, profile } = response.data.data;
+      const { refreshToken } = response.data.data;
 
       if (!refreshToken) return rejectWithValue("No refresh token received");
-      if (!profile) return rejectWithValue("No user data received");
-
-      dispatch(setUserProfile(profile));
+      // if (!profile) return rejectWithValue("No user data received");
+      dispatch(
+        setUserProfile({
+          email: "arundeshan@gmail.com",
+          firstName: "Arun",
+          lastName: "Deshan",
+          role: "ADMIN",
+          profileUrl:
+            "https://images.unsplash.com/photo-1492288991661-058aa541ff43?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          id: "1",
+        }),
+      );
+      dispatch(setAuth(true));
       AxiosPrivateService.updateToken(refreshToken);
 
       return response.data.data;
