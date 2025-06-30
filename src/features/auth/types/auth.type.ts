@@ -3,7 +3,7 @@ import type { IUserState } from "@/features/auth";
 export interface IAuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
-  loading?: boolean;
+  isLoading: boolean;
   error: string | null;
 }
 export type ILoginResponsePayload = Pick<

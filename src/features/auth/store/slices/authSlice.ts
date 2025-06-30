@@ -10,7 +10,7 @@ import {
 const initialState: IAuthState = {
   refreshToken: null,
   isAuthenticated: false,
-  loading: false,
+  isLoading: false,
   error: null,
 };
 
@@ -33,34 +33,34 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         const { refreshToken } = action.payload;
         state.refreshToken = refreshToken;
         state.isAuthenticated = true;
-        state.loading = false;
+        state.isLoading = false;
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.error = action.payload ?? null;
-        state.loading = false;
+        state.isLoading = false;
       })
 
       .addCase(refreshAccessToken.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.refreshToken = action.payload;
         state.isAuthenticated = true;
-        state.loading = false;
+        state.isLoading = false;
         state.error = null;
       })
       .addCase(refreshAccessToken.rejected, (state, action) => {
         state.error = action.payload ?? null;
-        state.loading = false;
+        state.isLoading = false;
       });
   },
 });
