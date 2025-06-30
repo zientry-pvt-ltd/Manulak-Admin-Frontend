@@ -1,8 +1,16 @@
-import { type IRoleTypes, useAuth, useUser } from "@/features/auth";
+import type { ReactNode } from "react";
 
-type AuthorizationProps = {
-  forbiddenFallback?: React.ReactNode;
-  children: React.ReactNode;
+import { AppLinearProgress } from "@/components";
+import type { ProgressLabel } from "@/components/ui/app-linear-progress";
+import { type IRoleTypes, useAuth, useUser } from "@/features/auth";
+import { cn } from "@/lib/utils";
+
+export type AuthorizationProps = {
+  isLoading?: boolean;
+  loadingLabel?: ProgressLabel;
+  className?: string;
+  forbiddenFallback?: ReactNode;
+  children: ReactNode;
 } & (
   | {
       allowedRoles: IRoleTypes[];
@@ -13,7 +21,6 @@ type AuthorizationProps = {
       policyCheck: boolean;
     }
 );
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuthorization = () => {
   const { isAuthenticated } = useAuth();
@@ -33,12 +40,15 @@ export const useAuthorization = () => {
   return { checkAccess, role: userInfo?.role };
 };
 
-export const Authorization = ({
+export const Authorization: React.FC<AuthorizationProps> = ({
   policyCheck,
   allowedRoles,
   forbiddenFallback = null,
   children,
-}: AuthorizationProps) => {
+  isLoading = false,
+  loadingLabel = "Loading...",
+  className,
+}) => {
   const { checkAccess } = useAuthorization();
 
   let canAccess = false;
@@ -51,5 +61,15 @@ export const Authorization = ({
     canAccess = policyCheck;
   }
 
-  return <>{canAccess ? children : forbiddenFallback}</>;
+  return (
+    <div className={cn(className)}>
+      {isLoading ? (
+        <AppLinearProgress label={loadingLabel} />
+      ) : canAccess ? (
+        children
+      ) : (
+        forbiddenFallback
+      )}
+    </div>
+  );
 };
