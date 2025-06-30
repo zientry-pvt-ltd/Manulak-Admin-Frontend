@@ -12,7 +12,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@theme/*": ["src/theme/*"],
       "@utils/*": ["src/utils/*"],
-      "@customTypes/*": ["src/customTypes/*"],
+      "@types/*": ["src/types/*"],
       "@store/*": ["src/store/*"],
       "@assets/*": ["src/assets/*"],
       "@config/*": ["src/config/*"],
