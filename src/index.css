@@ -130,3 +130,28 @@
     @apply bg-background text-foreground font-dm-sans antialiased;
   }
 }
+
+@keyframes indeterminate {
+  0% {
+    left: -200%;
+    right: 100%;
+  }
+  60% {
+    left: 107%;
+    right: -8%;
+  }
+  100% {
+    left: 107%;
+    right: -8%;
+  }
+}
+
+.animate-indeterminate {
+  position: absolute;
+  height: 100%;
+  animation: indeterminate 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  opacity: 0.6;
+  will-change: left, right;
+  border-radius: inherit;
+  transform: translateZ(0);
+}

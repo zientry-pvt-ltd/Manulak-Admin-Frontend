@@ -6,6 +6,7 @@ import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
 import AppInput from "@/components/ui/app-input";
+import AppLinearProgress from "@/components/ui/app-linear-progress";
 import AppMultiSelect from "@/components/ui/app-multi-select";
 import AppSelect from "@/components/ui/app-select";
 import AppText from "@/components/ui/app-text";
@@ -28,6 +29,7 @@ export {
   AppIconButton,
   AppImage,
   AppInput,
+  AppLinearProgress,
   AppMetadata,
   AppMultiSelect,
   AppSelect,
