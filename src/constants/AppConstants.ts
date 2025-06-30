@@ -1,4 +1,4 @@
-import type { CurrencyCode } from "@/customTypes/currency.type";
+import type { CurrencyCode } from "@/types";
 
 export const ROLES = {
   ADMIN: "ADMIN",

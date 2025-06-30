@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { DateFormatPatterns } from "@/constants";
-import type { DateFormat, TimeFormat } from "@/customTypes/date.types";
+import type { DateFormat, TimeFormat } from "@/types";
 
 export const formatDate = (
   date: moment.MomentInput,

@@ -1,5 +1,5 @@
 import { CurrencyLocaleMap } from "@/constants";
-import type { CurrencyCode } from "@/customTypes/currency.type";
+import type { CurrencyCode } from "@/types";
 
 export const formatCurrency = (
   value: number,

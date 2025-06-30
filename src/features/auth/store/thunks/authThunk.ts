@@ -1,11 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import type { CommonResponseDTO } from "@/customTypes/api.types";
 import type { ILoginResponsePayload } from "@/features/auth";
 import { AUTH_ENDPOINTS, AUTH_SLICE } from "@/features/auth/constants";
 import { setUserProfile } from "@/features/auth/store/slices/userSlice";
 import { AxiosPrivateService } from "@/services/AxiosPrivateService";
 import { AxiosPublicService } from "@/services/AxiosPublicService";
+import type { CommonResponseDTO } from "@/types";
 
 export const login = createAsyncThunk<
   ILoginResponsePayload,
