@@ -9,13 +9,13 @@ import { ProtectedRoute } from "@/lib/auth";
 // eslint-disable-next-line react-refresh/only-export-components
 export const createAppRouter = () =>
   createBrowserRouter([
-    // {
-    //   path: paths.home.path,
-    //   lazy: async () => {
-    //     const mod = await import("./routes/landing");
-    //     return { Component: mod.default };
-    //   },
-    // },
+    {
+      path: paths.home.path,
+      lazy: async () => {
+        const mod = await import("./routes/landing");
+        return { Component: mod.default };
+      },
+    },
     {
       path: paths.auth.login.path,
       lazy: async () => {
