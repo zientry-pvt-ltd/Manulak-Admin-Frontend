@@ -5,10 +5,13 @@ import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector(selectAuth);
+  const { isAuthenticated, isLoading } = useAppSelector(selectAuth);
 
-  const handleLogin = (credentials: { email: string; password: string }) => {
-    dispatch(login(credentials));
+  const handleLogin = async (credentials: {
+    email: string;
+    password: string;
+  }) => {
+    await dispatch(login(credentials));
   };
 
   const handleLogout = () => {
@@ -27,6 +30,7 @@ export const useAuth = () => {
 
   return {
     isAuthenticated,
+    isLoading,
     handleLogin,
     handleLogout,
     handleRefreshAccessToken,
