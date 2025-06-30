@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
-import AppText from "@/components/ui/app-text";
+import { AppText } from "@/components";
 import { paths } from "@/config/paths";
 import { useAuth } from "@/features/auth";
 
