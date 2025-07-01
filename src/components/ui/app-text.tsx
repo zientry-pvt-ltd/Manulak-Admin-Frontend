@@ -51,7 +51,7 @@ export interface AppTextProps extends React.HTMLAttributes<HTMLElement> {
   skeletonHeight?: number | string;
 }
 const variantClasses: Record<TextVariant, string> = {
-  heading: "text-2xl font-bold",
+  heading: "text-3xl font-bold",
   subheading: "text-xl font-semibold",
   body: "text-base font-normal",
   caption: "text-sm text-muted",
