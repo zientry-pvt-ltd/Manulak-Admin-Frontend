@@ -5,7 +5,7 @@ import {
   SunMoon,
   User,
 } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo, type MouseEvent, useCallback } from "react";
 
 import {
   AppAvatar,
@@ -21,11 +21,11 @@ import {
 } from "@/components";
 import AppSwitch from "@/components/ui/app-switch";
 import { useUser } from "@/features/auth";
-import { useTheme } from "@/providers/theme-provider";
+import { useApp } from "@/features/settings";
 
 const UserProfileCard = () => {
   const { userInfo } = useUser();
-  const { theme, setTheme } = useTheme();
+  const { toggleTheme, appTheme } = useApp();
   const { state, setOpen } = useSidebar();
 
   const isCollapsed = state === "collapsed";
@@ -47,11 +47,11 @@ const UserProfileCard = () => {
   }, []);
 
   const handleThemeToggle = useCallback(
-    (e: React.MouseEvent) => {
+    (e: MouseEvent) => {
       e.stopPropagation();
-      setTheme(theme === "dark" ? "light" : "dark");
+      toggleTheme();
     },
-    [setTheme, theme],
+    [toggleTheme],
   );
 
   const renderUserDetails = (
@@ -91,7 +91,10 @@ const UserProfileCard = () => {
           <AppText variant="caption" className="mr-auto">
             Dark Mode
           </AppText>
-          <AppSwitch checked={theme === "dark"} onClick={handleThemeToggle} />
+          <AppSwitch
+            checked={appTheme === "dark"}
+            onClick={handleThemeToggle}
+          />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSettings}>
           <AppIcon Icon={Settings} />
