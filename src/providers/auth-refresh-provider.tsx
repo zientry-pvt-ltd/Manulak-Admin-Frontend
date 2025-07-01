@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 
+import { LoadingFallback } from "@/components";
 import { useAuth } from "@/features/auth";
 
-export const AuthRefreshProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const AuthRefreshProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const { handleRefreshAccessToken } = useAuth();
 
@@ -20,12 +17,9 @@ export const AuthRefreshProvider = ({
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        loading..
-      </div>
-    );
+    return <LoadingFallback />;
   }
 
   return <>{children}</>;
 };
+export default AuthRefreshProvider;

@@ -1,3 +1,4 @@
+import LoadingFallback from "@/components/errors/loading-fallback";
 import { MainErrorFallback } from "@/components/errors/main";
 import { AppMetadata } from "@/components/seo/app-metadata";
 import AppAvatar from "@/components/ui/app-avatar";
@@ -37,6 +38,7 @@ export {
   AppTextarea,
   AppTitle,
   Button,
+  LoadingFallback,
   MainErrorFallback,
   Skeleton,
 };
