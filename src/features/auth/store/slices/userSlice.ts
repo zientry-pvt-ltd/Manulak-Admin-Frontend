@@ -7,9 +7,10 @@ const initialState: IUserState = {
   profile: {
     email: "arun",
     firstName: "Arun",
-    lastName: "Kumar",
+    lastName: "Deshan",
     id: "1",
-    profileUrl: "https://example.com/profile.jpg",
+    profileUrl:
+      "https://images.unsplash.com/photo-1492288991661-058aa541ff43?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     role: "ADMIN",
   },
   error: null,
