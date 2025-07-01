@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { IAuthState } from "@/features/auth";
+import { type IAuthState } from "@/features/auth";
 import { AUTH_SLICE } from "@/features/auth/constants";
 import {
   login,

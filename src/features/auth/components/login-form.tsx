@@ -3,10 +3,8 @@ import { Lock, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { AppButton, AppInput } from "@/components";
-import { Form } from "@/components/ui/form";
-import { useAuth } from "@/features/auth";
-import { loginInputSchema } from "@/features/auth/schema";
+import { AppButton, AppInput, Form } from "@/components";
+import { loginInputSchema, useAuth } from "@/features/auth";
 
 type LoginFormProps = {
   onLoginSuccess: () => void;
@@ -40,7 +38,6 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
         <AppInput
           label="Username"
-          size="md"
           type="text"
           placeholder="Username"
           startIcon={User}
@@ -52,7 +49,6 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
         <AppInput
           label="Password"
           type="password"
-          size="md"
           placeholder="••••••"
           startIcon={Lock}
           fullWidth
@@ -62,7 +58,6 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
 
         <AppButton
           type="submit"
-          size="md"
           className="mt-6"
           fullWidth
           isLoading={isLoading}

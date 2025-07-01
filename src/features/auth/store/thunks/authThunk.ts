@@ -1,11 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import type { ILoginResponsePayload } from "@/features/auth";
+import { type ILoginResponsePayload, setUserProfile } from "@/features/auth";
 import { AUTH_ENDPOINTS, AUTH_SLICE } from "@/features/auth/constants";
-import { setAuth } from "@/features/auth/store/slices/authSlice";
-import { setUserProfile } from "@/features/auth/store/slices/userSlice";
-import { AxiosPrivateService } from "@/services/AxiosPrivateService";
-import { AxiosPublicService } from "@/services/AxiosPublicService";
+import { AxiosPrivateService, AxiosPublicService } from "@/services";
 import type { CommonResponseDTO } from "@/types";
 
 export const login = createAsyncThunk<
@@ -35,7 +32,6 @@ export const login = createAsyncThunk<
           id: "1",
         }),
       );
-      dispatch(setAuth(true));
       AxiosPrivateService.updateToken(refreshToken);
 
       return response.data.data;

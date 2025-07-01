@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-import { AppLinearProgress } from "@/components";
-import type { ProgressLabel } from "@/components/ui/app-linear-progress";
+import { AppLinearProgress, type ProgressLabel } from "@/components";
 import { type IRoleTypes, useAuth, useUser } from "@/features/auth";
 import { cn } from "@/lib/utils";
 

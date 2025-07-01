@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { ILoginResponsePayload, IUserState } from "@/features/auth";
+import { type ILoginResponsePayload, type IUserState } from "@/features/auth";
 import { USER_SLICE } from "@/features/auth/constants";
 
 const initialState: IUserState = {

@@ -1,6 +1,9 @@
-import { login, refreshAccessToken } from "@/features/auth";
-import { logout, setAuth } from "@/features/auth/store/slices/authSlice";
-import { selectAuth } from "@/store/selectors/authSelectors";
+import { logout, setAuth } from "@/features/auth";
+import {
+  login,
+  refreshAccessToken,
+} from "@/features/auth/store/thunks/authThunk";
+import { selectAuth } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 export const useAuth = () => {

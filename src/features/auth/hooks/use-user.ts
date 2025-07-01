@@ -1,4 +1,4 @@
-import { selectUser } from "@/store/selectors/userSelectors";
+import { selectUser } from "@/store/selectors";
 import { useAppSelector } from "@/store/utils";
 
 export const useUser = () => {

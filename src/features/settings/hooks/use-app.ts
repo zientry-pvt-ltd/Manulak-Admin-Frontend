@@ -1,5 +1,5 @@
-import { toggleAppTheme } from "@/features/settings/store/slices/appConfigSlice";
-import { selectApp } from "@/store/selectors/appSelectors";
+import { toggleAppTheme } from "@/features/settings";
+import { selectApp } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 export const useApp = () => {

@@ -10,6 +10,7 @@ import { memo, type MouseEvent, useCallback } from "react";
 import {
   AppAvatar,
   AppIcon,
+  AppSwitch,
   AppText,
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +20,6 @@ import {
   DropdownMenuTrigger,
   useSidebar,
 } from "@/components";
-import AppSwitch from "@/components/ui/app-switch";
 import { useUser } from "@/features/auth";
 import { useApp } from "@/features/settings";
 

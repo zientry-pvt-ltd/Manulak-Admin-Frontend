@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { APP_CONFIG_SLICE } from "@/features/settings/constants";
-import type { IAppState } from "@/features/settings/types/appConfig.type";
+import { APP_CONFIG_SLICE, type IAppState } from "@/features/settings";
 
 const initialState: IAppState = {
   appName: "Manulak Agro",

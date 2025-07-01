@@ -29,4 +29,4 @@ export const AUTH_ERROR_MESSAGES = {
   INVALID_CREDENTIALS: "Invalid email or password.",
   USER_NOT_FOUND: "User account not found.",
   SESSION_EXPIRED: "Your session has expired. Please log in again.",
-};
+} as const;
