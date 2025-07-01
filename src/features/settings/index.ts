@@ -1,3 +1,5 @@
-import { useApp } from "@/features/settings/hooks/use-app";
+import { ThemeEffect } from "@/features/settings/components/theme-effect";
 
-export { useApp };
+export * from "@/features/settings/hooks/use-app";
+
+export { ThemeEffect };
