@@ -1,9 +1,15 @@
+import { toggleAppTheme } from "@/features/settings/store/slices/appConfigSlice";
 import { selectApp } from "@/store/selectors/appSelectors";
-import { useAppSelector } from "@/store/utils";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 export const useApp = () => {
-  const { appName, appLogo, appDescription, appVersion, faviconUrl } =
+  const dispatch = useAppDispatch();
+  const { appName, appLogo, appDescription, appVersion, faviconUrl, appTheme } =
     useAppSelector(selectApp);
+
+  const toggleTheme = () => {
+    dispatch(toggleAppTheme());
+  };
 
   return {
     appName,
@@ -11,5 +17,7 @@ export const useApp = () => {
     appDescription,
     appVersion,
     faviconUrl,
+    appTheme,
+    toggleTheme,
   };
 };
