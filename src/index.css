@@ -155,3 +155,8 @@
   border-radius: inherit;
   transform: translateZ(0);
 }
+
+body:has(.is-resizing) {
+  user-select: none;
+  cursor: col-resize;
+}
