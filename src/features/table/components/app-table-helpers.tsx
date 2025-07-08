@@ -11,6 +11,7 @@ export const createEditableColumn = <TData,>(
     maxSize?: number;
     type?: "text" | "number" | "date" | "select" | "multi-select";
     selectOptions?: { label: string; value: string | number }[];
+    enableEditing?: boolean | undefined;
     // eslint-disable-next-line no-unused-vars
     onSave?: (value: any) => Promise<void> | void;
   },
@@ -29,7 +30,10 @@ export const createEditableColumn = <TData,>(
       onSave={options?.onSave}
       type={options?.type || "text"}
       options={options?.selectOptions || []}
-      disabled={!(props.table.options.meta as any)?.enableEditing}
+      disabled={
+        options?.enableEditing === false ||
+        !props.table.options.meta?.enableEditing
+      }
     />
   ),
 });

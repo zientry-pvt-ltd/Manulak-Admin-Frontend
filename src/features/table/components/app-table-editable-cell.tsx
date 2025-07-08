@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AppInput } from "@/components";
-import type { EditableCellProps } from "@/features/table/types/appConfig.type";
+import type {
+  EditableCellProps,
+  ISelectOption,
+} from "@/features/table/types/appConfig.type";
 
 const EditableCell = <TData,>({
   getValue,
@@ -13,7 +16,11 @@ const EditableCell = <TData,>({
   options = [],
   disabled = false,
 }: EditableCellProps<TData>) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [value, setValue] = useState<any>(getValue());
+  const [multipleValue, setMultipleValue] =
+    useState<ISelectOption[]>(getValue());
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -22,18 +29,24 @@ const EditableCell = <TData,>({
     setValue(getValue());
   }, [getValue]);
 
-  const removeItem = async (itemToRemove: any) => {
-    const newValue = value.filter((item: any) => item !== itemToRemove);
-    setValue(newValue);
+  useEffect(() => {
+    if (isEditing && inputRef.current) inputRef.current.focus();
+  }, [isEditing]);
+
+  const removeItem = async (itemToRemove: ISelectOption) => {
+    const newValue = multipleValue.filter(
+      (item: ISelectOption) => item.value !== itemToRemove.value,
+    );
+    setMultipleValue(newValue);
     updateData(rowIndex, columnId, newValue);
 
     if (onSave) {
       setIsLoading(true);
       try {
-        await onSave(newValue);
+        await onSave(itemToRemove);
       } catch (error) {
         console.error("Failed to remove item:", error);
-        setValue(getValue());
+        setMultipleValue(getValue());
         updateData(rowIndex, columnId, getValue());
       } finally {
         setIsLoading(false);
@@ -41,12 +54,12 @@ const EditableCell = <TData,>({
     }
   };
 
-  const handleAddItem = (selectedValue: any) => {
-    if (!value.includes(selectedValue)) {
-      const newValue = [...value, selectedValue];
-      setValue(newValue);
+  const handleAddItem = (selectedValue: ISelectOption) => {
+    if (!multipleValue.includes(selectedValue)) {
+      const newValue = [...multipleValue, selectedValue];
+      setMultipleValue(newValue);
       updateData(rowIndex, columnId, newValue);
-      onSave?.(newValue);
+      onSave?.(selectedValue);
     }
     setInputValue("");
   };
@@ -90,18 +103,18 @@ const EditableCell = <TData,>({
         className="min-h-[40px] flex flex-wrap gap-2 items-center"
         onClick={() => setIsEditing(true)}
       >
-        {value?.map((item: any, i: number) => (
+        {multipleValue?.map((item: any, i: number) => (
           <span
             key={i}
             className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 rounded-full"
           >
-            {item}
+            {item.label || item}
             <button
               onClick={(e) => {
-                e.stopPropagation(); // prevent triggering edit mode
+                e.stopPropagation();
                 removeItem(item);
               }}
-              className="text-red-500 hover:text-red-700"
+              className="text-red-500 hover:text-red-700 cursor-pointer"
             >
               ×
             </button>
@@ -111,27 +124,31 @@ const EditableCell = <TData,>({
         {isEditing && (
           <div className="relative w-32">
             <input
+              ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="text-sm border px-2 py-1 w-full rounded"
-              onBlur={() => setTimeout(() => setIsEditing(false), 200)}
+              onBlur={() => setIsEditing(false)}
             />
-            {options
-              .filter(
-                (o) =>
-                  o.label.toLowerCase().includes(inputValue.toLowerCase()) &&
-                  !value.includes(o.value),
-              )
-              .slice(0, 5)
-              .map((option) => (
-                <div
-                  key={option.value}
-                  className="absolute left-0 right-0 bg-white border border-t-0 shadow-sm cursor-pointer text-sm px-2 py-1 hover:bg-blue-100 z-10"
-                  onMouseDown={() => handleAddItem(option.value)}
-                >
-                  {option.label}
-                </div>
-              ))}
+            <div className="absolute left-0 right-0 bg-white shadow-md border rounded-md z-50 max-h-60 overflow-y-auto mt-1">
+              {options
+                .filter((option) =>
+                  option.label.toLowerCase().includes(inputValue.toLowerCase()),
+                )
+                .filter(
+                  (option) =>
+                    !multipleValue.some((item) => item.value === option.value),
+                )
+                .map((option) => (
+                  <div
+                    key={option.value}
+                    className="p-3 cursor-pointer text-sm border-b last:border-b-0 transition-colors"
+                    onMouseDown={() => handleAddItem(option)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>

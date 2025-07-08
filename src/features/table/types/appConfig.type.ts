@@ -34,3 +34,8 @@ export type ReusableTableProps<TData> = {
   onPageChange?: (newPageIndex: number) => void;
   onPageSizeChange?: (newPageSize: number) => void;
 };
+
+export type ISelectOption = {
+  label: string;
+  value: string | number;
+};
