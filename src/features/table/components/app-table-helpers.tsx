@@ -1,5 +1,6 @@
 import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
+import AppTableChip from "@/features/table/components/app-table-chip";
 import EditableCell from "@/features/table/components/app-table-editable-cell";
 
 export const createEditableColumn = <TData,>(
@@ -19,7 +20,7 @@ export const createEditableColumn = <TData,>(
   accessorKey,
   header,
   size: options?.size || 200,
-  minSize: options?.minSize || 300,
+  minSize: options?.minSize || 200,
   maxSize: options?.maxSize || 400,
   cell: (props: CellContext<TData, unknown>) => (
     <EditableCell
@@ -45,6 +46,8 @@ export const createDisplayColumn = <TData,>(
     size?: number;
     minSize?: number;
     maxSize?: number;
+    type?: "default" | "chip";
+    chipOptions?: Record<string | number, { label: string; color: string }>;
     // eslint-disable-next-line no-unused-vars
     formatter?: (value: any) => React.ReactNode;
   },
@@ -56,10 +59,18 @@ export const createDisplayColumn = <TData,>(
   maxSize: options?.maxSize || 400,
   cell: (props: CellContext<TData, unknown>) => {
     const value = props.getValue();
+
+    if (options?.type === "chip" && options.chipOptions) {
+      return (
+        <AppTableChip value={String(value)} variantMap={options.chipOptions} />
+      );
+    }
+
+    // Default rendering
     return options?.formatter ? (
       options.formatter(value)
     ) : (
-      <span>{String(value)}</span>
+      <span className="text-xs">{String(value)}</span>
     );
   },
 });

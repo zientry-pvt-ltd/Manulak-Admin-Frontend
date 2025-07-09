@@ -25,6 +25,7 @@ export type ReusableTableProps<TData> = {
   onDataChange?: (data: TData[]) => void;
   enableColumnResizing?: boolean;
   enableEditing?: boolean;
+  isSaving?: boolean;
   className?: string;
   // Pagination
   enablePagination?: boolean;
