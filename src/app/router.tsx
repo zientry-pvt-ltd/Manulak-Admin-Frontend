@@ -5,6 +5,8 @@ import { RouterProvider } from "react-router/dom";
 import AppRoot from "@/app/routes/app/root";
 import { paths } from "@/config/paths";
 import { ProtectedRoute } from "@/lib/auth";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const createAppRouter = (isAuth: boolean) =>
@@ -93,7 +95,7 @@ export const createAppRouter = (isAuth: boolean) =>
   ]);
 
 export const AppRouter = () => {
-  const isAuthenticated = false; // TODO: replace with real auth check
+  const { isAuthenticated } = useAppSelector(selectAuth);
   const router = useMemo(
     () => createAppRouter(isAuthenticated),
     [isAuthenticated],

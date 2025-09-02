@@ -21,15 +21,19 @@ import {
   useSidebar,
 } from "@/components";
 import { useApp } from "@/features/settings";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 const UserProfileCard = () => {
   const { toggleTheme, appTheme } = useApp();
   const { state, setOpen } = useSidebar();
+  const { userInfo } = useAppSelector(selectAuth);
 
   const isCollapsed = state === "collapsed";
-  const fullName = "Arun";
+
+  const fullName = userInfo?.username || "Unknown";
   const profileUrl = "";
-  const role = "Unknown";
+  const role = userInfo?.role || "Unknown";
 
   const handleProfile = useCallback(() => {
     console.log("Go to profile");

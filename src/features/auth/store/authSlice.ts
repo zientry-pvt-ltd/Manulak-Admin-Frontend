@@ -33,6 +33,7 @@ const authSlice = createSlice({
       authApi.endpoints.login.matchFulfilled,
       (state, action) => {
         state.accessToken = action.payload.data.accessToken;
+        state.userInfo = action.payload.data.user;
         state.isAuthenticated = true;
       },
     );
@@ -41,6 +42,7 @@ const authSlice = createSlice({
       authApi.endpoints.refreshAccessToken.matchFulfilled,
       (state, action) => {
         state.accessToken = action.payload.data.accessToken;
+        state.userInfo = action.payload.data.user;
         state.isAuthenticated = true;
       },
     );

@@ -8,6 +8,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAppSelector(selectAuth);
   const location = useLocation();
 
+  console.log("isAuthenticated:", isAuthenticated);
+
   if (!isAuthenticated) {
     return (
       <Navigate to={paths.auth.login.getHref(location.pathname)} replace />
