@@ -21,7 +21,7 @@ export const ViewProducts = () => {
   };
   const config: TableConfig<Product> = {
     data: sampleProducts,
-    tableName: "Products",
+    tableName: "Product",
     columns: [
       {
         id: "id",
@@ -37,6 +37,7 @@ export const ViewProducts = () => {
         header: "Name",
         type: "text",
         sortable: true,
+        hideable: true,
         filtering: {
           enabled: true,
           filterType: "text",
@@ -48,6 +49,7 @@ export const ViewProducts = () => {
         mutationKey: "description",
         header: "Description",
         type: "text",
+        hideable: true,
       },
       {
         id: "category",
@@ -55,6 +57,7 @@ export const ViewProducts = () => {
         mutationKey: "category",
         header: "Category",
         type: "single-select",
+        hideable: true,
       },
       {
         id: "selling_price",
@@ -115,6 +118,19 @@ export const ViewProducts = () => {
       enabled: true,
       onPaginationChange(value) {
         console.log("Pagination Changed: ", value);
+      },
+    },
+    columnVisibility: {
+      enabled: true,
+    },
+    editing: {
+      enabled: true,
+      rowCreating: {
+        enabled: true,
+        autoSave: true,
+        addDummyRow: () => {
+          console.log("Add Dummy Row");
+        },
       },
     },
   };
