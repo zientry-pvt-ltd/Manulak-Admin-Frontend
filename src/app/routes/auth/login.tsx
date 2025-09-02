@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/layouts/auth-layout";
 import { paths } from "@/config/paths";
