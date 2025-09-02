@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 import { AppLinearProgress, type ProgressLabel } from "@/components";
-import { type IRoleTypes, useAuth, useUser } from "@/features/auth";
 import { cn } from "@/lib/utils";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 export type AuthorizationProps = {
   isLoading?: boolean;
@@ -12,7 +13,7 @@ export type AuthorizationProps = {
   children: ReactNode;
 } & (
   | {
-      allowedRoles: IRoleTypes[];
+      allowedRoles: any[];
       policyCheck?: never;
     }
   | {
@@ -22,8 +23,10 @@ export type AuthorizationProps = {
 );
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuthorization = () => {
-  const { isAuthenticated } = useAuth();
-  const { userInfo } = useUser();
+  const { isAuthenticated } = useAppSelector(selectAuth);
+  const userInfo = {
+    role: "ADMIN",
+  };
 
   if (!isAuthenticated) {
     throw Error("User does not exist!");

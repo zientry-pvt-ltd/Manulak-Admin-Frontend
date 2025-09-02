@@ -1,13 +1,15 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { AppButton, AppText } from "@/components";
 import { paths } from "@/config/paths";
-import { useAuth } from "@/features/auth";
 import { useApp } from "@/features/settings";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 const LandingRoute = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAppSelector(selectAuth);
   const { appName } = useApp();
 
   const handleStart = () => {
@@ -17,6 +19,10 @@ const LandingRoute = () => {
       navigate(paths.app.dashboard.getHref(), { replace: true });
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated) navigate(paths.app.root.getHref());
+  }, [isAuthenticated, navigate]);
 
   return (
     <main className="flex items-center justify-center h-screen text-center">

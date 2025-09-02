@@ -20,18 +20,16 @@ import {
   DropdownMenuTrigger,
   useSidebar,
 } from "@/components";
-import { useUser } from "@/features/auth";
 import { useApp } from "@/features/settings";
 
 const UserProfileCard = () => {
-  const { userInfo } = useUser();
   const { toggleTheme, appTheme } = useApp();
   const { state, setOpen } = useSidebar();
 
   const isCollapsed = state === "collapsed";
-  const fullName = `${userInfo?.firstName} ${userInfo?.lastName}`;
-  const profileUrl = userInfo?.profileUrl || "";
-  const role = userInfo?.role || "Unknown";
+  const fullName = "Arun";
+  const profileUrl = "";
+  const role = "Unknown";
 
   const handleProfile = useCallback(() => {
     console.log("Go to profile");

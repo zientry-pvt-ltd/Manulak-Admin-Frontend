@@ -1,10 +1,11 @@
 import { Navigate, useLocation } from "react-router";
 
 import { paths } from "@/config/paths";
-import { useAuth } from "@/features/auth";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAppSelector(selectAuth);
   const location = useLocation();
 
   if (!isAuthenticated) {

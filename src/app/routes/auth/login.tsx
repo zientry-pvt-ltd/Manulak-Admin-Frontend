@@ -15,6 +15,9 @@ const LoginRoute = () => {
           navigate(paths.app.dashboard.getHref(), { replace: true });
           toast.success("Login successful!");
         }}
+        onLoginError={(error) => {
+          toast.error(error.message);
+        }}
       />
     </AuthLayout>
   );

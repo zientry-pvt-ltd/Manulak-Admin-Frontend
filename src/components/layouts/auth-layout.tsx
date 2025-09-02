@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { AppText } from "@/components";
-import { paths } from "@/config/paths";
-import { useAuth } from "@/features/auth";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -12,18 +12,19 @@ type LayoutProps = {
 };
 
 export const AuthLayout = ({ children, title }: LayoutProps) => {
-  const auth = useAuth();
+  const auth = useAppSelector(selectAuth);
+
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate(redirectTo ? redirectTo : paths.app.dashboard.getHref(), {
-        replace: true,
-      });
-    }
+    // if (auth.isAuthenticated) {
+    //   navigate(redirectTo ? redirectTo : paths.app.dashboard.getHref(), {
+    //     replace: true,
+    //   });
+    // }
   }, [auth.isAuthenticated, navigate, redirectTo]);
 
   return (

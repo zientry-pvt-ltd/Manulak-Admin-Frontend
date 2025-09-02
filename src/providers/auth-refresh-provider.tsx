@@ -1,22 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LoadingFallback } from "@/components";
-import { useAuth } from "@/features/auth";
+import { useRefreshAccessTokenMutation } from "@/services/auth";
 
 const AuthRefreshProvider = ({ children }: { children: React.ReactNode }) => {
-  const [loading, setLoading] = useState(true);
-  const { handleRefreshAccessToken } = useAuth();
+  const initRef = useRef(false);
+  const [isAuthInitialized, setIsAuthInitialized] = useState(false);
+
+  const [handleRefreshAccessToken, { isLoading }] =
+    useRefreshAccessTokenMutation();
 
   useEffect(() => {
-    const initAuth = async () => {
-      await handleRefreshAccessToken();
-      setLoading(false);
-    };
-    initAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (initRef.current) return;
+    initRef.current = true;
 
-  if (loading) {
+    const initAuth = async () => {
+      try {
+        await handleRefreshAccessToken();
+      } finally {
+        setIsAuthInitialized(true);
+      }
+    };
+
+    initAuth();
+  }, [handleRefreshAccessToken]);
+
+  if (!isAuthInitialized || isLoading) {
     return <LoadingFallback />;
   }
 
