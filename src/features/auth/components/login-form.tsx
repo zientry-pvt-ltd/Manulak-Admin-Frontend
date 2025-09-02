@@ -7,7 +7,7 @@ import { AppButton, AppInput, Form } from "@/components";
 import { loginInputSchema } from "@/features/auth/schema";
 import { useLoginMutation } from "@/services/auth";
 import type { CommonResponseDTO } from "@/types";
-import { handleApiError } from "@/utils/ErrorHandler";
+import { handleApiError } from "@/utils/error-handler";
 
 type LoginFormProps = {
   onLoginSuccess: () => void;

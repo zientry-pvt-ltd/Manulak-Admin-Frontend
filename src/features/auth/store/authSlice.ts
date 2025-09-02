@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+import { SLICES } from "@/constants";
 import type { IUserInfo } from "@/features/auth";
 import { authApi } from "@/services";
 
@@ -16,7 +17,7 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: SLICES.AUTH,
   initialState,
   reducers: {
     logout(state) {

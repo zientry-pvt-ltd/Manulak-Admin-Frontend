@@ -11,3 +11,9 @@ export const ENDPOINTS = {
     STATS: "/dashboard/stats",
   },
 } as const;
+
+export const SLICES = {
+  AUTH: "auth",
+  USERS: "users",
+  DASHBOARD: "dashboard",
+} as const;

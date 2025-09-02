@@ -13,13 +13,11 @@ import {
 import storage from "redux-persist/lib/storage";
 
 import authReducer from "@/features/auth/store/authSlice";
-// import userReducer from "@/features/auth/store/authSlice";
-import appConfigReducer from "@/features/settings/store/slices/appConfigSlice";
+import appConfigReducer from "@/features/settings/store/appConfigSlice";
 import { authApi } from "@/services/auth";
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  // user: userReducer,
   appConfig: appConfigReducer,
   [authApi.reducerPath]: authApi.reducer,
 });

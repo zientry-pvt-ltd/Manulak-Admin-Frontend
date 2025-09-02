@@ -4,7 +4,7 @@ import axios from "axios";
 import { env } from "@/config/env";
 import { refreshAccessToken } from "@/features/auth/store/thunks/authThunk";
 import { store } from "@/store";
-import Logger from "@/utils/Logger";
+import Logger from "@/utils/logger";
 
 export class AxiosPrivateService {
   private static _instance: AxiosInstance;

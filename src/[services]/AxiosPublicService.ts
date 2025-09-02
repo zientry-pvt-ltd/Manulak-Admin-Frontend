@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
 import { env } from "@/config/env";
-import Logger from "@/utils/Logger";
+import Logger from "@/utils/logger";
 
 export class AxiosPublicService {
   private static _instance: AxiosInstance;
