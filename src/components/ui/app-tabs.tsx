@@ -1,3 +1,4 @@
+import AppText from "@/components/ui/app-text";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type TabItem = {
@@ -28,7 +29,9 @@ export function AppTabs({
         <TabsList>
           {items.map((item) => (
             <TabsTrigger key={item.value} value={item.value}>
-              {item.label}
+              <AppText variant="caption" size="text-xs">
+                {item.label}
+              </AppText>
             </TabsTrigger>
           ))}
         </TabsList>
