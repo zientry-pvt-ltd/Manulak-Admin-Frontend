@@ -4,35 +4,38 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { AppButton, AppInput, Form } from "@/components";
-import { loginInputSchema, useAuth } from "@/features/auth";
+import { loginInputSchema } from "@/features/auth/schema";
+import { useLoginMutation } from "@/services/auth";
+import type { CommonResponseDTO } from "@/types";
+import { handleApiError } from "@/utils/error-handler";
 
 type LoginFormProps = {
   onLoginSuccess: () => void;
   // eslint-disable-next-line no-unused-vars
-  onLoginError?: (error: Error) => void;
+  onLoginError?: (error: CommonResponseDTO<null>) => void;
 };
 
 const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
-  const { handleLogin, isLoading } = useAuth();
+  const [login, { isLoading }] = useLoginMutation();
 
   const form = useForm<z.infer<typeof loginInputSchema>>({
     resolver: zodResolver(loginInputSchema),
     defaultValues: {
-      userName: "",
+      username: "",
       password: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof loginInputSchema>) => {
-    console.log("LoginForm onSubmit", data);
     try {
-      await handleLogin({ email: "arundeshan@gmail.com", password: "123321" });
+      await login(data).unwrap();
       onLoginSuccess();
     } catch (error) {
-      console.error("Login failed:", error);
-      onLoginError?.(error as Error);
+      const message = handleApiError(error, onLoginError);
+      console.error("Login failed:", message);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
@@ -42,8 +45,8 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
           placeholder="Username"
           startIcon={User}
           fullWidth
-          error={form.formState.errors.userName?.message}
-          {...form.register("userName")}
+          error={form.formState.errors.username?.message}
+          {...form.register("username")}
         />
 
         <AppInput
