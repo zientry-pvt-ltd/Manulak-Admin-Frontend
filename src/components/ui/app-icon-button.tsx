@@ -35,13 +35,13 @@ const AppIconButton = ({
   ...props
 }: AppIconButtonProps) => {
   const sizeMap: Record<NonNullable<AppIconButtonProps["size"]>, string> = {
-    sm: "h-8 w-8",
+    sm: "h-7 w-7",
     md: "h-10 w-10",
     lg: "h-12 w-12",
   };
 
   const iconSizeMap: Record<NonNullable<AppIconButtonProps["size"]>, string> = {
-    sm: "size-4",
+    sm: "size-3",
     md: "size-5",
     lg: "size-6",
   };

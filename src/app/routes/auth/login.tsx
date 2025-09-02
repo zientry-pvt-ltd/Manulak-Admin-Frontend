@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/layouts/auth-layout";
 import { paths } from "@/config/paths";
@@ -13,7 +12,7 @@ const LoginRoute = () => {
       <LoginForm
         onLoginSuccess={() => {
           navigate(paths.app.dashboard.getHref(), { replace: true });
-          toast.success("Login successful!");
+          // toast.success("Login successful!");
         }}
       />
     </AuthLayout>
