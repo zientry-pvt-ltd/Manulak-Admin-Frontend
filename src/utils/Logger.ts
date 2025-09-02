@@ -76,7 +76,7 @@ const responseError = ({
   status_code?: number;
 }) => {
   if (SHOW_LOGS && import.meta.env.DEV) {
-    const style = "color: crimson; font-weight:";
+    const style = "color: crimson;";
 
     console.log(
       `%c\n************ ERROR RESPONSE ************

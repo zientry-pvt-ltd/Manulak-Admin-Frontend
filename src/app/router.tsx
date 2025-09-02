@@ -1,14 +1,24 @@
 import { useMemo } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
 import AppRoot from "@/app/routes/app/root";
 import { paths } from "@/config/paths";
 import { ProtectedRoute } from "@/lib/auth";
+import { selectAuth } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const createAppRouter = () =>
+export const createAppRouter = (isAuth: boolean) =>
   createBrowserRouter([
+    {
+      path: "/",
+      element: isAuth ? (
+        <Navigate to={paths.app.root.path} replace />
+      ) : (
+        <Navigate to={paths.auth.login.path} replace />
+      ),
+    },
     {
       path: paths.home.path,
       lazy: async () => {
@@ -85,6 +95,10 @@ export const createAppRouter = () =>
   ]);
 
 export const AppRouter = () => {
-  const router = useMemo(() => createAppRouter(), []);
+  const { isAuthenticated } = useAppSelector(selectAuth);
+  const router = useMemo(
+    () => createAppRouter(isAuthenticated),
+    [isAuthenticated],
+  );
   return <RouterProvider router={router} />;
 };

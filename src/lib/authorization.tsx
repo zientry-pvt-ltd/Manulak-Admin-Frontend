@@ -1,10 +1,17 @@
-import type { IRoleTypes } from "@/customTypes/auth.types";
-import { selectAuth } from "@/store/selectors/authSelectors";
+import type { ReactNode } from "react";
+
+import { AppLinearProgress, type ProgressLabel } from "@/components";
+import type { IRoleTypes } from "@/features/auth/types/auth.types";
+import { cn } from "@/lib/utils";
+import { selectAuth } from "@/store/selectors";
 import { useAppSelector } from "@/store/utils";
 
-type AuthorizationProps = {
-  forbiddenFallback?: React.ReactNode;
-  children: React.ReactNode;
+export type AuthorizationProps = {
+  isLoading?: boolean;
+  loadingLabel?: ProgressLabel;
+  className?: string;
+  forbiddenFallback?: ReactNode;
+  children: ReactNode;
 } & (
   | {
       allowedRoles: IRoleTypes[];
@@ -15,31 +22,33 @@ type AuthorizationProps = {
       policyCheck: boolean;
     }
 );
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuthorization = () => {
-  const auth = useAppSelector(selectAuth);
+  const { isAuthenticated, userInfo } = useAppSelector(selectAuth);
 
-  if (!auth.isAuthenticated) {
+  if (!isAuthenticated) {
     throw Error("User does not exist!");
   }
 
   const checkAccess = ({ allowedRoles }: { allowedRoles: string[] }) => {
-    if (allowedRoles && allowedRoles.length > 0 && auth) {
-      return allowedRoles.includes(auth.userInfo?.role || "");
+    if (allowedRoles && allowedRoles.length > 0 && isAuthenticated) {
+      return allowedRoles.includes(userInfo?.role || "");
     }
     return true;
   };
 
-  return { checkAccess, role: auth.userInfo?.role };
+  return { checkAccess, role: userInfo?.role };
 };
 
-export const Authorization = ({
+export const Authorization: React.FC<AuthorizationProps> = ({
   policyCheck,
   allowedRoles,
   forbiddenFallback = null,
   children,
-}: AuthorizationProps) => {
+  isLoading = false,
+  loadingLabel = "Loading...",
+  className,
+}) => {
   const { checkAccess } = useAuthorization();
 
   let canAccess = false;
@@ -52,5 +61,15 @@ export const Authorization = ({
     canAccess = policyCheck;
   }
 
-  return <>{canAccess ? children : forbiddenFallback}</>;
+  return (
+    <div className={cn(className)}>
+      {isLoading ? (
+        <AppLinearProgress label={loadingLabel} />
+      ) : canAccess ? (
+        children
+      ) : (
+        forbiddenFallback
+      )}
+    </div>
+  );
 };

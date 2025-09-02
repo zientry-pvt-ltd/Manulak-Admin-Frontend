@@ -1,14 +1,13 @@
-import { selectApp } from "@/store/selectors/appSelectors";
-import { useAppSelector } from "@/store/utils";
+import { useApp } from "@/features/settings";
 
 export const AppMetadata = () => {
-  const app = useAppSelector(selectApp);
+  const { appName, appLogo } = useApp();
 
   return (
     <>
-      <title>{app.appName || "Loading..."}</title>
-      <meta name="application-name" content={app.appName} />
-      <link rel="icon" href={app.appLogo[0]} />
+      <title>{appName || "Loading..."}</title>
+      <meta name="application-name" content={appName} />
+      <link rel="icon" href={appLogo[0]} />
     </>
   );
 };

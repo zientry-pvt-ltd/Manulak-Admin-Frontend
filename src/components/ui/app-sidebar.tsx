@@ -1,6 +1,5 @@
 import {
   BadgeDollarSign,
-  Boxes,
   Calculator,
   LayoutDashboard,
   type LucideProps,
@@ -13,7 +12,6 @@ import {
   AppIcon,
   AppText,
   AppTitle,
-  ProfileCard,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -23,11 +21,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { paths } from "@/config/paths";
-import { ROLES } from "@/constants";
-import { useAuthorization } from "@/lib/authorization";
+import { UserProfileCard } from "@/features/auth";
 
 type SideNavigationItem = {
   name: string;
@@ -39,7 +36,6 @@ type SideNavigationItem = {
 
 export function AppSidebar() {
   const location = useLocation();
-  const { checkAccess } = useAuthorization();
   const navigation = [
     {
       name: "Dashboard",
@@ -47,11 +43,7 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     { name: "Products", to: paths.app.products.getHref(), icon: Package },
-    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
-      name: "Stocks",
-      to: paths.app.stocks.getHref(),
-      icon: Boxes,
-    },
+
     {
       name: "Sales",
       to: paths.app.sales.getHref(),
@@ -99,7 +91,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarTrigger />
-        <ProfileCard />
+        <UserProfileCard />
       </SidebarFooter>
     </Sidebar>
   );

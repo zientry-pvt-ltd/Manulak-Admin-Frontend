@@ -21,7 +21,7 @@ interface AppButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   >;
   iconPosition?: "left" | "right";
   variant?: Pick<VariantProps<typeof buttonVariants>, "variant">["variant"];
-  size: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg";
   rounded?: "md" | "full";
   fullWidth?: boolean;
   isLoading?: boolean;
@@ -46,13 +46,13 @@ const AppButton = ({
     lg: "h-12 px-6",
   };
 
-  const fontSizeMap: Record<AppButtonProps["size"], FontSize> = {
+  const fontSizeMap: Record<"sm" | "md" | "lg", FontSize> = {
     sm: "text-xs",
     md: "text-sm",
     lg: "text-base",
   };
 
-  const iconSizeMap: Record<AppButtonProps["size"], string> = {
+  const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
     sm: "size-4",
     md: "size-4.5",
     lg: "size-5",

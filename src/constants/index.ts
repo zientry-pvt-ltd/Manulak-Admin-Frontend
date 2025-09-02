@@ -1,1 +1,2 @@
-export * from "./AppConstants";
+export * from "./app";
+export * from "./endpoints";
