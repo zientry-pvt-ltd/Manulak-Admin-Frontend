@@ -36,10 +36,8 @@ export const AutoCompleteCell = <TData, TKey extends keyof TData>({
 
   return (
     <div
-      className={`text-xs p-2 min-h-[32px] flex items-center cursor-pointer hover:bg-gray-50 font-normal ${
-        columnConfig?.editable
-          ? "border border-transparent hover:border-gray-200"
-          : ""
+      className={`text-xs p-2 min-h-[32px] flex items-center cursor-pointer font-normal ${
+        columnConfig?.editable ? "border border-transparent" : ""
       }`}
       onClick={columnConfig?.editable ? onEdit : undefined}
     >

@@ -34,10 +34,8 @@ export const BooleanCell = <TData, TKey extends keyof TData>({
 
   return (
     <div
-      className={`p-2 min-h-[32px] flex items-center justify-center cursor-pointer hover:bg-gray-50 ${
-        columnConfig?.editable
-          ? "border border-transparent hover:border-gray-200"
-          : ""
+      className={`p-2 min-h-[32px] flex items-center justify-center cursor-pointer ${
+        columnConfig?.editable ? "border border-transparent" : ""
       }`}
       onClick={columnConfig?.editable ? onEdit : undefined}
     >

@@ -9,13 +9,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -660,7 +654,7 @@ export const ConfigurableTable = <
               <SelectTrigger className="w-16 font-normal text-xs border">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="text-xs font-normal">
                 {pageSizeOptions.map((pageSize) => (
                   <SelectItem key={pageSize} value={pageSize.toString()}>
                     {pageSize}
@@ -678,14 +672,6 @@ export const ConfigurableTable = <
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0 hidden"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
@@ -707,15 +693,6 @@ export const ConfigurableTable = <
                 }
               >
                 <ChevronRight className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0 hidden"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
