@@ -1,10 +1,17 @@
-import { type ReactNode, useState } from "react";
+/* eslint-disable no-unused-vars */
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 import { AppConfirmDialog } from "@/components";
 import type { AppConfirmDialogProps } from "@/components/ui/app-confirm-dialog";
-import { AppConfirmDialogContext } from "@/contexts";
 
-export type AppConfirmDialogOptions = Omit<
+type AppConfirmDialogContextType = {
+  confirm: (options: AppConfirmDialogOptions) => void;
+};
+
+const AppConfirmDialogContext =
+  createContext<AppConfirmDialogContextType | null>(null);
+
+type AppConfirmDialogOptions = Omit<
   AppConfirmDialogProps,
   "open" | "isLoading" | "onCancel"
 >;
@@ -46,4 +53,15 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
       />
     </AppConfirmDialogContext.Provider>
   );
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useConfirmDialog() {
+  const ctx = useContext(AppConfirmDialogContext);
+  if (!ctx) {
+    throw new Error(
+      "useConfirmDialog must be used within AppConfirmDialogProvider",
+    );
+  }
+  return ctx;
 }
