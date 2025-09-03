@@ -565,7 +565,7 @@ export const ConfigurableTable = <
     <div className="space-y-1">
       {/* Table */}
       <div className="flex flex-col w-full overflow-scroll px-2 h-[calc(92vh-7.5rem)] no-scrollbar">
-        <div className="flex items-center justify-end py-2 space-x-3">
+        <div className="flex items-center justify-end pb-2 space-x-3">
           {isLoading && (
             <div className="flex items-center space-x-2 mr-auto">
               <span className="text-xs text-muted-foreground font-normal">
