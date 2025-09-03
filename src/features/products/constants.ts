@@ -13,8 +13,11 @@ export const sampleProducts: Product[] = [
     courier_charge_for_1st_kg: 5,
     courier_charge_for_other_kg: 3,
     image_urls: [
-      "https://example.com/images/headphones1.jpg",
-      "https://example.com/images/headphones2.jpg",
+      "https://plus.unsplash.com/premium_photo-1663962158789-0ab624c4f17d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGxhbnR8ZW58MHx8MHx8fDA%3D",
+      "https://plus.unsplash.com/premium_photo-1681290358247-c160fc097bdb?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cGxhbnR8ZW58MHx8MHx8fDA%3D",
+      "https://images.unsplash.com/photo-1517191434949-5e90cd67d2b6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBsYW50fGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1555037015-1498966bcd7c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cGxhbnR8ZW58MHx8MHx8fDA%3D",
+      "https://images.unsplash.com/photo-1597305877032-0668b3c6413a?q=80&w=1064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     ],
   },
   {
