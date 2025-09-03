@@ -11,7 +11,7 @@ import {
 } from "@/components";
 import { ThemeEffect } from "@/features/settings";
 import useOnlineStatus from "@/hooks/use-online-status";
-import { AuthRefreshProvider } from "@/providers";
+import { AuthRefreshProvider, ConfirmDialogProvider } from "@/providers";
 import { persistor, store } from "@/store";
 
 type AppProviderProps = {
@@ -26,7 +26,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            <AuthRefreshProvider>{children}</AuthRefreshProvider>
+            <AuthRefreshProvider>
+              <ConfirmDialogProvider>{children}</ConfirmDialogProvider>
+            </AuthRefreshProvider>
             <Toaster expand theme="light" richColors closeButton />
             <AppMetadata />
             <ThemeEffect />

@@ -4,6 +4,7 @@ import { AuthLayout } from "@/components/layouts/auth-layout";
 import { AppMetadata } from "@/components/seo/app-metadata";
 import AppAvatar from "@/components/ui/app-avatar";
 import AppButton from "@/components/ui/app-button";
+import { AppConfirmDialog } from "@/components/ui/app-confirm-dialog";
 import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
@@ -12,6 +13,7 @@ import AppLinearProgress from "@/components/ui/app-linear-progress";
 import AppMultiSelect from "@/components/ui/app-multi-select";
 import AppSelect from "@/components/ui/app-select";
 import AppSwitch from "@/components/ui/app-switch";
+import { AppTabs } from "@/components/ui/app-tabs";
 import AppText from "@/components/ui/app-text";
 import AppTextarea from "@/components/ui/app-textarea";
 import AppTitle from "@/components/ui/app-title";
@@ -30,6 +32,7 @@ export * from "@/components/ui/tabs";
 export {
   AppAvatar,
   AppButton,
+  AppConfirmDialog,
   AppIcon,
   AppIconButton,
   AppImage,
@@ -39,6 +42,7 @@ export {
   AppMultiSelect,
   AppSelect,
   AppSwitch,
+  AppTabs,
   AppText,
   AppTextarea,
   AppTitle,
