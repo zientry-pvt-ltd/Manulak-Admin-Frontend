@@ -564,7 +564,7 @@ export const ConfigurableTable = <
   return (
     <div className="space-y-1">
       {/* Table */}
-      <div className="">
+      <div className="flex flex-col w-full overflow-scroll px-2 h-[calc(92vh-7.5rem)] no-scrollbar">
         <div className="flex items-center justify-end py-2 space-x-3">
           {isLoading && (
             <div className="flex items-center space-x-2 mr-auto">
@@ -582,7 +582,7 @@ export const ConfigurableTable = <
             </Button>
           )}
         </div>
-        <Table className="border">
+        <Table className="overflow-x-scroll border">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -644,17 +644,17 @@ export const ConfigurableTable = <
 
       {/* Pagination */}
       {config.pagination?.enabled && (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="flex items-center space-x-2">
-            <p className="text-xs font-normal">Rows per page</p>
+        <div className="flex items-center justify-between space-x-2">
+          <div className="flex items-center space-x-2 font-normal text-xs">
+            <p>Rows per page</p>
             <Select
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={(value) => table.setPageSize(Number(value))}
             >
-              <SelectTrigger className="w-16 font-normal text-xs border">
+              <SelectTrigger className="h-8 w-[4rem] [&[data-size]]:h-8">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="text-xs font-normal">
+              <SelectContent side="top">
                 {pageSizeOptions.map((pageSize) => (
                   <SelectItem key={pageSize} value={pageSize.toString()}>
                     {pageSize}
@@ -666,7 +666,7 @@ export const ConfigurableTable = <
 
           <div className="flex items-center space-x-6 lg:space-x-8">
             <div className="items-center space-x-2 hidden">
-              <p className="text-xs font-medium">
+              <p className="font-extrabold text-xs">
                 Page {table.getState().pagination.pageIndex + 1} of{" "}
                 {table.getPageCount()}
               </p>
@@ -674,25 +674,27 @@ export const ConfigurableTable = <
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0"
+                size="icon"
+                className="hidden size-8 lg:flex"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft />
               </Button>
               <p className="text-xs font-normal">
                 Page {table.getState().pagination.pageIndex + 1}
               </p>
               <Button
                 variant="outline"
-                className="h-8 w-8 p-0"
+                size="icon"
+                className="hidden size-8 lg:flex"
                 onClick={() => table.nextPage()}
                 disabled={
                   table.getRowCount() < table.getState().pagination.pageSize ||
                   table.getRowCount() === 0
                 }
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight />
               </Button>
             </div>
           </div>
