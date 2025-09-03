@@ -5,6 +5,7 @@ import { AppMetadata } from "@/components/seo/app-metadata";
 import AppAvatar from "@/components/ui/app-avatar";
 import AppButton from "@/components/ui/app-button";
 import { AppConfirmDialog } from "@/components/ui/app-confirm-dialog";
+import { AppDialog } from "@/components/ui/app-dialog";
 import AppIcon from "@/components/ui/app-icon";
 import AppIconButton from "@/components/ui/app-icon-button";
 import AppImage from "@/components/ui/app-image";
@@ -33,6 +34,7 @@ export {
   AppAvatar,
   AppButton,
   AppConfirmDialog,
+  AppDialog,
   AppIcon,
   AppIconButton,
   AppImage,
