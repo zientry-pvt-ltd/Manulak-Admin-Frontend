@@ -67,13 +67,13 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
 
         <div
           className={cn(
-            "flex items-center rounded-md border transition-colors",
+            "flex items-center rounded-md border transition-colors mx-0.5",
             sizeClasses[size],
             variant === "fill" ? "bg-muted/30" : "bg-transparent",
             error
               ? "border-destructive focus-within:ring-destructive/30"
               : "border-input focus-within:ring-ring/40",
-            "focus-within:ring-2 focus-within:outline-none",
+            "focus-within:ring-1 focus-within:outline-none",
             fullWidth && "w-full",
             className,
           )}

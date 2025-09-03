@@ -61,8 +61,8 @@ const AppTextarea = React.forwardRef<HTMLTextAreaElement, AppTextareaProps>(
           rows={rows}
           aria-invalid={!!error}
           className={cn(
-            "w-full resize-none rounded-md border transition-colors shadow-xs outline-none disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted-foreground",
-            "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0",
+            "w-full mx-0.5 resize-none rounded-md border transition-colors shadow-xs outline-none disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted-foreground",
+            "focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0",
             error
               ? "border-destructive focus-visible:ring-destructive/30"
               : "border-input",
