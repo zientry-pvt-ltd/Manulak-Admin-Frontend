@@ -125,7 +125,6 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
       onSubmit={form.handleSubmit(handleSubmit)}
       className="flex md:grid-cols-3 gap-6 w-full overflow-y-scroll min-w-[800px]"
     >
-      {/* LEFT SIDE - Fields */}
       <div className="w-1/2 space-y-3">
         <AppInput
           label="Product Name"
@@ -225,7 +224,6 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
         />
       </div>
 
-      {/* RIGHT SIDE - Images */}
       <div className="w-1/2 sticky top-0 h-fit space-y-2 bg-white">
         <AppText>Product Images</AppText>
 
