@@ -7,7 +7,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full flex flex-col justify-between">
+      <main className="w-full flex flex-col justify-between overflow-hidden">
         {/* side bar trigger header */}
         <AppContentHeader />
         {children}
