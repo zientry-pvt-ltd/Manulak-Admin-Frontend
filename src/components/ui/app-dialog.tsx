@@ -16,7 +16,8 @@ type AppDialogProps = {
   title?: string;
   description?: string;
   children: React.ReactNode;
-  onSubmit: (e: React.FormEvent) => void;
+  formId?: string;
+  disableFooter?: boolean;
 };
 
 export function AppDialog({
@@ -24,28 +25,29 @@ export function AppDialog({
   onOpenChange,
   title,
   description,
-  onSubmit,
   children,
+  formId,
+  disableFooter = false,
 }: AppDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <form onSubmit={onSubmit}>
-        <DialogContent className="min-w-fit flex flex-col max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-          {children}
+      <DialogContent className="min-w-fit flex flex-col max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {children}
+        {!disableFooter && (
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" onClick={onSubmit}>
+            <Button type="submit" form={formId}>
               Save changes
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

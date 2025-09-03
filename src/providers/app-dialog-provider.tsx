@@ -8,10 +8,12 @@ type AppDialogContextType = {
     title: string;
     description: string;
     content: ReactNode;
-    onSubmit: (e: React.FormEvent) => void;
+    formId?: string;
+    disableFooter?: boolean;
   }) => void;
   closeAppDialog: () => void;
 };
+
 const AppDialogContext = createContext<AppDialogContextType | undefined>(
   undefined,
 );
@@ -22,7 +24,9 @@ export const AppDialogProvider = ({ children }: { children: ReactNode }) => {
     title: string;
     description: string;
     content: ReactNode;
-    onSubmit: (e: React.FormEvent) => void;
+    formId?: string;
+    onSubmit?: (e: React.FormEvent) => void;
+    disableFooter?: boolean;
   } | null>(null);
 
   const openAppDialog: AppDialogContextType["openAppDialog"] = (options) => {
@@ -43,10 +47,8 @@ export const AppDialogProvider = ({ children }: { children: ReactNode }) => {
         onOpenChange={setOpen}
         title={dialogOptions?.title}
         description={dialogOptions?.description}
-        onSubmit={(e) => {
-          e.preventDefault();
-          dialogOptions?.onSubmit(e);
-        }}
+        formId={dialogOptions?.formId}
+        disableFooter={dialogOptions?.disableFooter}
       >
         {dialogOptions?.content}
       </AppDialog>
