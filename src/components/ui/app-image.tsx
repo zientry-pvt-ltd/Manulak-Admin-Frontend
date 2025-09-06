@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 type RoundedVariant =
   | "rounded-none"
+  | "rounded-md"
   | "rounded-2xl"
   | "rounded-3xl"
   | "rounded-4xl"
