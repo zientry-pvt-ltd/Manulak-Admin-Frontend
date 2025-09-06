@@ -73,7 +73,7 @@ export const ConfigurableTable = <
   const [tableData, setTableData] = useState(config.data);
   const [isLoading, setIsLoading] = useState(false);
   // eslint-disable-next-line no-unused-vars
-  const [apiErrors, setApiErrors] = useState<Record<string, string>>({});
+  const [_, setApiErrors] = useState<Record<string, string>>({});
   const [editingCell, setEditingCell] = useState<{
     rowIndex: number;
     columnId: string;
