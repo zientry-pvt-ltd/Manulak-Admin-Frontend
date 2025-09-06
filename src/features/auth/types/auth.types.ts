@@ -13,7 +13,7 @@ export type IUserInfo = {
 export type ILoginResponse = IRefreshAccessTokenResponse;
 
 export type IRefreshAccessTokenResponse = CommonResponseDTO<{
-  accessToken: string;
+  access_token: string;
   user: IUserInfo;
 }>;
 
