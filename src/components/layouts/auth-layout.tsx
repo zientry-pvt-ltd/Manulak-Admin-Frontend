@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { AppText } from "@/components";
+import { paths } from "@/config/paths";
 import { selectAuth } from "@/store/selectors";
 import { useAppSelector } from "@/store/utils";
 
@@ -12,7 +13,7 @@ type LayoutProps = {
 };
 
 export const AuthLayout = ({ children, title }: LayoutProps) => {
-  const auth = useAppSelector(selectAuth);
+  const { isAuthenticated } = useAppSelector(selectAuth);
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
@@ -20,12 +21,12 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if (auth.isAuthenticated) {
-    //   navigate(redirectTo ? redirectTo : paths.app.dashboard.getHref(), {
-    //     replace: true,
-    //   });
-    // }
-  }, [auth.isAuthenticated, navigate, redirectTo]);
+    if (isAuthenticated) {
+      navigate(redirectTo ? redirectTo : paths.app.dashboard.getHref(), {
+        replace: true,
+      });
+    }
+  }, [isAuthenticated, navigate, redirectTo]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">

@@ -3,11 +3,16 @@ import { Edit, Eye, Trash } from "lucide-react";
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
 import type { Product } from "@/features/products";
+import ProductForm from "@/features/products/components/product-form";
 import { sampleProducts } from "@/features/products/constants";
-import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
+import { selectProduct } from "@/features/products/store/product-slice";
+import { useAppDialog, useConfirmDialog } from "@/providers";
+import { useAppDispatch } from "@/store/utils";
 
 export const ViewProducts = () => {
+  const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
+  const { openAppDialog } = useAppDialog();
 
   const handleDeleteProduct = () => {
     confirm({
@@ -90,14 +95,35 @@ export const ViewProducts = () => {
           {
             Icon: Eye,
             tooltip: "View Product",
-            onClick: (row) => console.log("View", row),
             variant: "outline",
+            onClick: (row) => {
+              dispatch(selectProduct(row.id));
+              openAppDialog({
+                title: `View Product - ${row.name}`,
+                description: `Details for product ${row.name}`,
+                content: <ProductForm mode="view" />,
+                disableFooter: true,
+              });
+            },
           },
           {
             Icon: Edit,
             tooltip: "Edit Product",
-            onClick: (row) => console.log("Edit", row),
             variant: "outline",
+            onClick: (row) => {
+              dispatch(selectProduct(row.id));
+              openAppDialog({
+                title: `Edit Product - ${row.name}`,
+                description: `Edit details for product ${row.name}`,
+                formId: "product-form",
+                content: (
+                  <ProductForm
+                    mode="edit"
+                    onSubmit={(data) => console.log("Editing product:", data)}
+                  />
+                ),
+              });
+            },
           },
           {
             Icon: Trash,

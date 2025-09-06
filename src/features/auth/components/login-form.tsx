@@ -21,7 +21,7 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
   const form = useForm<z.infer<typeof loginInputSchema>>({
     resolver: zodResolver(loginInputSchema),
     defaultValues: {
-      username: "",
+      user_name: "",
       password: "",
     },
   });
@@ -45,8 +45,8 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
           placeholder="Username"
           startIcon={User}
           fullWidth
-          error={form.formState.errors.username?.message}
-          {...form.register("username")}
+          error={form.formState.errors.user_name?.message}
+          {...form.register("user_name")}
         />
 
         <AppInput

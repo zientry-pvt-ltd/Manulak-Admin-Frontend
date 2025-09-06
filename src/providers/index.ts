@@ -1,4 +1,17 @@
+import {
+  AppDialogProvider,
+  useAppDialog,
+} from "@/providers/app-dialog-provider";
 import AuthRefreshProvider from "@/providers/auth-refresh-provider";
-import { ConfirmDialogProvider } from "@/providers/confirm-dialog-provider";
+import {
+  ConfirmDialogProvider,
+  useConfirmDialog,
+} from "@/providers/confirm-dialog-provider";
 
-export { AuthRefreshProvider, ConfirmDialogProvider };
+export {
+  AppDialogProvider,
+  AuthRefreshProvider,
+  ConfirmDialogProvider,
+  useAppDialog,
+  useConfirmDialog,
+};

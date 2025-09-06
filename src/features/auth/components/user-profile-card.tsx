@@ -31,7 +31,7 @@ const UserProfileCard = () => {
 
   const isCollapsed = state === "collapsed";
 
-  const fullName = userInfo?.username || "Unknown";
+  const fullName = userInfo?.user_name || "Unknown";
   const profileUrl = "";
   const role = userInfo?.role || "Unknown";
 

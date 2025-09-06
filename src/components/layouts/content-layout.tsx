@@ -9,7 +9,7 @@ type ContentLayoutProps = {
 
 export const ContentLayout = ({ children, title }: ContentLayoutProps) => {
   return (
-    <div className="flex flex-col border-y px-2 h-[90vh] overflow-y-scroll">
+    <div className="flex flex-col border-y px-2 h-[90vh] min-w-[1200px] overflow-scroll">
       {title && <AppText variant="heading">{title}</AppText>}
       {children}
     </div>

@@ -39,7 +39,7 @@ export function AppTabs({
 
       <div className="flex-1 overflow-y-auto" style={{ height: contentHeight }}>
         {items.map((item) => (
-          <TabsContent key={item.value} value={item.value} className="p-4">
+          <TabsContent key={item.value} value={item.value}>
             {item.content}
           </TabsContent>
         ))}
