@@ -5,7 +5,7 @@ export type IRoleTypes = keyof typeof ROLES;
 
 export type IUserInfo = {
   id: string;
-  username: string;
+  user_name: string;
   role: IRoleTypes;
   company_id: string;
 };
@@ -18,6 +18,6 @@ export type IRefreshAccessTokenResponse = CommonResponseDTO<{
 }>;
 
 export type ILoginRequest = {
-  username: string;
+  user_name: string;
   password: string;
 };
