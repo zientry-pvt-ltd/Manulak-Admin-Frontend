@@ -1,4 +1,9 @@
-type ProductCategoryType = "electronics" | "clothing" | "home" | "books";
+export type ProductCategoryType =
+  | "flower-seeds"
+  | "vegetable-seeds"
+  | "saplings"
+  | "gardening-tools"
+  | "eco-products";
 
 type Product = {
   id: string;
