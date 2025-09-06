@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Image, X } from "lucide-react";
 import { useRef, useState } from "react";
@@ -16,26 +14,28 @@ import {
   AppTextarea,
 } from "@/components";
 import AppImage from "@/components/ui/app-image";
-import { Separator } from "@/components/ui/separator";
+import { CATEGORIES } from "@/features/products/constants";
 import { productSchema } from "@/features/products/schema";
 import { updateSelectedProduct } from "@/features/products/store/product-slice";
 import { selectProducts } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 type FormValues = z.infer<typeof productSchema>;
+export type ProductFormMode = "new" | "edit" | "view";
+export type ExtendedFormValues = FormValues & { localImages: File[] };
 
 type ProductFormProps = {
-  mode: "edit" | "view";
-  // eslint-disable-next-line no-unused-vars
-  onSubmit?: (data: FormValues) => void;
+  mode: ProductFormMode;
+  onSubmit?: ({
+    // eslint-disable-next-line no-unused-vars
+    data,
+    // eslint-disable-next-line no-unused-vars
+    mode,
+  }: {
+    data: ExtendedFormValues;
+    mode: ProductFormMode;
+  }) => Promise<void>;
 };
-
-const CATEGORIES = [
-  { label: "Electronics", value: "Electronics" },
-  { label: "Clothing", value: "Clothing" },
-  { label: "Books", value: "Books" },
-  { label: "Other", value: "Other" },
-];
 
 const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
   mode,
@@ -47,57 +47,54 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isView = mode === "view";
+  const urlImages =
+    mode === "edit" || mode === "view" ? selectedProduct?.image_urls || [] : [];
 
   const [localImages, setLocalImages] = useState<File[]>([]);
-
-  if (!selectedProduct) return null;
-
-  const mapCategory = (cat: string) => {
-    switch (cat?.toLowerCase()) {
-      case "electronics":
-        return "Electronics";
-      case "clothing":
-        return "Clothing";
-      case "books":
-        return "Books";
-      default:
-        return "Other";
-    }
-  };
+  const localImagePreviews = localImages.map((file) =>
+    URL.createObjectURL(file),
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: selectedProduct
-      ? {
-          ...selectedProduct,
-          category: mapCategory(selectedProduct.category),
-        }
-      : {
-          name: "",
-          description: "",
-          category: "Other",
-          selling_price: 0,
-          bought_price: 0,
-          unit_weight: 0,
-          courier_charge_for_1st_kg: 0,
-          courier_charge_for_other_kg: 0,
-          image_urls: [],
-        },
+    defaultValues:
+      (mode === "edit" || mode === "view") && selectedProduct
+        ? {
+            ...selectedProduct,
+          }
+        : {
+            name: "",
+            description: "",
+            category: "flower-seeds",
+            selling_price: 0,
+            bought_price: 0,
+            unit_weight: 0,
+            courier_charge_for_1st_kg: 0,
+            courier_charge_for_other_kg: 0,
+            image_urls: [],
+          },
   });
 
   const handleSubmit = (data: FormValues) => {
+    const submitData: FormValues & { localImages: File[] } = {
+      ...data,
+      localImages,
+    };
+
     if (onSubmit) {
-      onSubmit(data);
-    } else {
-      console.log("Form submitted:", {
-        ...data,
-        localImages,
+      onSubmit({
+        data: submitData,
+        mode,
       });
-      toast.success("Product saved successfully!");
+    } else {
+      console.log("Form submitted:", submitData);
+      toast.success(
+        mode === "new"
+          ? "Product created successfully!"
+          : "Product saved successfully!",
+      );
     }
   };
-
-  if (!selectedProduct && mode === "edit") return null;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -114,10 +111,18 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
     setLocalImages((prev) => [...prev, ...files]);
   };
 
-  const urlImages = selectedProduct.image_urls || [];
-  const localImagePreviews = localImages.map((file) =>
-    URL.createObjectURL(file),
-  );
+  if ((mode === "edit" || mode === "view") && !selectedProduct) {
+    return (
+      <AppText
+        variant="caption"
+        italic
+        size="text-xs"
+        data-testid="not-selected"
+      >
+        No product selected
+      </AppText>
+    );
+  }
 
   return (
     <form
@@ -189,6 +194,8 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
         <AppInput
           label="Unit Weight (kg)"
           type="number"
+          inputMode="decimal"
+          step="0.5"
           size="md"
           placeholder="Enter unit weight"
           fullWidth
@@ -228,19 +235,19 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
         <AppText>Product Images</AppText>
 
         {/* URL Images */}
-        <div className="flex flex-wrap gap-2 rounded-md">
+        <div className="flex flex-wrap gap-2 border border-dashed rounded-md p-2">
           {urlImages.length > 0 ? (
             urlImages.map((src, idx) => (
-              <div key={`url-${idx}`} className="relative w-[120px] h-[120px]">
+              <div key={`url-${idx}`} className="relative w-[110px] h-[110px]">
                 {/* Image */}
                 <AppImage
                   imageUrl={src}
                   alt={`URL Image ${idx + 1}`}
                   size="md"
-                  width={120}
-                  height={120}
+                  width={110}
+                  height={110}
                   objectFit="cover"
-                  rounded="rounded-none"
+                  rounded="rounded-md"
                   className="border"
                 />
 
@@ -277,51 +284,73 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
           )}
         </div>
 
-        <Separator className="my-4" />
-
         {/* Local Images */}
-        <div className="flex flex-wrap gap-2">
-          {localImagePreviews.length > 0
-            ? localImagePreviews.map((src, idx) => (
-                <AppImage
-                  key={`local-${idx}`}
-                  imageUrl={src}
-                  alt={`Local Image ${idx + 1}`}
-                  size="md"
-                  width={120}
-                  height={120}
-                  rounded="rounded-none"
-                  objectFit="cover"
+        {!isView && (
+          <div className="flex flex-wrap gap-2 border border-dashed rounded-md p-2">
+            {localImagePreviews.length > 0
+              ? localImagePreviews.map((src, idx) => (
+                  <div
+                    key={`local-${idx}`}
+                    className="relative w-[110px] h-[110px]"
+                  >
+                    <AppImage
+                      key={`local-${idx}`}
+                      imageUrl={src}
+                      alt={`Local Image ${idx + 1}`}
+                      size="md"
+                      width={110}
+                      height={110}
+                      rounded="rounded-md"
+                      objectFit="cover"
+                    />
+
+                    {
+                      <AppIconButton
+                        Icon={X}
+                        className="absolute top-1 right-1"
+                        size="sm"
+                        variant={"outline"}
+                        rounded="full"
+                        onClick={() => {
+                          setLocalImages((prev) => {
+                            const updated = [...prev];
+                            updated.splice(idx, 1);
+                            return updated;
+                          });
+                        }}
+                        type="button"
+                      />
+                    }
+                  </div>
+                ))
+              : null}
+
+            {!isView && (
+              <div className="w-full flex">
+                <AppButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 mx-auto my-2"
+                  Icon={Image}
+                  disabled={urlImages.length + localImages.length >= 5}
+                >
+                  New Image
+                </AppButton>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
                 />
-              ))
-            : null}
-
-          {!isView && (
-            <div className="w-full flex">
-              <AppButton
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2"
-                Icon={Image}
-                disabled={urlImages.length + localImages.length >= 5}
-                fullWidth
-              >
-                New Image
-              </AppButton>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </form>
   );

@@ -3,8 +3,11 @@ import { Edit, Eye, Trash } from "lucide-react";
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
 import type { Product } from "@/features/products";
-import ProductForm from "@/features/products/components/product-form";
-import { sampleProducts } from "@/features/products/constants";
+import ProductForm, {
+  type ExtendedFormValues,
+  type ProductFormMode,
+} from "@/features/products/components/product-form";
+import { CATEGORIES, sampleProducts } from "@/features/products/constants";
 import { selectProduct } from "@/features/products/store/product-slice";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import { useAppDispatch } from "@/store/utils";
@@ -24,6 +27,36 @@ export const ViewProducts = () => {
       onSubmit: async () => {},
     });
   };
+
+  const handleAddProductSubmit = async ({
+    data,
+    mode,
+  }: {
+    data: ExtendedFormValues;
+    mode: ProductFormMode;
+  }) => {
+    console.log("Adding product:", data, mode);
+  };
+
+  const handleEditProductSubmit = async ({
+    data,
+    mode,
+  }: {
+    data: ExtendedFormValues;
+    mode: ProductFormMode;
+  }) => {
+    console.log("editing product:", data, mode);
+  };
+
+  const handleAddProduct = () => {
+    openAppDialog({
+      title: "Add New Product",
+      description: "Fill the form to add a new product",
+      formId: "product-form",
+      content: <ProductForm mode="new" onSubmit={handleAddProductSubmit} />,
+    });
+  };
+
   const config: TableConfig<Product> = {
     data: sampleProducts,
     tableName: "Product",
@@ -62,27 +95,28 @@ export const ViewProducts = () => {
         mutationKey: "category",
         header: "Category",
         type: "single-select",
+        options: CATEGORIES,
         hideable: true,
       },
       {
         id: "selling_price",
         accessorKey: "selling_price",
         mutationKey: "selling_price",
-        header: "Selling Price",
+        header: "Selling Price(Rs)",
         type: "text",
       },
       {
         id: "bought_price",
         accessorKey: "bought_price",
         mutationKey: "bought_price",
-        header: "Bought Price",
+        header: "Bought Price(Rs)",
         type: "text",
       },
       {
         id: "unit_weight",
         accessorKey: "unit_weight",
         mutationKey: "unit_weight",
-        header: "Unit Weight",
+        header: "Unit Weight(kg)",
         type: "text",
       },
       {
@@ -117,10 +151,7 @@ export const ViewProducts = () => {
                 description: `Edit details for product ${row.name}`,
                 formId: "product-form",
                 content: (
-                  <ProductForm
-                    mode="edit"
-                    onSubmit={(data) => console.log("Editing product:", data)}
-                  />
+                  <ProductForm mode="edit" onSubmit={handleEditProductSubmit} />
                 ),
               });
             },
@@ -156,6 +187,7 @@ export const ViewProducts = () => {
         autoSave: true,
         addDummyRow: () => {
           console.log("Add Dummy Row");
+          handleAddProduct();
         },
       },
     },

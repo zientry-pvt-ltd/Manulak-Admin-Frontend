@@ -43,7 +43,7 @@ export function AppDialog({
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button type="submit" form={formId}>
-              Save changes
+              Submit
             </Button>
           </DialogFooter>
         )}
