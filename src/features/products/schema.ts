@@ -1,9 +1,11 @@
 import { z } from "zod";
 
+import { CATEGORY_LABELS } from "@/features/products/constants";
+
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  category: z.enum(["Electronics", "Clothing", "Books", "Other"]),
+  category: z.enum([...CATEGORY_LABELS] as [string, ...string[]]),
   selling_price: z.number().min(0, "Selling price must be positive"),
   bought_price: z.number().min(0, "Bought price must be positive"),
   unit_weight: z.number().min(0, "Unit weight must be positive"),
