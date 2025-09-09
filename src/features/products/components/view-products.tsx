@@ -104,6 +104,7 @@ export const ViewProducts = () => {
         mutationKey: "selling_price",
         header: "Selling Price(Rs)",
         type: "text",
+        hideable: true,
       },
       {
         id: "bought_price",
@@ -111,6 +112,7 @@ export const ViewProducts = () => {
         mutationKey: "bought_price",
         header: "Bought Price(Rs)",
         type: "text",
+        hideable: true,
       },
       {
         id: "unit_weight",
@@ -118,6 +120,7 @@ export const ViewProducts = () => {
         mutationKey: "unit_weight",
         header: "Unit Weight(kg)",
         type: "text",
+        hideable: true,
       },
       {
         id: "actions",
@@ -125,6 +128,8 @@ export const ViewProducts = () => {
         mutationKey: "id",
         header: "Actions",
         type: "icon-buttons",
+        hideable: true,
+
         iconButtons: [
           {
             Icon: Eye,
