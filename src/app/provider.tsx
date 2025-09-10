@@ -35,7 +35,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                 <AppDialogProvider>{children}</AppDialogProvider>
               </ConfirmDialogProvider>
             </AuthRefreshProvider>
-            <Toaster expand theme="light" richColors closeButton />
+            <Toaster expand theme="system" richColors closeButton />
             <AppMetadata />
             <ThemeEffect />
           </PersistGate>
