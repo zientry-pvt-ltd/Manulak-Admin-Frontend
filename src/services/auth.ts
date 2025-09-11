@@ -15,6 +15,12 @@ export const authApi = api.injectEndpoints({
         body,
       }),
     }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: ENDPOINTS.AUTH.LOGOUT,
+        method: "POST",
+      }),
+    }),
     refreshAccessToken: builder.mutation<IRefreshAccessTokenResponse, void>({
       query: () => ({
         url: ENDPOINTS.AUTH.REFRESH,
@@ -25,4 +31,8 @@ export const authApi = api.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useLoginMutation, useRefreshAccessTokenMutation } = authApi;
+export const {
+  useLoginMutation,
+  useRefreshAccessTokenMutation,
+  useLogoutMutation,
+} = authApi;

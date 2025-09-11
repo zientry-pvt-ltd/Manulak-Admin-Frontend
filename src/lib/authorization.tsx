@@ -32,12 +32,12 @@ export const useAuthorization = () => {
 
   const checkAccess = ({ allowedRoles }: { allowedRoles: string[] }) => {
     if (allowedRoles && allowedRoles.length > 0 && isAuthenticated) {
-      return allowedRoles.includes(userInfo?.role || "");
+      return allowedRoles.includes(userInfo?.user_role || "");
     }
     return true;
   };
 
-  return { checkAccess, role: userInfo?.role };
+  return { checkAccess, role: userInfo?.user_role };
 };
 
 export const Authorization: React.FC<AuthorizationProps> = ({

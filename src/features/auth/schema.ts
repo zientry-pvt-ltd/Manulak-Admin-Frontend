@@ -5,5 +5,5 @@ export const loginInputSchema = z.object({
   user_name: z
     .string()
     .min(1, "Required")
-    .max(20, "Must be 20 characters or less"),
+    .max(30, "Must be 30 characters or less"),
 });

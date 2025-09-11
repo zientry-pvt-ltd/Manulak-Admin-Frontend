@@ -5,7 +5,8 @@ import {
   SunMoon,
   User,
 } from "lucide-react";
-import { memo, type MouseEvent, useCallback } from "react";
+import { memo, type MouseEvent, useCallback, useState } from "react";
+import { toast } from "sonner";
 
 import {
   AppAvatar,
@@ -21,19 +22,25 @@ import {
   useSidebar,
 } from "@/components";
 import { useApp } from "@/features/settings";
+import { useConfirmDialog } from "@/providers";
+import { useLogoutMutation } from "@/services/auth";
 import { selectAuth } from "@/store/selectors";
 import { useAppSelector } from "@/store/utils";
+import { normalizeError } from "@/utils/error-handler";
 
 const UserProfileCard = () => {
+  const [openProfile, setOpenProfile] = useState(false);
   const { toggleTheme, appTheme } = useApp();
   const { state, setOpen } = useSidebar();
   const { userInfo } = useAppSelector(selectAuth);
+  const { confirm } = useConfirmDialog();
+  const [logout] = useLogoutMutation();
 
   const isCollapsed = state === "collapsed";
 
   const fullName = userInfo?.user_name || "Unknown";
   const profileUrl = "";
-  const role = userInfo?.role || "Unknown";
+  const role = userInfo?.user_role || "Unknown";
 
   const handleProfile = useCallback(() => {
     console.log("Go to profile");
@@ -44,9 +51,27 @@ const UserProfileCard = () => {
     console.log("Open settings");
   }, []);
 
-  const handleLogout = useCallback(() => {
-    console.log("Logging out...");
-  }, []);
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout().unwrap();
+    } catch (error) {
+      const message = normalizeError(error);
+      toast.error(message.message);
+      console.error("Logout failed:", message.message);
+    }
+  }, [logout]);
+
+  const handleConfirmLogout = useCallback(() => {
+    confirm({
+      title: "Confirm Logout",
+      description: "Are you sure you want to log out?",
+      variant: "destructive",
+      confirmText: "Log Out",
+      cancelText: "Cancel",
+      onSubmit: handleLogout,
+    });
+    setOpenProfile(false);
+  }, [confirm, handleLogout]);
 
   const handleThemeToggle = useCallback(
     (e: MouseEvent) => {
@@ -61,8 +86,8 @@ const UserProfileCard = () => {
       <AppAvatar name={fullName} imageUrl={profileUrl} size="md" />
       {!isCollapsed && (
         <>
-          <div className="flex flex-col">
-            <AppText size="text-xs" weight="font-semibold" ellipsis>
+          <div className="flex flex-col max-w-[130px]">
+            <AppText size="text-xs" weight="font-semibold" ellipsis truncate>
               {fullName}
             </AppText>
             <AppText size="text-xs" color="muted">
@@ -76,8 +101,10 @@ const UserProfileCard = () => {
   );
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{renderUserDetails}</DropdownMenuTrigger>
+    <DropdownMenu open={openProfile}>
+      <DropdownMenuTrigger asChild onClick={() => setOpenProfile(!openProfile)}>
+        {renderUserDetails}
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>Account</DropdownMenuLabel>
@@ -88,15 +115,12 @@ const UserProfileCard = () => {
           <AppIcon Icon={User} />
           <AppText variant="caption">Profile</AppText>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSettings}>
+        <DropdownMenuItem onClick={handleThemeToggle}>
           <AppIcon Icon={SunMoon} />
           <AppText variant="caption" className="mr-auto">
             Dark Mode
           </AppText>
-          <AppSwitch
-            checked={appTheme === "dark"}
-            onClick={handleThemeToggle}
-          />
+          <AppSwitch checked={appTheme === "dark"} />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSettings}>
           <AppIcon Icon={Settings} />
@@ -105,7 +129,7 @@ const UserProfileCard = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleConfirmLogout}>
           <AppIcon Icon={LogOut} />
           <AppText variant="caption">Log out</AppText>
         </DropdownMenuItem>

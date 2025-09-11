@@ -6,7 +6,7 @@ import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
 const AppTitle = () => {
-  const { appLogo } = useAppSelector(selectApp);
+  const { appLogo, faviconUrl } = useAppSelector(selectApp);
   const { state } = useSidebar();
 
   const isCollapsed = state === "collapsed";
@@ -21,7 +21,7 @@ const AppTitle = () => {
       <AppImage
         width={isCollapsed ? 24 : 120}
         height={isCollapsed ? 24 : 40}
-        imageUrl={isCollapsed ? appLogo[0] : appLogo[1]}
+        imageUrl={isCollapsed ? faviconUrl : appLogo}
         alt="App Logo"
         rounded="rounded-none"
       />

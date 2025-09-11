@@ -13,7 +13,7 @@ interface AuthState {
 const initialState: AuthState = {
   accessToken: null,
   userInfo: null,
-  isAuthenticated: true,
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
@@ -47,6 +47,12 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       },
     );
+
+    builder.addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.userInfo = null;
+    });
   },
 });
 

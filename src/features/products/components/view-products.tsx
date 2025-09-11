@@ -2,20 +2,28 @@ import { Edit, Eye, Trash } from "lucide-react";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
-import type { Product } from "@/features/products";
 import ProductForm, {
   type ExtendedFormValues,
   type ProductFormMode,
 } from "@/features/products/components/product-form";
-import { CATEGORIES, sampleProducts } from "@/features/products/constants";
+import { CATEGORIES } from "@/features/products/constants";
 import { selectProduct } from "@/features/products/store/product-slice";
+import type { IProductInfo } from "@/features/products/types/product.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
+import { useGetProductsQuery } from "@/services/product";
 import { useAppDispatch } from "@/store/utils";
 
 export const ViewProducts = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog } = useAppDialog();
+  const { data: products } = useGetProductsQuery({
+    filters: {
+      query: "",
+    },
+    paging: { pageNo: 1, pageSize: 10 },
+    sorting: { columnName: "created_at", sortOrder: -1 },
+  });
 
   const handleDeleteProduct = () => {
     confirm({
@@ -57,21 +65,14 @@ export const ViewProducts = () => {
     });
   };
 
-  const config: TableConfig<Product> = {
-    data: sampleProducts,
+  const config: TableConfig<IProductInfo> = {
+    data: products?.data.entities ?? [],
     tableName: "Product",
     columns: [
       {
-        id: "id",
-        accessorKey: "id",
-        mutationKey: "id",
-        header: "ID",
-        type: "id",
-      },
-      {
         id: "name",
-        accessorKey: "name",
-        mutationKey: "name",
+        accessorKey: "product_name",
+        mutationKey: "product_name",
         header: "Name",
         type: "text",
         sortable: true,
@@ -83,16 +84,16 @@ export const ViewProducts = () => {
       },
       {
         id: "description",
-        accessorKey: "description",
-        mutationKey: "description",
+        accessorKey: "product_desc",
+        mutationKey: "product_desc",
         header: "Description",
         type: "text",
         hideable: true,
       },
       {
         id: "category",
-        accessorKey: "category",
-        mutationKey: "category",
+        accessorKey: "product_category",
+        mutationKey: "product_category",
         header: "Category",
         type: "single-select",
         options: CATEGORIES,
@@ -129,7 +130,6 @@ export const ViewProducts = () => {
         header: "Actions",
         type: "icon-buttons",
         hideable: true,
-
         iconButtons: [
           {
             Icon: Eye,
@@ -138,8 +138,8 @@ export const ViewProducts = () => {
             onClick: (row) => {
               dispatch(selectProduct(row.id));
               openAppDialog({
-                title: `View Product - ${row.name}`,
-                description: `Details for product ${row.name}`,
+                title: `View Product - ${row.product_name}`,
+                description: `Details for product ${row.product_name}`,
                 content: <ProductForm mode="view" />,
                 disableFooter: true,
               });
@@ -152,8 +152,8 @@ export const ViewProducts = () => {
             onClick: (row) => {
               dispatch(selectProduct(row.id));
               openAppDialog({
-                title: `Edit Product - ${row.name}`,
-                description: `Edit details for product ${row.name}`,
+                title: `Edit Product - ${row.product_name}`,
+                description: `Edit details for product ${row.product_name}`,
                 formId: "product-form",
                 content: (
                   <ProductForm mode="edit" onSubmit={handleEditProductSubmit} />

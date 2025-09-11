@@ -13,8 +13,7 @@
     "format:fix": "prettier --write .",
     "env:copy:local": "cp .env.local .env",
     "env:copy:dev": "cp .env.dev .env",
-    "prepare": "husky",
-    "copy-local-env": "cp .env.local .env"
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
