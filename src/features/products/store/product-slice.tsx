@@ -1,39 +1,40 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import { sampleProducts } from "@/features/products/constants";
-import type { Product } from "@/features/products/types/product.type";
+import { SLICES } from "@/constants";
+import type { IProductInfo } from "@/features/products/types/product.type";
+import { productApi } from "@/services/product";
 
 export type ProductCategoryType = "electronics" | "clothing" | "home" | "books";
 
 type ProductState = {
-  products: Product[];
-  selectedProduct: Product | null;
+  products: IProductInfo[];
+  selectedProduct: IProductInfo | null;
 };
 
 const initialState: ProductState = {
-  products: sampleProducts,
+  products: [],
   selectedProduct: null,
 };
 
 const productSlice = createSlice({
-  name: "products",
+  name: SLICES.PRODUCT,
   initialState,
   reducers: {
-    setProducts(state, action: PayloadAction<Product[]>) {
+    setProducts(state, action: PayloadAction<IProductInfo[]>) {
       state.products = action.payload;
     },
     selectProduct(state, action: PayloadAction<string>) {
       state.selectedProduct =
         state.products.find((p) => p.id === action.payload) || null;
     },
-    updateSelectedProduct(state, action: PayloadAction<Partial<Product>>) {
+    updateSelectedProduct(state, action: PayloadAction<Partial<IProductInfo>>) {
       if (state.selectedProduct)
         state.selectedProduct = { ...state.selectedProduct, ...action.payload };
     },
     clearSelectedProduct(state) {
       state.selectedProduct = null;
     },
-    addProduct(state, action: PayloadAction<Product>) {
+    addProduct(state, action: PayloadAction<IProductInfo>) {
       state.products.push(action.payload);
     },
     removeProduct(state, action: PayloadAction<string>) {
@@ -42,7 +43,7 @@ const productSlice = createSlice({
         state.selectedProduct = null;
       }
     },
-    updateProduct(state, action: PayloadAction<Product>) {
+    updateProduct(state, action: PayloadAction<IProductInfo>) {
       const idx = state.products.findIndex((p) => p.id === action.payload.id);
       if (idx !== -1) {
         state.products[idx] = action.payload;
@@ -51,6 +52,14 @@ const productSlice = createSlice({
         }
       }
     },
+  },
+  extraReducers(builder) {
+    builder.addMatcher(
+      productApi.endpoints.getProducts.matchFulfilled,
+      (state, action) => {
+        state.products = action.payload.data.entities;
+      },
+    );
   },
 });
 
