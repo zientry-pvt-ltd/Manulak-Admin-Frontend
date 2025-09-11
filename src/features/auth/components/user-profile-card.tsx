@@ -101,7 +101,7 @@ const UserProfileCard = () => {
   );
 
   return (
-    <DropdownMenu open={openProfile}>
+    <DropdownMenu open={openProfile} onOpenChange={setOpenProfile}>
       <DropdownMenuTrigger asChild onClick={() => setOpenProfile(!openProfile)}>
         {renderUserDetails}
       </DropdownMenuTrigger>
