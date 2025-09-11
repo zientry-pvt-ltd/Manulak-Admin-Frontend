@@ -4,18 +4,32 @@ import type { CommonResponseDTO } from "@/types";
 export type IRoleTypes = keyof typeof ROLES;
 
 export type IUserInfo = {
-  id: string;
+  user_id: string;
   user_name: string;
-  role: IRoleTypes;
+  user_role: IRoleTypes;
   company_id: string;
 };
 
-export type ILoginResponse = IRefreshAccessTokenResponse;
+export interface ICompanyInfo {
+  company_id: string;
+  company_name: string;
+  company_description: string;
+  company_images: string[];
+  phone: string;
+  email: string | null;
+  address: string | null;
+  support_number: string | null;
+  bank_details: string | null;
+  social_media: string | null;
+}
 
 export type IRefreshAccessTokenResponse = CommonResponseDTO<{
   access_token: string;
   user: IUserInfo;
+  company: ICompanyInfo;
 }>;
+
+export type ILoginResponse = IRefreshAccessTokenResponse;
 
 export type ILoginRequest = {
   user_name: string;
