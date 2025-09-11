@@ -1,5 +1,5 @@
 import type { ROLES } from "@/constants";
-import type { CommonResponseDTO } from "@/types";
+import type { ApiResource } from "@/types";
 
 export type IRoleTypes = keyof typeof ROLES;
 
@@ -23,7 +23,7 @@ export interface ICompanyInfo {
   social_media: string | null;
 }
 
-export type IRefreshAccessTokenResponse = CommonResponseDTO<{
+export type IRefreshAccessTokenResponse = ApiResource<{
   access_token: string;
   user: IUserInfo;
   company: ICompanyInfo;
