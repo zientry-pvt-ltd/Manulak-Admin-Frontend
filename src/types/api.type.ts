@@ -1,4 +1,4 @@
-export interface BaseResponse {
+interface BaseResponse {
   success: boolean;
   message: string;
   status?: number;
@@ -15,13 +15,29 @@ interface ResponseDTO<T> extends BaseResponse {
 }
 
 interface ListResponseDTO<T> extends BaseResponse {
-  entities: T[];
-  paging: Paging;
+  data: {
+    entities: T[];
+    paging: Paging;
+  };
 }
 
 export type ApiResource<T> = ResponseDTO<T>;
 
 export type ApiResourceList<T> = ListResponseDTO<T>;
+
+export interface ResourceListQueryParams {
+  filters: {
+    query?: string;
+  };
+  paging: {
+    pageNo: number;
+    pageSize: number;
+  };
+  sorting: {
+    columnName: string;
+    sortOrder: 1 | -1; // 1 : ascending, -1 : descending
+  };
+}
 
 export type NormalizedAPIError = {
   status: number | string;
