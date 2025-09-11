@@ -1,12 +1,30 @@
-import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
-export interface CommonResponseDTO<T> {
-  data: T;
-  status: number;
-  message: string;
+export interface BaseResponse {
   success: boolean;
+  message: string;
+  status?: number;
 }
 
-export type APIError = FetchBaseQueryError & {
-  data?: CommonResponseDTO<null>;
+interface Paging {
+  pageNo: number;
+  pageSize: number;
+  length: number;
+}
+
+interface ResponseDTO<T> extends BaseResponse {
+  data: T;
+}
+
+interface ListResponseDTO<T> extends BaseResponse {
+  entities: T[];
+  paging: Paging;
+}
+
+export type ApiResource<T> = ResponseDTO<T>;
+
+export type ApiResourceList<T> = ListResponseDTO<T>;
+
+export type NormalizedAPIError = {
+  status: number | string;
+  message: string;
+  details?: unknown;
 };
