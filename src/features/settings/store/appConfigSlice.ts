@@ -1,15 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import type { ICompanyInfo } from "@/features/auth";
 import { APP_CONFIG_SLICE, type IAppState } from "@/features/settings";
+import { authApi } from "@/services";
 
 const initialState: IAppState = {
-  appName: "Manulak Agro",
-  appDescription: "Your Inventory Management System for Modern Businesses",
-  appLogo: [
-    "https://wordpress.validthemes.net/agrica/wp-content/uploads/2024/01/cropped-favicon-270x270.png",
-    "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
-  ],
-  faviconUrl: "https://manulakagro.com/wp-content/uploads/2025/02/logo-2.png",
+  appName: "App Name",
+  appDescription: "App Description",
+  appLogo: "",
+  faviconUrl: "",
   appTheme: "light",
   appVersion: "1.0.0",
 };
@@ -21,6 +20,33 @@ const appSlice = createSlice({
     toggleAppTheme: (state) => {
       state.appTheme = state.appTheme === "light" ? "dark" : "light";
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      authApi.endpoints.login.matchFulfilled,
+      (state, action) => {
+        const company: ICompanyInfo = action.payload.data.company;
+        if (company) {
+          state.appName = company.company_name;
+          state.appDescription = company.company_description;
+          state.appLogo = company.company_images?.[0] ?? state.appLogo;
+          state.faviconUrl = company.company_images?.[1] ?? state.faviconUrl;
+        }
+      },
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.refreshAccessToken.matchFulfilled,
+      (state, action) => {
+        const company: ICompanyInfo = action.payload.data.company;
+        if (company) {
+          state.appName = company.company_name;
+          state.appDescription = company.company_description;
+          state.appLogo = company.company_images?.[0] ?? state.appLogo;
+          state.faviconUrl = company.company_images?.[1] ?? state.faviconUrl;
+        }
+      },
+    );
   },
 });
 
