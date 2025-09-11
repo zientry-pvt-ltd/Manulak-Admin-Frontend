@@ -33,7 +33,7 @@ const UserProfileCard = () => {
 
   const fullName = userInfo?.user_name || "Unknown";
   const profileUrl = "";
-  const role = userInfo?.role || "Unknown";
+  const role = userInfo?.user_role || "Unknown";
 
   const handleProfile = useCallback(() => {
     console.log("Go to profile");
@@ -61,8 +61,8 @@ const UserProfileCard = () => {
       <AppAvatar name={fullName} imageUrl={profileUrl} size="md" />
       {!isCollapsed && (
         <>
-          <div className="flex flex-col">
-            <AppText size="text-xs" weight="font-semibold" ellipsis>
+          <div className="flex flex-col max-w-[130px]">
+            <AppText size="text-xs" weight="font-semibold" ellipsis truncate>
               {fullName}
             </AppText>
             <AppText size="text-xs" color="muted">
