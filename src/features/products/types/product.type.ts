@@ -1,3 +1,5 @@
+import type { ApiResource, ApiResourceList } from "@/types";
+
 export type ProductCategoryType =
   | "flower-seeds"
   | "vegetable-seeds"
@@ -5,7 +7,7 @@ export type ProductCategoryType =
   | "gardening-tools"
   | "eco-products";
 
-export type Product = {
+export type IProductInfo = {
   id: string;
   product_name: string;
   product_desc: string;
@@ -20,3 +22,21 @@ export type Product = {
   updated_at: string;
   is_deleted: boolean;
 };
+
+export interface IUpdateProductRequest {
+  id: string;
+  product_name?: string;
+  product_desc?: string;
+  product_category?: string;
+  bought_price?: string;
+  selling_price?: string;
+  unit_weight?: string;
+  courier_chargers_1kg?: string;
+  courier_chargers_more_than_1kg?: string;
+  product_image_urls?: string[];
+  is_deleted?: boolean;
+}
+
+export type IProductListResponse = ApiResourceList<IProductInfo>;
+
+export type IProductResponse = ApiResource<IProductInfo>;
