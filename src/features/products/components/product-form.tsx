@@ -48,7 +48,9 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
 
   const isView = mode === "view";
   const urlImages =
-    mode === "edit" || mode === "view" ? selectedProduct?.image_urls || [] : [];
+    mode === "edit" || mode === "view"
+      ? selectedProduct?.product_image_urls || []
+      : [];
 
   const [localImages, setLocalImages] = useState<File[]>([]);
   const localImagePreviews = localImages.map((file) =>
@@ -63,15 +65,15 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
             ...selectedProduct,
           }
         : {
-            name: "",
-            description: "",
-            category: "flower-seeds",
-            selling_price: 0,
-            bought_price: 0,
-            unit_weight: 0,
-            courier_charge_for_1st_kg: 0,
-            courier_charge_for_other_kg: 0,
-            image_urls: [],
+            product_name: "",
+            product_desc: "",
+            product_category: "flower-seeds",
+            selling_price: "",
+            bought_price: "",
+            unit_weight: "",
+            courier_chargers_1kg: "",
+            courier_chargers_more_than_1kg: "",
+            product_image_urls: [],
           },
   });
 
@@ -101,7 +103,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
 
     const files = Array.from(e.target.files);
     const total =
-      localImages.length + (form.getValues("image_urls")?.length || 0);
+      localImages.length + (form.getValues("product_image_urls")?.length || 0);
 
     if (total + files.length > 5) {
       toast.error("Maximum 5 images allowed");
@@ -137,8 +139,8 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
           placeholder="Enter product name"
           fullWidth
           disabled={isView}
-          error={form.formState.errors.name?.message}
-          {...form.register("name")}
+          error={form.formState.errors.product_name?.message}
+          {...form.register("product_name")}
         />
 
         <AppTextarea
@@ -148,8 +150,8 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
           rows={5}
           fullWidth
           disabled={isView}
-          error={form.formState.errors.description?.message}
-          {...form.register("description")}
+          error={form.formState.errors.product_desc?.message}
+          {...form.register("product_desc")}
         />
 
         <AppInput
@@ -176,7 +178,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
 
         <Controller
           control={form.control}
-          name="category"
+          name="product_category"
           render={({ field }) => (
             <AppSelect
               label="Category"
@@ -186,7 +188,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
               disabled={isView}
               value={field.value}
               onValueChange={field.onChange}
-              error={form.formState.errors.category?.message}
+              error={form.formState.errors.product_category?.message}
             />
           )}
         />
@@ -211,8 +213,8 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
           placeholder="Enter charge"
           fullWidth
           disabled={isView}
-          error={form.formState.errors.courier_charge_for_1st_kg?.message}
-          {...form.register("courier_charge_for_1st_kg", {
+          error={form.formState.errors.courier_chargers_1kg?.message}
+          {...form.register("courier_chargers_1kg", {
             valueAsNumber: true,
           })}
         />
@@ -224,8 +226,8 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
           placeholder="Enter charge"
           fullWidth
           disabled={isView}
-          error={form.formState.errors.courier_charge_for_other_kg?.message}
-          {...form.register("courier_charge_for_other_kg", {
+          error={form.formState.errors.courier_chargers_more_than_1kg?.message}
+          {...form.register("courier_chargers_more_than_1kg", {
             valueAsNumber: true,
           })}
         />
@@ -261,16 +263,17 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
                     rounded="full"
                     onClick={() => {
                       form.setValue(
-                        "image_urls",
-                        selectedProduct?.image_urls.filter(
+                        "product_image_urls",
+                        selectedProduct?.product_image_urls.filter(
                           (url) => url !== src,
                         ) || [],
                       );
                       dispatch(
                         updateSelectedProduct({
-                          image_urls: selectedProduct?.image_urls.filter(
-                            (url) => url !== src,
-                          ),
+                          product_image_urls:
+                            selectedProduct?.product_image_urls.filter(
+                              (url) => url !== src,
+                            ),
                         }),
                       );
                     }}
