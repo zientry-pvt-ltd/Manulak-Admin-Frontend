@@ -6,13 +6,13 @@ import { z } from "zod";
 import { AppButton, AppInput, Form } from "@/components";
 import { loginInputSchema } from "@/features/auth/schema";
 import { useLoginMutation } from "@/services/auth";
-import type { CommonResponseDTO } from "@/types";
-import { handleApiError } from "@/utils/error-handler";
+import type { NormalizedAPIError } from "@/types";
+import { normalizeError } from "@/utils/error-handler";
 
 type LoginFormProps = {
   onLoginSuccess: () => void;
   // eslint-disable-next-line no-unused-vars
-  onLoginError?: (error: CommonResponseDTO<null>) => void;
+  onLoginError?: (error: NormalizedAPIError) => void;
 };
 
 const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
@@ -31,7 +31,8 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
       await login(data).unwrap();
       onLoginSuccess();
     } catch (error) {
-      const message = handleApiError(error, onLoginError);
+      const message = normalizeError(error);
+      onLoginError?.(message);
       console.error("Login failed:", message);
     }
   };
