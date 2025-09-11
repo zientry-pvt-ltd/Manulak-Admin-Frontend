@@ -1,17 +1,34 @@
-import type { APIError, CommonResponseDTO } from "@/types";
+import type { SerializedError } from "@reduxjs/toolkit";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-export function handleApiError(
+import type { NormalizedAPIError } from "@/types";
+
+const isFetchBaseQueryError = (
   error: unknown,
-  // eslint-disable-next-line no-unused-vars
-  onError?: (err: CommonResponseDTO<null>) => void,
-) {
-  if (isAPIError(error) && error.data) {
-    onError?.(error.data);
-    return error.data.message;
-  }
-  return "Something went wrong. Please try again.";
-}
+): error is FetchBaseQueryError => {
+  return typeof error === "object" && error != null && "status" in error;
+};
 
-function isAPIError(error: unknown): error is APIError {
-  return typeof error === "object" && error !== null && "status" in error;
-}
+const isSerializedError = (error: unknown): error is SerializedError => {
+  return typeof error === "object" && error != null && "message" in error;
+};
+
+export const normalizeError = (error: unknown): NormalizedAPIError => {
+  if (isFetchBaseQueryError(error)) {
+    return {
+      status: error.status,
+      message: (error as any).data?.message ?? "Unexpected API error",
+      details: (error as any).data,
+    };
+  } else if (isSerializedError(error)) {
+    return {
+      status: "CLIENT_ERROR",
+      message: error.message ?? "Unknown client error",
+    };
+  } else {
+    return {
+      status: "UNKNOWN_ERROR",
+      message: "An unknown error occurred",
+    };
+  }
+};
