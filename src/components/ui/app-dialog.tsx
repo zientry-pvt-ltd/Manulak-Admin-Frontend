@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { FormIds } from "@/types";
 
 type AppDialogProps = {
   open: boolean;
@@ -16,7 +17,7 @@ type AppDialogProps = {
   title?: string;
   description?: string;
   children: React.ReactNode;
-  formId?: string;
+  formId?: FormIds;
   disableFooter?: boolean;
 };
 
