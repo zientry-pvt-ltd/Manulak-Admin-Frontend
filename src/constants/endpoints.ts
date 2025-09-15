@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     SINGLE: (id: string | number) => `/product/get-product-by-id/${id}`,
     UPDATE: (id: string | number) => `/product/update-product/${id}`,
     DELETE: (id: string | number) => `/product/delete-product/${id}`,
+    ADD_IMAGE: (id: string | number) => `/product/add-product-image/${id}`,
   },
   DASHBOARD: {
     STATS: "/dashboard/stats",
