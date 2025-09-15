@@ -10,10 +10,6 @@ interface Paging {
   length: number;
 }
 
-interface ResponseDTO<T> extends BaseResponse {
-  data: T;
-}
-
 interface ListResponseDTO<T> extends BaseResponse {
   data: {
     entities: T[];
@@ -44,3 +40,7 @@ export type NormalizedAPIError = {
   message: string;
   details?: unknown;
 };
+
+export interface ResponseDTO<T> extends BaseResponse {
+  data: T;
+}
