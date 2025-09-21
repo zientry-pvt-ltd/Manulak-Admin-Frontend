@@ -1,3 +1,4 @@
+import type { PaginationState, SortingState } from "@tanstack/react-table";
 import { Edit, Eye, Trash } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ import {
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
+  useLazyGetProductsQuery,
   useUpdateProductMutation,
 } from "@/services/product";
 import { selectProducts } from "@/store/selectors";
@@ -49,7 +51,7 @@ export const ViewProducts = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog, closeAppDialog } = useAppDialog();
-  const { products: productList } = useAppSelector(selectProducts);
+  const { products } = useAppSelector(selectProducts);
 
   const { isFetching } = useGetProductsQuery({
     filters: {
@@ -63,6 +65,44 @@ export const ViewProducts = () => {
   const [addProductImage] = useAddProductImageMutation();
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
+  const [trigger] = useLazyGetProductsQuery();
+
+  const handlePaginationChange = (value: PaginationState) => {
+    trigger({
+      filters: {
+        query: "",
+      },
+      paging: {
+        pageNo: value.pageIndex + 1,
+        pageSize: value.pageSize,
+      },
+      sorting: { columnName: "created_at", sortOrder: -1 },
+    });
+  };
+
+  const handleSortingChange = (sorting: SortingState) => {
+    if (sorting.length > 0) {
+      const sort = sorting[0];
+      trigger({
+        filters: {
+          query: "",
+        },
+        paging: { pageNo: 1, pageSize: 10 },
+        sorting: {
+          columnName: sort.id,
+          sortOrder: sort.desc ? -1 : 1,
+        },
+      });
+    } else {
+      trigger({
+        filters: {
+          query: "",
+        },
+        paging: { pageNo: 1, pageSize: 10 },
+        sorting: { columnName: "created_at", sortOrder: -1 },
+      });
+    }
+  };
 
   const handleDeleteProduct = useCallback(
     (productId: string) => {
@@ -225,7 +265,7 @@ export const ViewProducts = () => {
 
     const productId = data.fieldData.id;
     const updatedProduct = data.fieldData;
-    const productBeforeUpdate = productList?.find(
+    const productBeforeUpdate = products?.find(
       (p) => p.id === updatedProduct.id,
     );
 
@@ -275,7 +315,7 @@ export const ViewProducts = () => {
   };
 
   const config: TableConfig<IProductInfo> = {
-    data: productList || [],
+    data: products || [],
     tableName: "Product",
     columns: [
       {
@@ -387,9 +427,11 @@ export const ViewProducts = () => {
     },
     pagination: {
       enabled: true,
-      onPaginationChange(value) {
-        console.log("Pagination Changed: ", value);
-      },
+      onPaginationChange: handlePaginationChange,
+    },
+    sorting: {
+      enabled: true,
+      onColumnSortingChange: handleSortingChange,
     },
     columnVisibility: {
       enabled: true,
@@ -399,10 +441,7 @@ export const ViewProducts = () => {
       rowCreating: {
         enabled: true,
         autoSave: true,
-        addDummyRow: () => {
-          console.log("Add Dummy Row");
-          handleAddProduct();
-        },
+        addDummyRow: handleAddProduct,
       },
     },
   };
