@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CATEGORY_LABELS } from "@/features/products/constants";
 
 export const productSchema = z.object({
+  id: z.string().optional(),
   product_name: z.string().min(1, "Name is required"),
   product_desc: z
     .string()
