@@ -19,10 +19,15 @@ import { productSchema } from "@/features/products/schema";
 import { updateSelectedProduct } from "@/features/products/store/product-slice";
 import { selectProducts } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
+import type { FormIds } from "@/types";
 
-type FormValues = z.infer<typeof productSchema>;
+export type FormFieldValues = z.infer<typeof productSchema>;
 export type ProductFormMode = "new" | "edit" | "view";
-export type ExtendedFormValues = FormValues & { localImages: File[] };
+
+export type ProductFormSubmitData = {
+  fieldData: FormFieldValues;
+  imageData: File[];
+};
 
 type ProductFormProps = {
   mode: ProductFormMode;
@@ -32,12 +37,12 @@ type ProductFormProps = {
     // eslint-disable-next-line no-unused-vars
     mode,
   }: {
-    data: ExtendedFormValues;
+    data: ProductFormSubmitData;
     mode: ProductFormMode;
   }) => Promise<void>;
 };
 
-const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
+const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
   mode,
   onSubmit,
   formId = "product-form",
@@ -57,7 +62,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
     URL.createObjectURL(file),
   );
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormFieldValues>({
     resolver: zodResolver(productSchema),
     defaultValues:
       (mode === "edit" || mode === "view") && selectedProduct
@@ -65,31 +70,29 @@ const ProductForm: React.FC<ProductFormProps & { formId?: string }> = ({
             ...selectedProduct,
           }
         : {
-            product_name: "",
-            product_desc: "",
+            product_name: "Black Rose",
+            product_desc: "This is a sample description for Black Rose",
             product_category: "flower-seeds",
-            selling_price: "",
-            bought_price: "",
-            unit_weight: "",
-            courier_chargers_1kg: "",
-            courier_chargers_more_than_1kg: "",
+            selling_price: 10,
+            bought_price: 20,
+            unit_weight: 30,
+            courier_chargers_1kg: 30,
+            courier_chargers_more_than_1kg: 220,
             product_image_urls: [],
           },
   });
 
-  const handleSubmit = (data: FormValues) => {
-    const submitData: FormValues & { localImages: File[] } = {
-      ...data,
-      localImages,
-    };
-
+  const handleSubmit = (data: FormFieldValues) => {
     if (onSubmit) {
       onSubmit({
-        data: submitData,
+        data: {
+          fieldData: data,
+          imageData: localImages,
+        },
         mode,
       });
     } else {
-      console.log("Form submitted:", submitData);
+      console.log("Form submitted:", data, localImages, mode);
       toast.success(
         mode === "new"
           ? "Product created successfully!"

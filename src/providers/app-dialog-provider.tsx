@@ -2,13 +2,14 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
 
 import { AppDialog } from "@/components";
+import type { FormIds } from "@/types";
 
 type AppDialogContextType = {
   openAppDialog: (options: {
     title: string;
     description: string;
     content: ReactNode;
-    formId?: string;
+    formId?: FormIds;
     disableFooter?: boolean;
   }) => void;
   closeAppDialog: () => void;
@@ -24,7 +25,7 @@ export const AppDialogProvider = ({ children }: { children: ReactNode }) => {
     title: string;
     description: string;
     content: ReactNode;
-    formId?: string;
+    formId?: FormIds;
     onSubmit?: (e: React.FormEvent) => void;
     disableFooter?: boolean;
   } | null>(null);
