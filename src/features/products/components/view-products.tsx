@@ -1,6 +1,7 @@
 import { Edit, Eye, Trash } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import type { z } from "zod";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
@@ -9,6 +10,7 @@ import ProductForm, {
   type ProductFormSubmitData,
 } from "@/features/products/components/product-form";
 import { CATEGORIES } from "@/features/products/constants";
+import type { productSchema } from "@/features/products/schema";
 import { selectProduct } from "@/features/products/store/product-slice";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
@@ -17,16 +19,39 @@ import {
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
+  useUpdateProductMutation,
 } from "@/services/product";
-import { useAppDispatch } from "@/store/utils";
+import { selectProducts } from "@/store/selectors";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
+
+const getChangedFields = (
+  before: IProductInfo,
+  after: z.infer<typeof productSchema>,
+): Partial<IProductInfo> => {
+  const changes: Partial<IProductInfo> = {};
+
+  for (const key of Object.keys(after) as (keyof z.infer<
+    typeof productSchema
+  >)[]) {
+    const beforeValue = before[key as keyof IProductInfo];
+    const afterValue = after[key];
+
+    if (afterValue !== undefined && beforeValue !== afterValue) {
+      (changes as any)[key] = afterValue;
+    }
+  }
+
+  return changes;
+};
 
 export const ViewProducts = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
-  const { openAppDialog } = useAppDialog();
+  const { openAppDialog, closeAppDialog } = useAppDialog();
+  const { products: productList } = useAppSelector(selectProducts);
 
-  const { data: products } = useGetProductsQuery({
+  useGetProductsQuery({
     filters: {
       query: "",
     },
@@ -37,6 +62,7 @@ export const ViewProducts = () => {
   const [createProduct] = useCreateProductMutation();
   const [addProductImage] = useAddProductImageMutation();
   const [deleteProduct] = useDeleteProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
 
   const handleDeleteProduct = useCallback(
     (productId: string) => {
@@ -60,26 +86,21 @@ export const ViewProducts = () => {
     [confirm, deleteProduct],
   );
 
-  const handleAddProductSubmit = async ({
-    data,
-  }: {
-    data: ProductFormSubmitData;
-  }) => {
-    // Show initial loading toast
-    const loadingToastId = toast.loading("Creating product...");
-
-    try {
-      // Step 1: Create the product first
-      const result = await createProduct(data.fieldData).unwrap();
-      const productId = result.data.id;
-
+  const handleImageUpload = useCallback(
+    async (
+      productId: string,
+      data: ProductFormSubmitData,
+      loadingToastId: string | number,
+      mode: "edit" | "new",
+    ) => {
+      const isNewProduct = mode === "new";
       // Step 2: Upload images if they exist
       if (data.imageData && data.imageData.length > 0) {
         const totalImages = data.imageData.length;
 
         // Update toast to show image upload progress
         toast.loading(
-          `Product created! Uploading images (0/${totalImages})...`,
+          `Product ${isNewProduct ? "created" : "updated"}! Uploading images (0/${totalImages})...`,
           {
             id: loadingToastId,
           },
@@ -87,48 +108,49 @@ export const ViewProducts = () => {
 
         let uploadedCount = 0;
         let failedCount = 0;
+        const uploadResults = [];
 
-        // Create array of image upload promises with progress tracking
-        const imageUploadPromises = data.imageData.map(
-          async (image: File, index: number) => {
-            try {
-              await addProductImage({
-                id: productId,
-                file: image,
-              }).unwrap();
+        // Upload images one by one using a for loop
+        for (let index = 0; index < data.imageData.length; index++) {
+          const image = data.imageData[index];
 
-              uploadedCount++;
+          try {
+            await addProductImage({
+              id: productId,
+              file: image,
+            }).unwrap();
 
-              // Update progress toast
-              toast.loading(
-                `Product created! Uploading images (${uploadedCount}/${totalImages})...`,
-                { id: loadingToastId },
-              );
+            uploadedCount++;
 
-              return { success: true, index: index + 1 };
-            } catch (error) {
-              failedCount++;
-              console.error(`Failed to upload image ${index + 1}:`, error);
+            // Update progress toast after each successful upload
+            toast.loading(
+              `Product created! Uploading images (${uploadedCount}/${totalImages})...`,
+              { id: loadingToastId },
+            );
 
-              // Still update progress even for failed uploads
-              const processedCount = uploadedCount + failedCount;
-              toast.loading(
-                `Product created! Processing images (${processedCount}/${totalImages})...`,
-                { id: loadingToastId },
-              );
+            uploadResults.push({
+              success: true,
+              index: index + 1,
+            });
+          } catch (error) {
+            failedCount++;
+            console.error(`Failed to upload image ${index + 1}:`, error);
 
-              return {
-                success: false,
-                error: true,
-                index: index + 1,
-                message: normalizeError(error).message,
-              };
-            }
-          },
-        );
+            // Update progress even for failed uploads
+            const processedCount = uploadedCount + failedCount;
+            toast.loading(
+              `Product ${isNewProduct ? "created" : "updated"}! Processing images (${processedCount}/${totalImages})...`,
+              { id: loadingToastId },
+            );
 
-        // Wait for all image uploads to complete
-        const uploadResults = await Promise.all(imageUploadPromises);
+            uploadResults.push({
+              success: false,
+              error: true,
+              index: index + 1,
+              message: normalizeError(error).message,
+            });
+          }
+        }
 
         // Count final results
         const successful = uploadResults.filter(
@@ -142,29 +164,49 @@ export const ViewProducts = () => {
         if (failed === 0) {
           // All images uploaded successfully
           toast.success(
-            `Product created successfully with ${successful}/${totalImages} image${totalImages !== 1 ? "s" : ""}!`,
+            `Product ${isNewProduct ? "created" : "updated"} successfully with ${successful}/${totalImages} image${totalImages !== 1 ? "s" : ""}!`,
           );
         } else if (successful > 0) {
           // Some images failed
           toast.warning(
-            `Product created! ${successful}/${totalImages} image${totalImages !== 1 ? "s" : ""} uploaded successfully, ${failed} failed.`,
+            `Product  ${isNewProduct ? "created" : "updated"}! ${successful}/${totalImages} image${totalImages !== 1 ? "s" : ""} uploaded successfully, ${failed} failed.`,
           );
         } else {
           // All images failed but product was created
           toast.warning(
-            `Product created successfully, but failed to upload all ${totalImages} image${totalImages !== 1 ? "s" : ""}. You can add images later.`,
+            `Product ${isNewProduct ? "created" : "updated"} successfully, but failed to upload all ${totalImages} image${totalImages !== 1 ? "s" : ""}. You can add images later.`,
           );
         }
       } else {
         // No images to upload
         toast.dismiss(loadingToastId);
-        toast.success("Product created successfully!");
+        toast.success(
+          `Product ${isNewProduct ? "created" : "updated"} successfully!`,
+        );
       }
+    },
+    [addProductImage],
+  );
 
-      // Close the dialog on successful creation
-      // Note: You might need to pass a close function or handle this differently based on your dialog implementation
+  const handleAddProductSubmit = async ({
+    data,
+  }: {
+    data: ProductFormSubmitData;
+  }) => {
+    // Show initial loading toast
+    const loadingToastId = toast.loading("Creating product...");
+
+    try {
+      // Step 1: Create the product first
+      const result = await createProduct(data.fieldData).unwrap();
+      const productId = result.data.id;
+
+      await handleImageUpload(productId, data, loadingToastId, "new");
+
+      setTimeout(() => {
+        closeAppDialog();
+      }, 700);
     } catch (error) {
-      // Handle product creation failure
       toast.dismiss(loadingToastId);
       const message = normalizeError(error);
       toast.error(`Failed to create product: ${message.message}`);
@@ -179,7 +221,48 @@ export const ViewProducts = () => {
     data: ProductFormSubmitData;
     mode: ProductFormMode;
   }) => {
-    console.log("editing product:", data, mode);
+    const loadingToastId = toast.loading("Updating product...");
+
+    const productId = data.fieldData.id;
+    const updatedProduct = data.fieldData;
+    const productBeforeUpdate = productList?.find(
+      (p) => p.id === updatedProduct.id,
+    );
+
+    if (!productId) {
+      toast.error("Product ID is missing. Cannot update the product.");
+      return;
+    }
+
+    if (mode !== "edit" || !updatedProduct || !productBeforeUpdate) {
+      toast.error("Invalid operation: No product selected for editing.");
+      return;
+    }
+
+    const changes = getChangedFields(productBeforeUpdate, updatedProduct);
+
+    if (Object.keys(changes).length === 0) {
+      console.warn("No changes detected, skipping patch");
+      return;
+    }
+
+    try {
+      await updateProduct({
+        id: productId,
+        ...changes,
+      });
+
+      await handleImageUpload(productId, data, loadingToastId, "edit");
+
+      setTimeout(() => {
+        closeAppDialog();
+      }, 700);
+    } catch (error) {
+      const message = normalizeError(error);
+      toast.dismiss(loadingToastId);
+      toast.error(`Failed to update product: ${message.message}`);
+      console.error("Product update failed:", error);
+    }
   };
 
   const handleAddProduct = () => {
@@ -192,7 +275,7 @@ export const ViewProducts = () => {
   };
 
   const config: TableConfig<IProductInfo> = {
-    data: products?.data.entities ?? [],
+    data: productList || [],
     tableName: "Product",
     columns: [
       {

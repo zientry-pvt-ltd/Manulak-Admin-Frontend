@@ -24,19 +24,7 @@ export type IProductInfo = {
   is_deleted: boolean;
 };
 
-export interface IUpdateProductRequest {
-  id: string;
-  product_name?: string;
-  product_desc?: string;
-  product_category?: string;
-  bought_price?: string;
-  selling_price?: string;
-  unit_weight?: string;
-  courier_chargers_1kg?: string;
-  courier_chargers_more_than_1kg?: string;
-  product_image_urls?: string[];
-  is_deleted?: boolean;
-}
+export type IUpdateProductRequest = Partial<IProductInfo> & { id: string };
 
 export type IProductCreateRequest = FormFieldValues;
 

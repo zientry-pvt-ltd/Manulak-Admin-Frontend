@@ -72,7 +72,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         : {
             product_name: "Black Rose",
             product_desc: "This is a sample description for Black Rose",
-            product_category: "flower-seeds",
+            product_category: "PLANTS",
             selling_price: 10,
             bought_price: 20,
             unit_weight: 30,
@@ -236,7 +236,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
       </div>
 
-      <div className="w-1/2 sticky top-0 h-fit space-y-2 bg-white">
+      <div className="w-1/2 sticky top-0 h-fit space-y-2 bg-background">
         <AppText>Product Images</AppText>
 
         {/* URL Images */}

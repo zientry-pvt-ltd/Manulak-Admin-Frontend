@@ -8,23 +8,20 @@ import type {
 import { api } from "@/services/api";
 import type { ResourceListQueryParams, ResponseDTO } from "@/types";
 
-export function productToFormData(product: IProductCreateRequest): FormData {
-  const formData = new FormData();
-  formData.append("product_name", product.product_name);
-  formData.append("product_desc", product.product_desc);
-  formData.append("product_category", product.product_category);
-  formData.append("bought_price", product.bought_price.toString());
-  formData.append("selling_price", product.selling_price.toString());
-  formData.append("unit_weight", product.unit_weight.toString());
-  formData.append(
-    "courier_chargers_1kg",
-    product.courier_chargers_1kg.toString(),
-  );
-  formData.append(
-    "courier_chargers_more_than_1kg",
-    product.courier_chargers_more_than_1kg.toString(),
-  );
-  return formData;
+export function productToFormData(
+  product: IProductCreateRequest,
+): Record<string, string> {
+  return {
+    product_name: product.product_name,
+    product_desc: product.product_desc,
+    product_category: product.product_category,
+    bought_price: product.bought_price.toString(),
+    selling_price: product.selling_price.toString(),
+    unit_weight: product.unit_weight.toString(),
+    courier_chargers_1kg: product.courier_chargers_1kg.toString(),
+    courier_chargers_more_than_1kg:
+      product.courier_chargers_more_than_1kg.toString(),
+  };
 }
 
 export const productApi = api.injectEndpoints({
@@ -49,7 +46,7 @@ export const productApi = api.injectEndpoints({
       query: (body) => ({
         url: ENDPOINTS.PRODUCT.CREATE,
         method: "POST",
-        body: productToFormData(body),
+        body: body,
       }),
     }),
     addProductImage: builder.mutation<
@@ -58,10 +55,10 @@ export const productApi = api.injectEndpoints({
     >({
       query: ({ id, file }) => {
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("product-image", file);
         return {
           url: ENDPOINTS.PRODUCT.ADD_IMAGE(id),
-          method: "POST",
+          method: "PATCH",
           body: formData,
         };
       },
