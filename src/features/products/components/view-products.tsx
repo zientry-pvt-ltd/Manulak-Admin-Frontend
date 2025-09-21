@@ -51,7 +51,7 @@ export const ViewProducts = () => {
   const { openAppDialog, closeAppDialog } = useAppDialog();
   const { products: productList } = useAppSelector(selectProducts);
 
-  useGetProductsQuery({
+  const { isFetching } = useGetProductsQuery({
     filters: {
       query: "",
     },
@@ -406,5 +406,5 @@ export const ViewProducts = () => {
       },
     },
   };
-  return <ConfigurableTable config={config} isFetching={false} />;
+  return <ConfigurableTable config={config} isFetching={isFetching} />;
 };

@@ -13,7 +13,7 @@ const UsersRoute = () => {
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
       >
-        <div className="flex gap-4 mt-3">
+        <div className="flex gap-4 mt-3 hidden">
           <ButtonShowcase />
           <AppTextShowcase />
           <AppIconButtonShowcase />

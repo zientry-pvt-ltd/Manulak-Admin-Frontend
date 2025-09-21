@@ -10,6 +10,7 @@ const Sales = () => {
       <Authorization
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
+        className="hidden"
       >
         <AppDummyForm />
         <ShowcaseImage />
