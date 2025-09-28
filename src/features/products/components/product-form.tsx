@@ -260,9 +260,9 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
                 {!isView && (
                   <AppIconButton
                     Icon={X}
-                    className="absolute top-1 right-1"
+                    className="absolute top-1 right-1 z-50 bg-primary"
                     size="sm"
-                    variant={"outline"}
+                    variant={"default"}
                     rounded="full"
                     onClick={() => {
                       form.setValue(
@@ -313,9 +313,9 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
                     {
                       <AppIconButton
                         Icon={X}
-                        className="absolute top-1 right-1"
+                        className="absolute top-1 right-1 z-50 bg-primary"
                         size="sm"
-                        variant={"outline"}
+                        variant={"default"}
                         rounded="full"
                         onClick={() => {
                           setLocalImages((prev) => {
