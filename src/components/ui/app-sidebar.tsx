@@ -1,10 +1,8 @@
 import {
-  BadgeDollarSign,
-  Calculator,
   LayoutDashboard,
   type LucideProps,
   Package,
-  Settings,
+  Warehouse,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
@@ -43,22 +41,23 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     { name: "Products", to: paths.app.products.getHref(), icon: Package },
+    { name: "Stock", to: paths.app.stocks.getHref(), icon: Warehouse },
 
-    {
-      name: "Sales",
-      to: paths.app.sales.getHref(),
-      icon: BadgeDollarSign,
-    },
-    {
-      name: "Bill Calculation",
-      to: paths.app.billCalculation.getHref(),
-      icon: Calculator,
-    },
-    {
-      name: "Settings",
-      to: paths.app.settings.getHref(),
-      icon: Settings,
-    },
+    // {
+    //   name: "Sales",
+    //   to: paths.app.sales.getHref(),
+    //   icon: BadgeDollarSign,
+    // },
+    // {
+    //   name: "Bill Calculation",
+    //   to: paths.app.billCalculation.getHref(),
+    //   icon: Calculator,
+    // },
+    // {
+    //   name: "Settings",
+    //   to: paths.app.settings.getHref(),
+    //   icon: Settings,
+    // },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
