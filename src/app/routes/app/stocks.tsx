@@ -1,15 +1,16 @@
 import { ContentLayout } from "@/components/layouts";
 import { ROLES } from "@/constants";
+import { StockTabs } from "@/features/stock";
 import { Authorization } from "@/lib/authorization";
 
 const UsersRoute = () => {
   return (
-    <ContentLayout title="Stocks">
+    <ContentLayout>
       <Authorization
         forbiddenFallback={<div>Only admin can view this.</div>}
         allowedRoles={[ROLES.ADMIN]}
       >
-        <span>Stocks Content</span>
+        <StockTabs />
       </Authorization>
     </ContentLayout>
   );

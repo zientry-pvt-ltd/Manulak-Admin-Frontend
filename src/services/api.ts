@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 
 import { env } from "@/config/env";
+import { ENDPOINTS } from "@/constants";
+import { logout, tokenReceived } from "@/features/auth/store/authSlice";
+import type { IRefreshAccessTokenResponse } from "@/features/auth/types/auth.types";
 import type { RootState } from "@/store";
 
 const baseQuery = fetchBaseQuery({
@@ -15,7 +18,38 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
+const baseQueryWithReauth: typeof baseQuery = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  let result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 401) {
+    // try to get a new token
+    const refreshResult = await baseQuery(
+      ENDPOINTS.AUTH.REFRESH,
+      api,
+      extraOptions,
+    );
+    if (refreshResult.data) {
+      // store the new token
+      const refreshData = refreshResult.data as IRefreshAccessTokenResponse;
+      api.dispatch(
+        tokenReceived({
+          access_token: refreshData.data.access_token,
+          user: refreshData.data.user,
+        }),
+      );
+      // retry the initial query
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+    }
+  }
+  return result;
+};
+
+const baseQueryWithRetry = retry(baseQueryWithReauth, { maxRetries: 0 });
 
 /**
  * Create a base API to inject endpoints into elsewhere.

@@ -4,6 +4,7 @@ import type {
   PaginationState,
   RowData,
   SortingState,
+  Table,
   VisibilityState,
 } from "@tanstack/react-table";
 import type { LucideProps } from "lucide-react";
@@ -198,4 +199,6 @@ export interface TableConfig<TData> {
       context: { operation: string; rowIndex: number; columnId?: keyof TData };
     }) => void;
   };
+
+  customToolBar?: (table: Table<TData>) => React.ReactNode;
 }

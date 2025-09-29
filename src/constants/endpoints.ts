@@ -12,6 +12,11 @@ export const ENDPOINTS = {
     DELETE: (id: string | number) => `/product/delete-product/${id}`,
     ADD_IMAGE: (id: string | number) => `/product/upload-product-image/${id}`,
   },
+  STOCK: {
+    ALL: "/stock/get-all-stock-items",
+    STOCK_NET_WORTH: "/stock/stock-net-worth",
+    UPDATE_QUANTITY: (id: string) => `/stock/update-stock-quantity/${id}`,
+  },
   DASHBOARD: {
     STATS: "/dashboard/stats",
   },
@@ -20,5 +25,6 @@ export const ENDPOINTS = {
 export const SLICES = {
   AUTH: "auth",
   PRODUCT: "product",
+  STOCK: "stock",
   DASHBOARD: "dashboard",
 } as const;

@@ -15,12 +15,14 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "@/features/auth/store/authSlice";
 import productsReducer from "@/features/products/store/product-slice";
 import appConfigReducer from "@/features/settings/store/appConfigSlice";
+import stockReducer from "@/features/stock/store/stock-slice";
 import { authApi } from "@/services/auth";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   appConfig: appConfigReducer,
   products: productsReducer,
+  stock: stockReducer,
   [authApi.reducerPath]: authApi.reducer,
 });
 

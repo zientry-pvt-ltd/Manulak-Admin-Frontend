@@ -565,7 +565,8 @@ export const ConfigurableTable = <
     <div className="space-y-1">
       {/* Table */}
       <div className="flex flex-col w-full overflow-scroll px-2 h-[calc(92vh-7.5rem)] no-scrollbar">
-        <div className="flex items-center justify-end pb-2 space-x-3">
+        <div className="flex items-center py-2 justify-between space-x-3">
+          {config.customToolBar && config.customToolBar(table)}
           {isLoading && (
             <div className="flex items-center space-x-2 mr-auto">
               <span className="text-xs text-muted-foreground font-normal">
@@ -573,14 +574,16 @@ export const ConfigurableTable = <
               </span>
             </div>
           )}
-          <ConfigTableColumnHider table={table} />
-          {config.editing?.rowCreating?.enabled && (
-            <Button size={"sm"} variant={"outline"} onClick={handleAddNewRow}>
-              <span className="text-xs font-normal">
-                Add {config.tableName ? <>{config.tableName}</> : null}
-              </span>
-            </Button>
-          )}
+          <div className="ml-auto flex items-center space-x-2">
+            {config.editing?.rowCreating?.enabled && (
+              <Button size={"sm"} variant={"outline"} onClick={handleAddNewRow}>
+                <span className="text-xs font-normal">
+                  Add {config.tableName ? <>{config.tableName}</> : null}
+                </span>
+              </Button>
+            )}
+            <ConfigTableColumnHider table={table} />
+          </div>
         </div>
         <Table className="overflow-x-scroll border">
           <TableHeader>
