@@ -23,6 +23,7 @@
       "@lib/*": ["src/lib/*"],
       "@providers/*": ["src/providers/*"],
       "@app/*": ["src/app/*"]
-    }
+    },
+    "noUncheckedIndexedAccess": true
   }
 }
