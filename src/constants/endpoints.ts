@@ -13,9 +13,8 @@ export const ENDPOINTS = {
     ADD_IMAGE: (id: string | number) => `/product/upload-product-image/${id}`,
   },
   STOCK: {
-    ALL: "/stock/get-all-stock-items",
     STOCK_NET_WORTH: "/stock/stock-net-worth",
-    UPDATE_QUANTITY: (id: string) => `/stock/update-stock-quantity/${id}`,
+    UPDATE_QUANTITY: (id: string) => `/stock/${id}`,
   },
   DASHBOARD: {
     STATS: "/dashboard/stats",
@@ -28,3 +27,5 @@ export const SLICES = {
   STOCK: "stock",
   DASHBOARD: "dashboard",
 } as const;
+
+export const API_TAG_TYPES = ["Product", "StockNetWorth"];
