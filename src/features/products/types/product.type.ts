@@ -16,6 +16,7 @@ export type IProductInfo = {
   bought_price: number;
   selling_price: number;
   unit_weight: number;
+  quantity: number;
   courier_chargers_1kg: number;
   courier_chargers_more_than_1kg: number;
   product_image_urls: string[];

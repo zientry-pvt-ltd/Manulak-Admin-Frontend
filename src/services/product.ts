@@ -32,6 +32,7 @@ export const productApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
+      providesTags: ["Product"],
     }),
     getProductById: builder.query<IProductResponse, string>({
       query: (id) => ({
