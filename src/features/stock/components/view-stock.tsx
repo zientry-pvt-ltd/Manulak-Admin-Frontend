@@ -1,59 +1,70 @@
 import { MinusCircle, PlusCircle } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { toast } from "sonner";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
+import { CATEGORIES } from "@/features/products/constants";
+import type { IProductInfo } from "@/features/products/types/product.type";
 import { ExistingStockIndicator, QuantityForm } from "@/features/stock";
-import type { IStockInfo } from "@/features/stock/types/stock.type";
+import type { StockOperationType } from "@/features/stock/types/stock.type";
 import { useAppDialog } from "@/providers";
+import { useGetProductsQuery } from "@/services/product";
+import { useUpdateStockQuantityMutation } from "@/services/stock";
+import { selectProducts } from "@/store/selectors";
+import { useAppSelector } from "@/store/utils";
+import { normalizeError } from "@/utils/error-handler";
 
 export const ViewStock = () => {
-  const { openAppDialog } = useAppDialog();
+  const { openAppDialog, closeAppDialog } = useAppDialog();
+  const { products } = useAppSelector(selectProducts);
 
-  const config: TableConfig<IStockInfo> = useMemo(
+  const [updateStockQuantity] = useUpdateStockQuantityMutation();
+
+  const handleUpdateProductQuantity = useCallback(
+    ({
+      productId,
+      action,
+      quantity,
+    }: {
+      action: StockOperationType;
+      productId: string;
+      quantity: number;
+    }) => {
+      try {
+        updateStockQuantity({
+          productId: productId,
+          body: {
+            operation: action,
+            quantity: quantity,
+          },
+        });
+
+        toast.success("Stock quantity update successfully");
+
+        setTimeout(() => {
+          closeAppDialog();
+        }, 1000);
+      } catch (error) {
+        const message = normalizeError(error);
+        toast.error(`Failed to update quantity: ${message.message}`);
+        console.error("Product update failed:", error);
+      }
+    },
+    [closeAppDialog, updateStockQuantity],
+  );
+
+  const { isLoading } = useGetProductsQuery({
+    filters: {
+      query: "",
+    },
+    paging: { pageNo: 1, pageSize: 10 },
+    sorting: { columnName: "created_at", sortOrder: -1 },
+  });
+
+  const config: TableConfig<IProductInfo> = useMemo(
     () => ({
-      data: [
-        {
-          id: "1",
-          product_name: "Wireless Headphones",
-          category: "Electronics",
-          quantity: 25,
-          unit_price: 89.99,
-          net_worth: 2249.75,
-        },
-        {
-          id: "2",
-          product_name: "Coffee Beans",
-          category: "Food & Beverages",
-          quantity: 50,
-          unit_price: 12.5,
-          net_worth: 625.0,
-        },
-        {
-          id: "3",
-          product_name: "Office Chair",
-          category: "Furniture",
-          quantity: 8,
-          unit_price: 199.99,
-          net_worth: 1599.92,
-        },
-        {
-          id: "4",
-          product_name: "Running Shoes",
-          category: "Sports & Outdoors",
-          quantity: 15,
-          unit_price: 129.95,
-          net_worth: 1949.25,
-        },
-        {
-          id: "5",
-          product_name: "Notebook Set",
-          category: "Stationery",
-          quantity: 100,
-          unit_price: 4.99,
-          net_worth: 499.0,
-        },
-      ],
+      data: products,
       columns: [
         {
           id: "name",
@@ -69,11 +80,12 @@ export const ViewStock = () => {
         },
         {
           id: "category",
-          accessorKey: "category",
+          accessorKey: "product_category",
           header: "Category",
-          mutationKey: "category",
-          type: "text",
+          mutationKey: "product_category",
+          type: "single-select",
           hideable: true,
+          options: CATEGORIES,
         },
         {
           id: "quantity",
@@ -85,9 +97,9 @@ export const ViewStock = () => {
         },
         {
           id: "unit_price",
-          accessorKey: "unit_price",
+          accessorKey: "bought_price",
           header: "Unit Price ($)",
-          mutationKey: "unit_price",
+          mutationKey: "bought_price",
           type: "number",
           hideable: true,
         },
@@ -102,11 +114,19 @@ export const ViewStock = () => {
               Icon: PlusCircle,
               variant: "outline",
               tooltip: "Add Stock",
-              onClick: () => {
+              onClick: (row) => {
                 openAppDialog({
                   title: "Change of Stock Quantity",
                   description: "Add stock to the existing quantity.",
-                  content: <QuantityForm action="add" />,
+                  formId: "quantity-add-form",
+                  content: (
+                    <QuantityForm
+                      formId="quantity-add-form"
+                      action="ADD"
+                      productId={row.id}
+                      onSubmit={handleUpdateProductQuantity}
+                    />
+                  ),
                 });
               },
             },
@@ -114,11 +134,19 @@ export const ViewStock = () => {
               Icon: MinusCircle,
               variant: "outline",
               tooltip: "Remove Stock",
-              onClick: () => {
+              onClick: (row) => {
                 openAppDialog({
                   title: "Change of Stock Quantity",
+                  formId: "quantity-remove-form",
                   description: "Remove stock from the existing quantity.",
-                  content: <QuantityForm action="remove" />,
+                  content: (
+                    <QuantityForm
+                      formId="quantity-remove-form"
+                      action="REMOVE"
+                      productId={row.id}
+                      onSubmit={handleUpdateProductQuantity}
+                    />
+                  ),
                 });
               },
             },
@@ -136,7 +164,7 @@ export const ViewStock = () => {
       },
       customToolBar: () => <ExistingStockIndicator />,
     }),
-    [openAppDialog],
+    [handleUpdateProductQuantity, openAppDialog, products],
   );
-  return <ConfigurableTable config={config} isFetching={false} />;
+  return <ConfigurableTable config={config} isFetching={isLoading} />;
 };
