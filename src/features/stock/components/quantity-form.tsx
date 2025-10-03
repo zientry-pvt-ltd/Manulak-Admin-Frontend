@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 import { AppInput } from "@/components";
+import { stockSchema } from "@/features/stock/schema";
 import type { StockOperationType } from "@/features/stock/types/stock.type";
 import type { FormIds } from "@/types";
 
@@ -27,10 +29,16 @@ export const QuantityForm = ({
   onSubmit,
   productId,
 }: QuantityFormProps) => {
-  const [quantity, setQuantity] = useState<number>(0);
+  const form = useForm<{
+    quantity: number;
+  }>({
+    resolver: zodResolver(stockSchema),
+    defaultValues: { quantity: 0 },
+  });
 
-  const handleUpdateProductQuantity = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateProductQuantity = (data: { quantity: number }) => {
+    const { quantity } = data;
+
     onSubmit({
       action,
       productId,
@@ -39,15 +47,27 @@ export const QuantityForm = ({
   };
 
   return (
-    <form id={formId} action="submit" onSubmit={handleUpdateProductQuantity}>
+    <form
+      id={formId}
+      action="submit"
+      onSubmit={form.handleSubmit(handleUpdateProductQuantity)}
+    >
       <AppInput
-        label={`Quantity to be ${action === "ADD" ? "added" : "removed"}`}
         size="md"
-        type="number"
-        placeholder="Enter quantity"
         fullWidth
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        type="text"
+        inputMode="numeric"
+        placeholder="Enter quantity"
+        label={`Quantity to be ${action === "ADD" ? "added" : "removed"}`}
+        error={form.formState.errors.quantity?.message}
+        {...form.register("quantity", {
+          valueAsNumber: true,
+          validate: (v) => Number.isInteger(v) || "Please enter an integer",
+        })}
+        onInput={(e) => {
+          const target = e.target as HTMLInputElement;
+          target.value = target.value.replace(/\D/g, "");
+        }}
       />
     </form>
   );
