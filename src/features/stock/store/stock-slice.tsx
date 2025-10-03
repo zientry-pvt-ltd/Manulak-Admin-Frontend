@@ -23,19 +23,6 @@ const stockSlice = createSlice({
     addStock: (state, action) => {
       state.stocks.push(action.payload);
     },
-    updateStock: (state, action) => {
-      const index = state.stocks.findIndex(
-        (stock) => stock.id === action.payload.id,
-      );
-      if (index !== -1) {
-        state.stocks[index] = action.payload;
-      }
-    },
-    removeStock: (state, action) => {
-      state.stocks = state.stocks.filter(
-        (stock) => stock.id !== action.payload,
-      );
-    },
     setExistingSNW: (state, action) => {
       state.existingSNW = action.payload;
     },
