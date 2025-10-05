@@ -22,7 +22,7 @@ export const ViewStock = () => {
   const [updateStockQuantity] = useUpdateStockQuantityMutation();
 
   const handleUpdateProductQuantity = useCallback(
-    ({
+    async ({
       productId,
       action,
       quantity,
@@ -32,13 +32,13 @@ export const ViewStock = () => {
       quantity: number;
     }) => {
       try {
-        updateStockQuantity({
+        await updateStockQuantity({
           productId: productId,
           body: {
             operation: action,
             quantity: quantity,
           },
-        });
+        }).unwrap();
 
         toast.success("Stock quantity update successfully");
 
