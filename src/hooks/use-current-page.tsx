@@ -12,6 +12,7 @@ export const routeMetadata: { path: string; label: string }[] = [
   { path: paths.app.billCalculation.getHref(), label: "Bill Calculation" },
   { path: paths.app.settings.getHref(), label: "Settings" },
   { path: paths.app.discussions.getHref(), label: "Discussions" },
+  { path: paths.app.orders.getHref(), label: "Orders" },
 ];
 
 export const useCurrentPageName = (): string => {

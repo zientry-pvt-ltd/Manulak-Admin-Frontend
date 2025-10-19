@@ -54,5 +54,9 @@ export const paths = {
       path: "discussions/:discussionId",
       getHref: (id: string) => `/app/discussions/${id}`,
     },
+    orders: {
+      path: "orders",
+      getHref: () => "/app/orders",
+    },
   },
 } as const;

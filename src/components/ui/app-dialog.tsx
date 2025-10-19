@@ -33,7 +33,7 @@ export function AppDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="min-w-fit flex flex-col max-h-[90vh]">
-        <DialogHeader>
+        <DialogHeader className="gap-0">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>

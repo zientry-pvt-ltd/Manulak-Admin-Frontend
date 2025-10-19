@@ -83,6 +83,13 @@ export const createAppRouter = (isAuth: boolean) =>
             return { Component: mod.default };
           },
         },
+        {
+          path: paths.app.orders.path,
+          lazy: async () => {
+            const mod = await import("./routes/app/orders");
+            return { Component: mod.default };
+          },
+        },
       ],
     },
     {
