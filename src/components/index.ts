@@ -13,6 +13,7 @@ import AppInput from "@/components/ui/app-input";
 import AppLinearProgress from "@/components/ui/app-linear-progress";
 import AppMultiSelect from "@/components/ui/app-multi-select";
 import AppSelect from "@/components/ui/app-select";
+import AppSingleSelectAutocomplete from "@/components/ui/app-single-select-autocomplete";
 import AppSwitch from "@/components/ui/app-switch";
 import { AppTabs } from "@/components/ui/app-tabs";
 import AppText from "@/components/ui/app-text";
@@ -43,6 +44,7 @@ export {
   AppMetadata,
   AppMultiSelect,
   AppSelect,
+  AppSingleSelectAutocomplete,
   AppSwitch,
   AppTabs,
   AppText,

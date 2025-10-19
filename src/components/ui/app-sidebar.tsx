@@ -41,6 +41,11 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     { name: "Products", to: paths.app.products.getHref(), icon: Package },
+    {
+      name: "Orders",
+      to: paths.app.orders.getHref(),
+      icon: Package,
+    },
     { name: "Stock", to: paths.app.stocks.getHref(), icon: Warehouse },
 
     // {

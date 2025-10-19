@@ -17,6 +17,19 @@ export const ENDPOINTS = {
     STOCK_NET_WORTH: "/stock/stock-net-worth",
     UPDATE_QUANTITY: (id: string) => `/stock/update-stock-quantity/${id}`,
   },
+  ORDERS: {
+    ALL: "/order/get-all-orders",
+    CREATE_ORDER: "/order/create-order",
+    GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
+    UPDATE_ORDER: (id: string | number) => `/order/update-order/${id}`,
+    DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
+    GET_ORDER_METADATA: (id: string | number) =>
+      `/order/get-order-meta-data-by-id/${id}`,
+    GET_ORDER_ITEMS: (id: string | number) =>
+      `/order/get-all-order-items-by-id/${id}`,
+    GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | number) =>
+      `/order/get-all-payment-transactions-by-id/${id}`,
+  },
   DASHBOARD: {
     STATS: "/dashboard/stats",
   },
@@ -27,4 +40,5 @@ export const SLICES = {
   PRODUCT: "product",
   STOCK: "stock",
   DASHBOARD: "dashboard",
+  ORDER_FORM: "orderForm",
 } as const;
