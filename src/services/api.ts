@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 
 import { env } from "@/config/env";
-import { ENDPOINTS } from "@/constants";
+import { API_TAG_TYPES, ENDPOINTS } from "@/constants";
 import { logout, tokenReceived } from "@/features/auth/store/authSlice";
 import type { IRefreshAccessTokenResponse } from "@/features/auth/types/auth.types";
 import type { RootState } from "@/store";
@@ -74,7 +74,7 @@ export const api = createApi({
    * Tag types must be defined in the original API definition
    * for any tags that would be provided by injected endpoints
    */
-  tagTypes: [],
+  tagTypes: API_TAG_TYPES,
   /**
    * This api has endpoints injected in adjacent files,
    * which is why no endpoints are shown below.

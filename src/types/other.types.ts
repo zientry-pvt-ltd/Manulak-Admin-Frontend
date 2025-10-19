@@ -4,3 +4,4 @@ export type FormIds =
   | "quantity-remove-form"
   | "online-order-placement-form"
   | "plant-nursery-order-placement-form";
+  | "quantity-remove-form";
