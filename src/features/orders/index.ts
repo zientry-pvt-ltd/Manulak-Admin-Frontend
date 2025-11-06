@@ -2,7 +2,7 @@ import { PaymentHistoryCard } from "@/features/orders/components/payment-history
 
 import { OnlineOrderPlacementForm } from "./components/online-order-placement-form";
 import { OrderDetailsTab } from "./components/order-details-tab";
-import { OrderEditTabs } from "./components/order-edit-tabs";
+import { OrderEditViewTabs } from "./components/order-edit-view-tabs";
 import { OrderPlacementMenu } from "./components/order-placement-menu";
 import { OrderReceiptView } from "./components/order-receipt-view";
 import { OrderTabs } from "./components/order-tabs";
@@ -14,7 +14,7 @@ import { ViewOrdersTab } from "./components/view-orders-tab";
 export {
   OnlineOrderPlacementForm,
   OrderDetailsTab,
-  OrderEditTabs,
+  OrderEditViewTabs,
   OrderPlacementMenu,
   OrderReceiptView,
   OrderTabs,

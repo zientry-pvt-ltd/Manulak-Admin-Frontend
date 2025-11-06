@@ -57,6 +57,23 @@ export interface OrderMetaData {
   status: OrderStatus;
 }
 
+export interface OrderTransactionHistoryItem {
+  order_id: string;
+  paid_amount: number;
+  payment_date: string;
+  payment_id: string;
+  payment_slip_number: string;
+  payment_slip_url: string;
+}
+
+export interface OrderProductListItem {
+  order_details_id: string;
+  product_id: string;
+  required_quantity: number;
+  order_id: string;
+  product: IProductInfo;
+}
+
 // Order Item Interface
 export interface OrderItem {
   product_id: string;
@@ -83,14 +100,10 @@ export type ICreateOrderRequest = FullOrder;
 
 export type IOrderResponse = ApiResourceList<ModifiedOrder>;
 
-export type IOrderProductListResponse = {
-  data: {
-    order_details_id: string;
-    product_id: string;
-    required_quantity: number;
-    order_id: string;
-    product: IProductInfo;
-  }[];
-};
+export type IOrderProductListResponse = ApiResource<OrderProductListItem[]>;
+
+export type IOrderTransactionHistoryResponse = ApiResource<
+  OrderTransactionHistoryItem[]
+>;
 
 export type IOrderMetadataResponse = ApiResource<Order>;
