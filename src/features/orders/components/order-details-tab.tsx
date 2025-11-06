@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { AppInput, AppSelect, AppText } from "@/components";
+import { AppButton, AppInput, AppSelect, AppText } from "@/components";
 import {
   ORDER_STATUS_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
@@ -12,26 +12,21 @@ import {
 } from "@/features/orders/constants";
 import { orderMetaDataSchema } from "@/features/orders/schema";
 import { useGetOrderMetadataQuery } from "@/services/orders";
+import { selectOrder } from "@/store/selectors/orderSelector";
+import { useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 type OrderDetailsTabProps = {
-  orderId: string;
   mode: "view" | "edit";
-  // eslint-disable-next-line no-unused-vars
-  onModeChange?: (mode: "view" | "edit") => void;
 };
 
 type FormFieldValues = z.infer<typeof orderMetaDataSchema>;
 
-export const OrderDetailsTab = ({
-  orderId,
-  mode: initialMode,
-  onModeChange,
-}: OrderDetailsTabProps) => {
-  const [mode, setMode] = useState<"view" | "edit">(initialMode);
-  const { data, isLoading, error } = useGetOrderMetadataQuery(orderId);
-  //   const [updateOrderMetadata, { isLoading: isUpdating }] =
-  //     useUpdateOrderMetadataMutation();
+export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
+  const { selectedOrderId } = useAppSelector(selectOrder);
+  const { data, isLoading, error } = useGetOrderMetadataQuery(selectedOrderId, {
+    skip: !selectedOrderId,
+  });
 
   const form = useForm<FormFieldValues>({
     resolver: zodResolver(orderMetaDataSchema),
@@ -53,7 +48,6 @@ export const OrderDetailsTab = ({
     },
   });
 
-  // Populate form when data is loaded
   useEffect(() => {
     if (data) {
       form.reset({
@@ -76,24 +70,24 @@ export const OrderDetailsTab = ({
     }
   }, [data, form]);
 
-  const handleModeChange = (newMode: "view" | "edit") => {
-    setMode(newMode);
-    if (onModeChange) {
-      onModeChange(newMode);
-    }
-  };
-
   const handleSubmit = async (formData: FormFieldValues) => {
     try {
       console.log({ formData });
       toast.success("Order details updated successfully");
-      handleModeChange("view");
     } catch (error) {
       const message = normalizeError(error);
       toast.error(`Failed to update order: ${message.message}`);
       console.error("Order update failed:", error);
     }
   };
+
+  if (!selectedOrderId) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <AppText variant="body">No order selected</AppText>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -124,7 +118,7 @@ export const OrderDetailsTab = ({
   const isViewMode = mode === "view";
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-2 mb-10">
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         {/* Customer Information */}
         <div>
@@ -287,48 +281,16 @@ export const OrderDetailsTab = ({
             />
           </div>
         </div>
-
-        {/* Metadata */}
-        {data && (
-          <div>
-            <AppText variant="subheading" className="mb-4">
-              System Information
-            </AppText>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <AppText variant="caption" size="text-xs" className="mb-1">
-                  Order ID
-                </AppText>
-                <AppText variant="body" size="text-sm">
-                  {data.data.order_id}
-                </AppText>
-              </div>
-              <div>
-                <AppText variant="caption" size="text-xs" className="mb-1">
-                  Created At
-                </AppText>
-                <AppText variant="body" size="text-sm">
-                  {new Date(data.data.created_at).toLocaleString()}
-                </AppText>
-              </div>
-              <div>
-                <AppText variant="caption" size="text-xs" className="mb-1">
-                  Updated At
-                </AppText>
-                <AppText variant="body" size="text-sm">
-                  {new Date(data.data.updated_at).toLocaleString()}
-                </AppText>
-              </div>
-              <div>
-                <AppText variant="caption" size="text-xs" className="mb-1">
-                  Status
-                </AppText>
-                <AppText variant="body" size="text-sm">
-                  {data.data.is_deleted ? "Deleted" : "Active"}
-                </AppText>
-              </div>
-            </div>
-          </div>
+        {mode === "edit" && (
+          <AppButton
+            type="submit"
+            disabled={isViewMode}
+            variant="default"
+            className="absolute bottom-0 right-4 m-4"
+            size="sm"
+          >
+            Save Changes
+          </AppButton>
         )}
       </form>
     </div>
