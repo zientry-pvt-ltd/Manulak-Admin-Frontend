@@ -29,8 +29,8 @@ export const OrderEditViewTabs = ({ mode }: OrderEditTabsProps) => {
   return (
     <AppTabs
       items={getItems(mode)}
-      defaultValue="order-details"
-      className="min-w-[80vw] min-h-[80vh]"
+      defaultValue={getItems(mode)[0].value}
+      className="min-w-[80vw] min-h-[79vh]"
     />
   );
 };
