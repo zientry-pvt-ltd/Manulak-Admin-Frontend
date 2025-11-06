@@ -14,6 +14,7 @@ import storage from "redux-persist/lib/storage";
 
 import authReducer from "@/features/auth/store/authSlice";
 import orderFormReducer from "@/features/orders/store/order-form-slice";
+import ordersReducer from "@/features/orders/store/order-slice";
 import productsReducer from "@/features/products/store/product-slice";
 import appConfigReducer from "@/features/settings/store/appConfigSlice";
 import stockReducer from "@/features/stock/store/stock-slice";
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   appConfig: appConfigReducer,
   orderForm: orderFormReducer,
   products: productsReducer,
+  orders: ordersReducer,
   stock: stockReducer,
   [authApi.reducerPath]: authApi.reducer,
 });
