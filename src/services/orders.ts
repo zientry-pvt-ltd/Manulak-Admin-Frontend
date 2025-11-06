@@ -4,6 +4,7 @@ import type {
   IOrderMetadataResponse,
   IOrderProductListResponse,
   IOrderResponse,
+  IOrderTransactionHistoryResponse,
   Order,
 } from "@/features/orders/types/order.type";
 import { api } from "@/services/api";
@@ -32,15 +33,24 @@ export const orderApi = api.injectEndpoints({
       },
       providesTags: ["Order"],
     }),
-    getOrderMetadata: builder.query<IOrderMetadataResponse, string>({
+    getOrderMetadata: builder.query<IOrderMetadataResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_METADATA(id),
         method: "GET",
       }),
     }),
-    getOrderProducts: builder.query<IOrderProductListResponse, string>({
+    getOrderProducts: builder.query<IOrderProductListResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_ITEMS(id),
+        method: "GET",
+      }),
+    }),
+    getOrderPaymentHistory: builder.query<
+      IOrderTransactionHistoryResponse,
+      string | null
+    >({
+      query: (id) => ({
+        url: ENDPOINTS.ORDERS.GET_ORDER_PAYMENT_TRANSACTIONS(id),
         method: "GET",
       }),
     }),
@@ -85,4 +95,5 @@ export const {
   useGetOrdersQuery,
   useGetOrderMetadataQuery,
   useGetOrderProductsQuery,
+  useGetOrderPaymentHistoryQuery,
 } = orderApi;
