@@ -9,7 +9,7 @@ import { AppButton, AppInput, AppSelect, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
 import AppSingleSelectAutoComplete from "@/components/ui/app-single-select-autocomplete";
 import { PAYMENT_METHOD_OPTIONS } from "@/features/orders/constants";
-import { fullOrderSchema } from "@/features/orders/schema";
+import { onlineManualOrderSchema } from "@/features/orders/schema";
 import {
   addProductToList,
   clearSelectedProducts,
@@ -22,7 +22,7 @@ import { selectOrderForm } from "@/store/selectors/orderFormSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
-export type FormFieldValues = z.infer<typeof fullOrderSchema>;
+export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
@@ -31,12 +31,10 @@ export const OnlineOrderPlacementForm = () => {
   const [createOrder] = useCreateOrderMutation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [quantity, setQuantity] = useState<number | undefined>();
   const [selectedProductId, setSelectedProductId] = useState<
     string | undefined
   >();
-  const [quantity, setQuantity] = useState<number | undefined>();
-  const [confirmPhone, setConfirmPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
 
   const productItems = useMemo(
     () =>
@@ -49,31 +47,31 @@ export const OnlineOrderPlacementForm = () => {
 
   const validatePhoneMatch = () => {
     const primaryPhone = form.getValues("orderMetaData.primary_phone_number");
+    const confirmPhone = form.getValues("orderMetaData.confirm_phone_number");
 
     if (primaryPhone && !confirmPhone) {
-      setPhoneError("Please confirm the phone number");
+      form.setError("orderMetaData.confirm_phone_number", {
+        message: "Please confirm the phone number",
+        type: "setValueAs",
+      });
       return false;
     }
 
     if (!confirmPhone) {
-      setPhoneError("");
+      form.clearErrors("orderMetaData.confirm_phone_number");
       return true;
     }
 
     if (primaryPhone !== confirmPhone) {
-      setPhoneError("Phone numbers do not match");
+      form.setError("orderMetaData.confirm_phone_number", {
+        message: "Phone numbers do not match",
+        type: "setValueAs",
+      });
       return false;
     }
 
-    setPhoneError("");
+    form.clearErrors("orderMetaData.confirm_phone_number");
     return true;
-  };
-
-  const handleConfirmPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPhone(e.target.value);
-    if (phoneError) {
-      setPhoneError("");
-    }
   };
 
   const setOrderValue = () => {
@@ -84,7 +82,7 @@ export const OnlineOrderPlacementForm = () => {
   };
 
   const form = useForm<FormFieldValues>({
-    resolver: zodResolver(fullOrderSchema),
+    resolver: zodResolver(onlineManualOrderSchema),
     defaultValues: {
       orderItemsData: [],
       orderMetaData: {
@@ -97,6 +95,7 @@ export const OnlineOrderPlacementForm = () => {
         address_line_3: "",
         postal_code: 20000,
         primary_phone_number: "1111111111",
+        confirm_phone_number: "",
         status: "PENDING",
         payment_method: "COD",
       },
@@ -111,17 +110,31 @@ export const OnlineOrderPlacementForm = () => {
   const handleSubmit = async (data: FormFieldValues) => {
     console.log("Form Data:", data);
 
+    const { orderItemsData, orderMetaData, paymentData } = data;
+
+    // eslint-disable-next-line no-unused-vars
+    const { confirm_phone_number, ...orderMetaDataWithoutConfirm } =
+      orderMetaData;
+
+    const updatedOrderMetaData = {
+      ...orderMetaDataWithoutConfirm,
+      order_value: selectedProducts.subtotal,
+    };
+
     const updatedData = {
-      ...data,
-      orderMetaData: {
-        ...data.orderMetaData,
-        order_value: selectedProducts.subtotal,
-      },
+      orderMetaData: updatedOrderMetaData,
+      orderItemsData: orderItemsData,
+      paymentData: paymentData,
+      "payment-slip": fileInputRef.current?.files
+        ? fileInputRef.current.files[0]
+        : undefined,
     };
 
     if (!validatePhoneMatch()) {
       return;
     }
+
+    console.log({ Success: updatedData });
 
     try {
       await createOrder(updatedData).unwrap();
@@ -190,7 +203,7 @@ export const OnlineOrderPlacementForm = () => {
 
   return (
     <form
-      id="order-placement-form"
+      id="online-order-placement-form"
       onSubmit={form.handleSubmit(handleSubmit)}
       className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
     >
@@ -286,6 +299,17 @@ export const OnlineOrderPlacementForm = () => {
         </div>
       </div>
 
+      <AppButton
+        type="button"
+        onClick={() =>
+          console.log({
+            error: form.formState.errors,
+          })
+        }
+      >
+        Debug Values
+      </AppButton>
+
       <div className="pr-4">
         <AppText variant="subheading">Billing Information</AppText>
         <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
@@ -366,10 +390,10 @@ export const OnlineOrderPlacementForm = () => {
             fullWidth
             size="sm"
             type="tel"
-            value={confirmPhone}
-            onChange={handleConfirmPhoneChange}
-            onBlur={validatePhoneMatch}
-            error={phoneError}
+            error={
+              form.formState.errors.orderMetaData?.confirm_phone_number?.message
+            }
+            {...form.register("orderMetaData.confirm_phone_number")}
           />
         </div>
       </div>

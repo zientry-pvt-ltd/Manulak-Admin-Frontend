@@ -3,19 +3,25 @@ import { useCallback } from "react";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
-import { OrderPlacementMenu } from "@/features/orders";
-import { OrderEditTabs } from "@/features/orders/components/order-edit-tabs";
+import {
+  OrderEditViewTabs,
+  OrderPlacementMenu,
+  OrderReceiptView,
+} from "@/features/orders";
 import {
   ORDER_STATUS_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
   SELLING_METHODS_OPTIONS,
 } from "@/features/orders/constants";
+import { setSelectedOrderId } from "@/features/orders/store/order-slice";
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import { useGetOrdersQuery } from "@/services/orders";
 import { useGetProductsQuery } from "@/services/product";
+import { useAppDispatch } from "@/store/utils";
 
 export const ViewOrdersTab = () => {
+  const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog } = useAppDialog();
   useGetProductsQuery({
@@ -109,11 +115,12 @@ export const ViewOrdersTab = () => {
             tooltip: "View Order Details",
             variant: "outline",
             onClick: (row) => {
+              dispatch(setSelectedOrderId(row.order_id));
               openAppDialog({
                 title: "Order Details",
                 description: `Viewing details for order with ID: ${row.order_id}`,
                 disableFooter: true,
-                content: <div>Order Details Content Here</div>,
+                content: <OrderEditViewTabs mode="view" />,
               });
             },
           },
@@ -122,24 +129,24 @@ export const ViewOrdersTab = () => {
             tooltip: "Edit Order",
             variant: "outline",
             onClick: (row) => {
+              dispatch(setSelectedOrderId(row.order_id));
               openAppDialog({
                 title: "Edit Order",
                 description: `Editing order with ID: ${row.order_id}`,
                 disableFooter: true,
-                content: <OrderEditTabs />,
+                content: <OrderEditViewTabs mode="edit" />,
               });
             },
           },
           {
             Icon: Download,
-            tooltip: "Download Invoice",
+            tooltip: "Order Receipt",
             variant: "outline",
             onClick: (row) => {
               openAppDialog({
-                title: "Download Invoice",
-                description: `Downloading invoice for order with ID: ${row.order_id}`,
+                title: "Order Receipt",
                 disableFooter: true,
-                content: <div>Invoice Download Content Here</div>,
+                content: <OrderReceiptView orderId={row.order_id} />,
               });
             },
           },

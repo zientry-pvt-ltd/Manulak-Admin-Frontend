@@ -22,11 +22,11 @@ export const ENDPOINTS = {
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
     UPDATE_ORDER: (id: string | number) => `/order/update-order/${id}`,
     DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
-    GET_ORDER_METADATA: (id: string | number) =>
+    GET_ORDER_METADATA: (id: string | number | null) =>
       `/order/get-order-meta-data-by-id/${id}`,
-    GET_ORDER_ITEMS: (id: string | number) =>
+    GET_ORDER_ITEMS: (id: string | number | null) =>
       `/order/get-all-order-items-by-id/${id}`,
-    GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | number) =>
+    GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | null) =>
       `/order/get-all-payment-transactions-by-id/${id}`,
   },
   DASHBOARD: {
@@ -37,6 +37,7 @@ export const ENDPOINTS = {
 export const SLICES = {
   AUTH: "auth",
   PRODUCT: "product",
+  ORDER: "order",
   STOCK: "stock",
   DASHBOARD: "dashboard",
   ORDER_FORM: "orderForm",

@@ -10,6 +10,10 @@ import sonarjs from "eslint-plugin-sonarjs";
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
+  {
+    ignores: ["node_modules/**", "dist/**", "build/**"],
+  },
+
   js.configs.recommended,
 
   {

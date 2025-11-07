@@ -3,39 +3,34 @@ import { OrderDetailsTab } from "@/features/orders/components/order-details-tab"
 import { PaymentInfoTab } from "@/features/orders/components/payment-info-tab";
 import { ProductsInfoTab } from "@/features/orders/components/products-info-tab";
 
-const items: TabItem[] = [
+const getItems = (mode: "edit" | "view"): TabItem[] => [
   {
     label: "Order Details",
     value: "order-details",
-    content: (
-      <OrderDetailsTab
-        mode="edit"
-        orderId="b4046891-6b17-40cf-aa0d-75c8c5bbbd27"
-      />
-    ),
+    content: <OrderDetailsTab mode={mode} />,
   },
   {
     label: "Product Info",
     value: "product-info",
-    content: (
-      <ProductsInfoTab
-        mode="view"
-        orderId="b4046891-6b17-40cf-aa0d-75c8c5bbbd27"
-      />
-    ),
+    content: <ProductsInfoTab mode={mode} />,
   },
   {
     label: "Payment Info",
     value: "payment-info",
-    content: <PaymentInfoTab />,
+    content: <PaymentInfoTab mode={mode} />,
   },
 ];
-export const OrderEditTabs = () => {
+
+type OrderEditTabsProps = {
+  mode: "edit" | "view";
+};
+
+export const OrderEditViewTabs = ({ mode }: OrderEditTabsProps) => {
   return (
     <AppTabs
-      items={items}
-      defaultValue="order-details"
-      className="min-w-[80vw] min-h-[80vh]"
+      items={getItems(mode)}
+      defaultValue={getItems(mode)[0].value}
+      className="min-w-[80vw] min-h-[79vh]"
     />
   );
 };

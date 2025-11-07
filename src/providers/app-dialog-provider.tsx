@@ -7,7 +7,7 @@ import type { FormIds } from "@/types";
 type AppDialogContextType = {
   openAppDialog: (options: {
     title: string;
-    description: string;
+    description?: string;
     content: ReactNode;
     formId?: FormIds;
     disableFooter?: boolean;
@@ -23,7 +23,7 @@ export const AppDialogProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
   const [dialogOptions, setDialogOptions] = useState<{
     title: string;
-    description: string;
+    description?: string;
     content: ReactNode;
     formId?: FormIds;
     onSubmit?: (e: React.FormEvent) => void;

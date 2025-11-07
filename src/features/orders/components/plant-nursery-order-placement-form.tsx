@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type SubmitErrorHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
@@ -14,9 +14,7 @@ import {
   clearSelectedProducts,
   removeProductFromList,
 } from "@/features/orders/store/order-form-slice";
-import type { FullOrder } from "@/features/orders/types/order.type";
 import { cn } from "@/lib/utils";
-import { useCreateOrderMutation } from "@/services/orders";
 import { selectProducts } from "@/store/selectors";
 import { selectOrderForm } from "@/store/selectors/orderFormSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
@@ -28,14 +26,11 @@ export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const productList = useAppSelector(selectProducts).products;
   const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
-  const [createOrder] = useCreateOrderMutation();
 
   const [selectedProductId, setSelectedProductId] = useState<
     string | undefined
   >();
   const [quantity, setQuantity] = useState<number | undefined>();
-  const [confirmPhone, setConfirmPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
 
   const productItems = useMemo(
     () =>
@@ -48,31 +43,31 @@ export const PlantNurseryOrderPlacementForm = () => {
 
   const validatePhoneMatch = () => {
     const primaryPhone = form.getValues("orderMetaData.primary_phone_number");
+    const confirmPhone = form.getValues("orderMetaData.confirm_phone_number");
 
     if (primaryPhone && !confirmPhone) {
-      setPhoneError("Please confirm the phone number");
+      form.setError("orderMetaData.confirm_phone_number", {
+        message: "Please confirm the phone number",
+        type: "setValueAs",
+      });
       return false;
     }
 
     if (!confirmPhone) {
-      setPhoneError("");
+      form.clearErrors("orderMetaData.confirm_phone_number");
       return true;
     }
 
     if (primaryPhone !== confirmPhone) {
-      setPhoneError("Phone numbers do not match");
+      form.setError("orderMetaData.confirm_phone_number", {
+        message: "Phone numbers do not match",
+        type: "setValueAs",
+      });
       return false;
     }
 
-    setPhoneError("");
+    form.clearErrors("orderMetaData.confirm_phone_number");
     return true;
-  };
-
-  const handleConfirmPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPhone(e.target.value);
-    if (phoneError) {
-      setPhoneError("");
-    }
   };
 
   const setOrderValue = () => {
@@ -95,7 +90,9 @@ export const PlantNurseryOrderPlacementForm = () => {
         address_line_2: "",
         address_line_3: "",
         primary_phone_number: "12212321232",
+        confirm_phone_number: "",
         status: "PENDING",
+        payment_method: "FULL_PAYMENT",
       },
       paymentData: {
         payment_date: "2023-10-10T00:00:00.000Z",
@@ -106,22 +103,31 @@ export const PlantNurseryOrderPlacementForm = () => {
   const handleSubmit = async (data: FormFieldValues) => {
     console.log("Form Data:", data);
 
+    const { orderItemsData, orderMetaData, paymentData } = data;
+
+    // eslint-disable-next-line no-unused-vars
+    const { confirm_phone_number, ...orderMetaDataWithoutConfirm } =
+      orderMetaData;
+
+    const updatedOrderMetaData = {
+      ...orderMetaDataWithoutConfirm,
+      order_value: selectedProducts.subtotal,
+    };
+
     const updatedData = {
-      ...data,
-      orderMetaData: {
-        ...data.orderMetaData,
-        order_value: selectedProducts.subtotal,
-      },
+      orderMetaData: updatedOrderMetaData,
+      orderItemsData: orderItemsData,
+      paymentData: paymentData,
     };
 
     if (!validatePhoneMatch()) return;
 
+    console.log({ Success: updatedData });
+
     try {
-      await createOrder(updatedData as FullOrder).unwrap();
       toast.success("Plant Nursery order created successfully");
       form.reset();
       dispatch(clearSelectedProducts());
-      setConfirmPhone("");
     } catch (error) {
       const message = normalizeError(error);
       toast.error(`Failed to create order: ${message.message}`);
@@ -178,10 +184,13 @@ export const PlantNurseryOrderPlacementForm = () => {
     setSelectedProductId(value);
   };
 
+  const onError: SubmitErrorHandler<FormFieldValues> = (errors) =>
+    console.log(errors);
+
   return (
     <form
       id="plant-nursery-order-placement-form"
-      onSubmit={form.handleSubmit(handleSubmit)}
+      onSubmit={form.handleSubmit(handleSubmit, onError)}
       className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
     >
       {/* Order Information Section */}
@@ -277,6 +286,13 @@ export const PlantNurseryOrderPlacementForm = () => {
         </div>
       </div>
 
+      <AppButton
+        type="button"
+        onClick={() => console.log(form.formState.errors, form.getValues())}
+      >
+        Debug Values
+      </AppButton>
+
       {/* Billing Information Section */}
       <div className="pr-4">
         <AppText variant="subheading">Billing Information</AppText>
@@ -347,10 +363,10 @@ export const PlantNurseryOrderPlacementForm = () => {
             fullWidth
             size="sm"
             type="tel"
-            value={confirmPhone}
-            onChange={handleConfirmPhoneChange}
-            onBlur={validatePhoneMatch}
-            error={phoneError}
+            error={
+              form.formState.errors.orderMetaData?.confirm_phone_number?.message
+            }
+            {...form.register("orderMetaData.confirm_phone_number")}
           />
         </div>
       </div>

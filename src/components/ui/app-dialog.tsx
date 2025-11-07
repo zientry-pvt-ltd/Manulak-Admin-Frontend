@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
+import { DialogDescription } from "@radix-ui/react-dialog";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -35,7 +36,7 @@ export function AppDialog({
       <DialogContent className="min-w-fit flex flex-col max-h-[90vh]">
         <DialogHeader className="gap-0">
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         {children}
         {!disableFooter && (
