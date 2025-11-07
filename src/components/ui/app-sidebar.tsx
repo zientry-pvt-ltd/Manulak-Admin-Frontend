@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  ListCheck,
   type LucideProps,
   Package,
   Warehouse,
@@ -44,25 +45,9 @@ export function AppSidebar() {
     {
       name: "Orders",
       to: paths.app.orders.getHref(),
-      icon: Package,
+      icon: ListCheck,
     },
     { name: "Stock", to: paths.app.stocks.getHref(), icon: Warehouse },
-
-    // {
-    //   name: "Sales",
-    //   to: paths.app.sales.getHref(),
-    //   icon: BadgeDollarSign,
-    // },
-    // {
-    //   name: "Bill Calculation",
-    //   to: paths.app.billCalculation.getHref(),
-    //   icon: Calculator,
-    // },
-    // {
-    //   name: "Settings",
-    //   to: paths.app.settings.getHref(),
-    //   icon: Settings,
-    // },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
