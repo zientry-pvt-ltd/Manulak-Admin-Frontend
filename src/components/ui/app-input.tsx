@@ -15,6 +15,7 @@ export interface AppInputProps
   endIcon?: React.ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
+  onEndIconClick?: () => void;
   size?: "sm" | "md" | "lg";
   variant?: "outline" | "fill";
   className?: string;
@@ -40,6 +41,7 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
       error,
       startIcon,
       endIcon,
+      onEndIconClick,
       size = "md",
       variant = "outline",
       className,
@@ -98,11 +100,17 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           />
 
           {endIcon && (
-            <AppIcon
-              Icon={endIcon}
-              size={size}
-              className="ml-2 text-muted-foreground"
-            />
+            <button
+              type="button"
+              onClick={onEndIconClick}
+              className={cn(
+                "ml-2 text-muted-foreground",
+                onEndIconClick &&
+                  "cursor-pointer hover:text-foreground transition-colors",
+              )}
+            >
+              <AppIcon Icon={endIcon} size={size} />
+            </button>
           )}
         </div>
 
