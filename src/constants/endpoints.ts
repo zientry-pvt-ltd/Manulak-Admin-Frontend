@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   PRODUCT: {
     ALL: "/product/get-all-products",
     CREATE: "/product/create-product",
+    SEARCH: "/product/get-product-by-productName",
     SINGLE: (id: string | number) => `/product/get-product-by-id/${id}`,
     UPDATE: (id: string | number) => `/product/update-product/${id}`,
     DELETE: (id: string | number) => `/product/delete-product/${id}`,
