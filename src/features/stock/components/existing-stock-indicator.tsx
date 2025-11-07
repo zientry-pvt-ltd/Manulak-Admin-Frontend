@@ -1,6 +1,4 @@
-import { RefreshCw } from "lucide-react";
-
-import { AppButton, AppText } from "@/components";
+import { AppText } from "@/components";
 import { useGetStockNetWorthQuery } from "@/services/stock";
 
 export const ExistingStockIndicator = () => {
@@ -32,15 +30,14 @@ export const ExistingStockIndicator = () => {
         )}
       </div>
 
-      <AppButton
-        Icon={RefreshCw}
-        size="sm"
-        onClick={() => refetch()}
-        aria-label="Refresh stock net worth"
-        variant={"link"}
+      <AppText
+        onClick={refetch}
+        variant="caption"
+        className="underline cursor-pointer"
+        color={isError ? "destructive" : "muted"}
       >
-        Refresh
-      </AppButton>
+        {isFetching ? "Refreshing..." : "Refresh"}
+      </AppText>
     </div>
   );
 };
