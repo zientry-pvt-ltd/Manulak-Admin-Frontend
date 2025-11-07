@@ -13,7 +13,7 @@ export const ENDPOINTS = {
     ADD_IMAGE: (id: string | number) => `/product/upload-product-image/${id}`,
   },
   STOCK: {
-    STOCK_NET_WORTH: "/stock/stock-net-worth",
+    STOCK_NET_WORTH: "/stock/get-stock-networth",
     UPDATE_QUANTITY: (id: string) => `/stock/${id}`,
   },
   ORDERS: {
@@ -28,6 +28,7 @@ export const ENDPOINTS = {
       `/order/get-all-order-items-by-id/${id}`,
     GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | null) =>
       `/order/get-all-payment-transactions-by-id/${id}`,
+    UPLOAD_PAYMENT_SLIP: (id: string) => `/order/upload-payment-slip/${id}`,
   },
   DASHBOARD: {
     STATS: "/dashboard/stats",

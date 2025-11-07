@@ -1,30 +1,48 @@
-import { AppText } from "@/components";
+import { RefreshCw } from "lucide-react";
+
+import { AppButton, AppText } from "@/components";
 import { useGetStockNetWorthQuery } from "@/services/stock";
 
 export const ExistingStockIndicator = () => {
-  const { data: stockNetWorth, isError, refetch } = useGetStockNetWorthQuery();
+  const { data, isError, isLoading, refetch, isFetching } =
+    useGetStockNetWorthQuery();
+
+  const stockNetWorth = data?.data;
 
   return (
-    <div>
-      {isError || !stockNetWorth ? (
-        <div className="flex items-center space-x-1">
-          <AppText variant="caption" className="text-destructive">
-            Error loading stock net worth.{" "}
+    <div className="flex items-center space-x-3">
+      {/* Status Display */}
+      <div className="flex items-center space-x-2 w-[240px]">
+        {isLoading || isFetching ? (
+          <>
+            <AppText variant="caption" color="muted">
+              Loading existing stock net worth...
+            </AppText>
+          </>
+        ) : isError ? (
+          <AppText variant="caption" color="destructive">
+            Error loading stock net worth.
           </AppText>
+        ) : !stockNetWorth ? (
+          <AppText variant="caption" color="muted">
+            No stock data available.
+          </AppText>
+        ) : (
+          <AppText variant="caption">
+            Existing stock net worth Rs. {stockNetWorth.toFixed(2)}
+          </AppText>
+        )}
+      </div>
 
-          <AppText
-            onClick={refetch}
-            variant="caption"
-            className="text-destructive underline cursor-pointer"
-          >
-            Retry
-          </AppText>
-        </div>
-      ) : (
-        <AppText variant="caption">
-          Existing stock net worth Rs. {stockNetWorth.net_worth.toFixed(2)}
-        </AppText>
-      )}
+      <AppButton
+        Icon={RefreshCw}
+        size="sm"
+        onClick={() => refetch()}
+        aria-label="Refresh stock net worth"
+        variant={"link"}
+      >
+        Refresh
+      </AppButton>
     </div>
   );
 };
