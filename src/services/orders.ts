@@ -1,24 +1,25 @@
 import { ENDPOINTS } from "@/constants";
 import type {
   ICreateOrderRequest,
+  IOrderCreateResponse,
   IOrderMetadataResponse,
   IOrderProductListResponse,
-  IOrderResponse,
+  IOrdersResponse,
   IOrderTransactionHistoryResponse,
-  Order,
+  IOrderTransactionSlipUploadResponse,
 } from "@/features/orders/types/order.type";
 import { api } from "@/services/api";
 import type { ResourceListQueryParams } from "@/types";
 
 export const orderApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getOrders: builder.query<IOrderResponse, ResourceListQueryParams>({
+    getOrders: builder.query<IOrdersResponse, ResourceListQueryParams>({
       query: (body) => ({
         url: ENDPOINTS.ORDERS.ALL,
         method: "POST",
         body,
       }),
-      transformResponse: (response: IOrderResponse) => {
+      transformResponse: (response: IOrdersResponse) => {
         return {
           ...response,
           data: {
@@ -54,37 +55,29 @@ export const orderApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
-    createOrder: builder.mutation<Order, ICreateOrderRequest>({
+    createOrder: builder.mutation<IOrderCreateResponse, ICreateOrderRequest>({
       query: (body) => {
-        const formData = new FormData();
-
-        if (body.orderMetaData) {
-          formData.append("orderMetaData", JSON.stringify(body.orderMetaData));
-        }
-
-        if (body.orderItemsData) {
-          formData.append(
-            "orderItemsData",
-            JSON.stringify(body.orderItemsData),
-          );
-        }
-
-        if (body.paymentData) {
-          formData.append("paymentData", JSON.stringify(body.paymentData));
-        }
-
-        const paymentSlip = (body as any)["payment-slip"];
-        if (paymentSlip) {
-          formData.append("payment-slip", paymentSlip);
-        }
-
         return {
           url: ENDPOINTS.ORDERS.CREATE_ORDER,
           method: "POST",
-          body: formData,
+          body,
         };
       },
       invalidatesTags: ["Order"],
+    }),
+    uploadPaymentSlip: builder.mutation<
+      IOrderTransactionSlipUploadResponse,
+      { id: string; file: File }
+    >({
+      query: ({ id, file }) => {
+        const formData = new FormData();
+        formData.append("payment-slip", file);
+        return {
+          url: ENDPOINTS.ORDERS.UPLOAD_PAYMENT_SLIP(id),
+          method: "PUT",
+          body: formData,
+        };
+      },
     }),
   }),
   overrideExisting: false,
@@ -96,4 +89,5 @@ export const {
   useGetOrderMetadataQuery,
   useGetOrderProductsQuery,
   useGetOrderPaymentHistoryQuery,
+  useUploadPaymentSlipMutation,
 } = orderApi;
