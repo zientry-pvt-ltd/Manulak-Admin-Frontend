@@ -14,11 +14,9 @@ export const ExistingStockIndicator = () => {
       {/* Status Display */}
       <div className="flex items-center space-x-2 w-[240px]">
         {isLoading || isFetching ? (
-          <>
-            <AppText variant="caption" color="muted">
-              Loading existing stock net worth...
-            </AppText>
-          </>
+          <AppText variant="caption" color="muted">
+            Loading existing stock net worth...
+          </AppText>
         ) : isError ? (
           <AppText variant="caption" color="destructive">
             Error loading stock net worth.
