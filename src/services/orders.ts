@@ -103,6 +103,25 @@ export const orderApi = api.injectEndpoints({
       invalidatesTags: ["OrderProducts"],
     }),
 
+    updateOrderItemRecord: builder.mutation<
+      any,
+      {
+        itemId: string;
+        data: {
+          modified_required_qunatity: number;
+        };
+      }
+    >({
+      query: ({ itemId, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.UPDATE_ORDER_ITEM_RECORD(itemId),
+          method: "PUT",
+          body: data,
+        };
+      },
+      invalidatesTags: ["OrderProducts"],
+    }),
+
     updateOrderMetaData: builder.mutation<
       any,
       { id: string; data: IUpdateOrderMetaDataRequest }
@@ -145,4 +164,5 @@ export const {
   useUpdateOrderMetaDataMutation,
   useCreatePaymentRecordMutation,
   useCreateOrderItemMutation,
+  useUpdateOrderItemRecordMutation,
 } = orderApi;
