@@ -103,6 +103,10 @@ export type ICreatePaymentRecordRequest = Partial<PaymentData>;
 
 export type IUpdateOrderMetaDataRequest = Partial<OrderMetaData>;
 
+export type IOrderItemCreateRequest = OrderItem;
+
+export type ICreateOrderItemResponse = ApiResource<OrderProductListItem>;
+
 export type ICreatePaymentRecordResponse =
   ApiResource<UpdatePaymentRecordResponse>;
 

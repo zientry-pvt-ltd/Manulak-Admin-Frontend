@@ -1,9 +1,11 @@
 import { ENDPOINTS } from "@/constants";
 import type {
+  ICreateOrderItemResponse,
   ICreateOrderRequest,
   ICreatePaymentRecordRequest,
   ICreatePaymentRecordResponse,
   IOrderCreateResponse,
+  IOrderItemCreateRequest,
   IOrderMetadataResponse,
   IOrderProductListResponse,
   IOrdersResponse,
@@ -50,6 +52,7 @@ export const orderApi = api.injectEndpoints({
         url: ENDPOINTS.ORDERS.GET_ORDER_ITEMS(id),
         method: "GET",
       }),
+      providesTags: ["OrderProducts"],
     }),
 
     getOrderPaymentHistory: builder.query<
@@ -86,6 +89,18 @@ export const orderApi = api.injectEndpoints({
         };
       },
       invalidatesTags: ["PaymentHistory"],
+    }),
+
+    createOrderItem: builder.mutation<
+      ICreateOrderItemResponse,
+      { orderId: string; data: IOrderItemCreateRequest }
+    >({
+      query: ({ orderId, data }) => ({
+        url: ENDPOINTS.ORDERS.CREATE_ORDER_ITEM_RECORD(orderId),
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["OrderProducts"],
     }),
 
     updateOrderMetaData: builder.mutation<
@@ -129,4 +144,5 @@ export const {
   useUploadPaymentSlipMutation,
   useUpdateOrderMetaDataMutation,
   useCreatePaymentRecordMutation,
+  useCreateOrderItemMutation,
 } = orderApi;
