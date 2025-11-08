@@ -3,6 +3,7 @@ import type {
   IProductCreateRequest,
   IProductListResponse,
   IProductResponse,
+  IProductSearchListResponse,
   IUpdateProductRequest,
 } from "@/features/products/types/product.type";
 import { api } from "@/services/api";
@@ -42,7 +43,7 @@ export const productApi = api.injectEndpoints({
       }),
     }),
 
-    searchProducts: builder.mutation<IProductListResponse, string>({
+    searchProducts: builder.mutation<IProductSearchListResponse, string>({
       query: (productName) => ({
         url: ENDPOINTS.PRODUCT.SEARCH,
         method: "POST",
