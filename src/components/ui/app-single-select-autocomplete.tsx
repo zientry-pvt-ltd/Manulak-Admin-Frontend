@@ -15,6 +15,14 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+export interface SingleSelectOption {
+  value: string;
+  label: string;
+  subLabel?: string;
+  isDisabled?: boolean;
+  meta?: Record<string, unknown>;
+}
+
 export interface AppSingleSelectAutoCompleteProps {
   label?: string;
   error?: string;
@@ -26,17 +34,17 @@ export interface AppSingleSelectAutoCompleteProps {
   variant?: "outline" | "fill";
   fullWidth?: boolean;
   className?: string;
-  items?: { label: string; value: string }[];
+  items?: SingleSelectOption[];
   value?: string;
   defaultValue?: string;
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: string, item: SingleSelectOption | undefined) => void;
   disabled?: boolean;
   startIcon?: React.ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
   // Server-side props
   isServerSide?: boolean;
-  onSearch?: (query: string) => Promise<{ label: string; value: string }[]>;
+  onSearch?: (query: string) => Promise<SingleSelectOption[]>;
   debounceMs?: number;
   minSearchLength?: number;
 }
@@ -84,12 +92,12 @@ const AppSingleSelectAutoComplete: React.FC<
   minSearchLength = 0,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [serverItems, setServerItems] = React.useState<
-    { label: string; value: string }[]
-  >([]);
+  const [serverItems, setServerItems] = React.useState<SingleSelectOption[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = React.useState(false);
-  const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
@@ -147,8 +155,23 @@ const AppSingleSelectAutoComplete: React.FC<
     );
   }, [items, searchQuery, isServerSide, serverItems]);
 
+  // Get the selected item to display only the label
+  const selectedItem = React.useMemo(() => {
+    const allItems = isServerSide ? serverItems : items;
+    return allItems.find((item) => item.value === value);
+  }, [value, serverItems, items, isServerSide]);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleValueChange = (selectedValue: string) => {
+    const allItems = isServerSide ? serverItems : items;
+    const selectedItem = allItems.find((item) => item.value === selectedValue);
+
+    if (onValueChange) {
+      onValueChange(selectedValue, selectedItem);
+    }
   };
 
   const displayContent = React.useMemo(() => {
@@ -188,8 +211,19 @@ const AppSingleSelectAutoComplete: React.FC<
     }
 
     return filteredItems.map((item) => (
-      <SelectItem key={item.value} value={item.value}>
-        <AppText size={fontSizeMap[size]}>{item.label}</AppText>
+      <SelectItem
+        key={item.value}
+        value={item.value}
+        disabled={item?.isDisabled || false}
+      >
+        <div className="flex flex-col">
+          <span>{item.label}</span>
+          {item.subLabel && (
+            <AppText size="text-xs" color="muted">
+              {item.subLabel}
+            </AppText>
+          )}
+        </div>
       </SelectItem>
     ));
   }, [
@@ -219,11 +253,12 @@ const AppSingleSelectAutoComplete: React.FC<
       <Select
         value={value}
         defaultValue={defaultValue}
-        onValueChange={onValueChange}
+        onValueChange={handleValueChange}
         disabled={disabled}
         onOpenChange={setIsOpen}
       >
         <SelectTrigger
+          aria-invalid={!!error}
           size={size === "sm" ? "sm" : "default"}
           className={cn(
             "flex items-center",
@@ -235,7 +270,6 @@ const AppSingleSelectAutoComplete: React.FC<
             fullWidth && "w-full",
             className,
           )}
-          aria-invalid={!!error}
         >
           <div className="flex items-center gap-2">
             {startIcon && (
@@ -251,7 +285,11 @@ const AppSingleSelectAutoComplete: React.FC<
                   {placeholder}
                 </AppText>
               }
-            />
+            >
+              {selectedItem && (
+                <AppText size={fontSizeMap[size]}>{selectedItem.label}</AppText>
+              )}
+            </SelectValue>
           </div>
         </SelectTrigger>
 
