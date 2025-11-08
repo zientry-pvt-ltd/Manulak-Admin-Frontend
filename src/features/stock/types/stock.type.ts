@@ -18,6 +18,8 @@ export type IStockListResponse = ApiResourceList<IStockInfo>;
 
 export type IStockResponse = ApiResource<IStockInfo>;
 
+export type IStockNetWorthResponse = ApiResource<number>;
+
 export type ICreateStockRequest = {
   product_id: string;
   quantity: number;

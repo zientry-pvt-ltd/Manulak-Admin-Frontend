@@ -1,5 +1,5 @@
 import type { FormFieldValues } from "@/features/products/components/product-form";
-import type { ApiResource, ApiResourceList } from "@/types";
+import type { ApiResource } from "@/types";
 
 export type ProductCategoryType =
   | "flower-seeds"
@@ -29,6 +29,6 @@ export type IUpdateProductRequest = Partial<IProductInfo> & { id: string };
 
 export type IProductCreateRequest = FormFieldValues;
 
-export type IProductListResponse = ApiResourceList<IProductInfo>;
+export type IProductListResponse = ApiResource<IProductInfo[]>;
 
 export type IProductResponse = ApiResource<IProductInfo>;

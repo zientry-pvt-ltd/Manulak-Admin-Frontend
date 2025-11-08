@@ -23,16 +23,18 @@ export const orderMetaDataSchema = z.object({
   confirm_phone_number: z.string().min(10, "Confirm phone number is required"),
   status: OrderStatusSchema,
   payment_method: PaymentMethodSchema,
-  email: z.string().email("Invalid email address").optional(),
-  alternate_phone_number_1: z
-    .string()
-    .min(10, "Alternate phone number 1 is required")
-    .optional(),
-  alternate_phone_number_2: z
-    .string()
-    .min(10, "Alternate phone number 2 is required")
-    .optional(),
   company_name: z.string().optional(),
+  email: z.union([z.string().email(), z.literal(""), z.undefined()]),
+  alternate_phone_number_1: z.union([
+    z.string().min(10),
+    z.literal(""),
+    z.undefined(),
+  ]),
+  alternate_phone_number_2: z.union([
+    z.string().min(10),
+    z.literal(""),
+    z.undefined(),
+  ]),
 });
 
 export const orderItemsDataSchema = z
@@ -60,7 +62,6 @@ export const onlineManualOrderSchema = z.object({
 
 export const plantNurseryOrderSchema = z.object({
   orderMetaData: orderMetaDataSchema.omit({
-    postal_code: true,
     email: true,
     alternate_phone_number_1: true,
     alternate_phone_number_2: true,
@@ -72,3 +73,5 @@ export const plantNurseryOrderSchema = z.object({
     paid_amount: true,
   }),
 });
+
+export const paymentRecordSchema = paymentDataSchema;

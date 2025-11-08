@@ -1,17 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
 import { AppButton, AppInput, AppSelect, AppText } from "@/components";
-import {
-  ORDER_STATUS_OPTIONS,
-  PAYMENT_METHOD_OPTIONS,
-  SELLING_METHODS_OPTIONS,
-} from "@/features/orders/constants";
+import { ORDER_STATUS_OPTIONS } from "@/features/orders/constants";
 import { orderMetaDataSchema } from "@/features/orders/schema";
-import { useGetOrderMetadataQuery } from "@/services/orders";
+import {
+  useGetOrderMetadataQuery,
+  useUpdateOrderMetaDataMutation,
+} from "@/services/orders";
 import { selectOrder } from "@/store/selectors/orderSelector";
 import { useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
@@ -27,52 +25,74 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
   const { data, isLoading, error } = useGetOrderMetadataQuery(selectedOrderId, {
     skip: !selectedOrderId,
   });
+  const [updateOrderMetaData, { isLoading: isUpdating }] =
+    useUpdateOrderMetaDataMutation();
 
   const form = useForm<FormFieldValues>({
     resolver: zodResolver(orderMetaDataSchema),
-    defaultValues: {
-      first_name: "",
-      last_name: "",
-      selling_method: "ONLINE",
-      order_value: 0,
-      address_line_1: "",
-      address_line_2: "",
-      address_line_3: "",
-      postal_code: 0,
-      primary_phone_number: "",
-      email: "",
-      alternate_phone_number_1: "",
-      alternate_phone_number_2: "",
-      status: "PENDING",
-      payment_method: "COD",
-    },
+    values: data
+      ? {
+          first_name: data.data.first_name,
+          last_name: data.data.last_name,
+          selling_method: data.data.selling_method,
+          order_value: data.data.order_value,
+          address_line_1: data.data.address_line_1,
+          address_line_2: data.data.address_line_2,
+          address_line_3: data.data.address_line_3,
+          postal_code: data.data.postal_code,
+          primary_phone_number: data.data.primary_phone_number,
+          confirm_phone_number: data.data.primary_phone_number,
+          company_name: data.data.company_name || "",
+          email: data.data.email || "",
+          alternate_phone_number_1: data.data.alternate_phone_number_1 || "",
+          alternate_phone_number_2: data.data.alternate_phone_number_2 || "",
+          status: data.data.status,
+          payment_method: data.data.payment_method,
+        }
+      : undefined,
   });
 
-  useEffect(() => {
-    if (data) {
-      form.reset({
-        first_name: data.data.first_name,
-        last_name: data.data.last_name,
-        selling_method: data.data.selling_method,
-        order_value: data.data.order_value,
-        address_line_1: data.data.address_line_1,
-        address_line_2: data.data.address_line_2,
-        address_line_3: data.data.address_line_3,
-        postal_code: data.data.postal_code,
-        primary_phone_number: data.data.primary_phone_number,
-        company_name: data.data.company_name || "",
-        email: data.data.email || "",
-        alternate_phone_number_1: data.data.alternate_phone_number_1 || "",
-        alternate_phone_number_2: data.data.alternate_phone_number_2 || "",
-        status: data.data.status,
-        payment_method: data.data.payment_method,
-      });
-    }
-  }, [data, form]);
+  const validatePhoneMatch = () => {
+    const primaryPhone = form.getValues("primary_phone_number");
+    const confirmPhone = form.getValues("confirm_phone_number");
 
-  const handleSubmit = async (formData: FormFieldValues) => {
+    if (primaryPhone && !confirmPhone) {
+      form.setError("confirm_phone_number", {
+        message: "Please confirm the phone number",
+        type: "setValueAs",
+      });
+      return false;
+    }
+
+    if (!confirmPhone) {
+      form.clearErrors("confirm_phone_number");
+      return true;
+    }
+
+    if (primaryPhone !== confirmPhone) {
+      form.setError("confirm_phone_number", {
+        message: "Phone numbers do not match",
+        type: "setValueAs",
+      });
+      return false;
+    }
+
+    form.clearErrors("confirm_phone_number");
+    return true;
+  };
+
+  const handleSubmit = async (data: FormFieldValues) => {
+    if (!selectedOrderId) return;
+    // eslint-disable-next-line no-unused-vars
+    const { confirm_phone_number, ...orderMetaDataWithoutConfirmP } = data;
+
+    if (!validatePhoneMatch()) return;
+
     try {
-      console.log({ formData });
+      await updateOrderMetaData({
+        id: selectedOrderId,
+        data: orderMetaDataWithoutConfirmP,
+      }).unwrap();
       toast.success("Order details updated successfully");
     } catch (error) {
       const message = normalizeError(error);
@@ -153,6 +173,25 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
               disabled={isViewMode}
               error={form.formState.errors.primary_phone_number?.message}
               {...form.register("primary_phone_number")}
+            />
+            <AppInput
+              label="Confirm Phone"
+              placeholder="Enter confirm phone"
+              type="tel"
+              fullWidth
+              size="sm"
+              disabled={isViewMode}
+              error={form.formState.errors.confirm_phone_number?.message}
+              {...form.register("confirm_phone_number")}
+            />
+            <AppInput
+              label="Company Name"
+              placeholder="Enter company name"
+              fullWidth
+              size="sm"
+              disabled={isViewMode}
+              error={form.formState.errors?.company_name?.message}
+              {...form.register("company_name")}
             />
             <AppInput
               label="Email"
@@ -240,16 +279,6 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
           </AppText>
           <div className="grid grid-cols-2 gap-4">
             <AppSelect
-              label="Selling Method"
-              placeholder="Select selling method"
-              items={SELLING_METHODS_OPTIONS}
-              fullWidth
-              size="sm"
-              disabled={isViewMode}
-              error={form.formState.errors.selling_method?.message}
-              {...form.register("selling_method")}
-            />
-            <AppSelect
               label="Order Status"
               placeholder="Select order status"
               items={ORDER_STATUS_OPTIONS}
@@ -257,27 +286,8 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
               size="sm"
               disabled={isViewMode}
               error={form.formState.errors.status?.message}
+              value={form.getValues("status")}
               {...form.register("status")}
-            />
-            <AppInput
-              label="Order Value"
-              placeholder="Enter order value"
-              type="number"
-              fullWidth
-              size="sm"
-              disabled={isViewMode}
-              error={form.formState.errors.order_value?.message}
-              {...form.register("order_value", { valueAsNumber: true })}
-            />
-            <AppSelect
-              label="Payment Method"
-              placeholder="Select payment method"
-              items={PAYMENT_METHOD_OPTIONS}
-              fullWidth
-              size="sm"
-              disabled={isViewMode}
-              error={form.formState.errors.payment_method?.message}
-              {...form.register("payment_method")}
             />
           </div>
         </div>
@@ -288,6 +298,7 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
             variant="default"
             className="absolute bottom-0 right-4 m-4"
             size="sm"
+            isLoading={isUpdating}
           >
             Save Changes
           </AppButton>

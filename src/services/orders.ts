@@ -1,24 +1,30 @@
 import { ENDPOINTS } from "@/constants";
 import type {
+  ICreateOrderItemResponse,
   ICreateOrderRequest,
+  ICreatePaymentRecordRequest,
+  ICreatePaymentRecordResponse,
+  IOrderCreateResponse,
+  IOrderItemCreateRequest,
   IOrderMetadataResponse,
   IOrderProductListResponse,
-  IOrderResponse,
+  IOrdersResponse,
   IOrderTransactionHistoryResponse,
-  Order,
+  IOrderTransactionSlipUploadResponse,
+  IUpdateOrderMetaDataRequest,
 } from "@/features/orders/types/order.type";
 import { api } from "@/services/api";
 import type { ResourceListQueryParams } from "@/types";
 
 export const orderApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getOrders: builder.query<IOrderResponse, ResourceListQueryParams>({
+    getOrders: builder.query<IOrdersResponse, ResourceListQueryParams>({
       query: (body) => ({
         url: ENDPOINTS.ORDERS.ALL,
         method: "POST",
         body,
       }),
-      transformResponse: (response: IOrderResponse) => {
+      transformResponse: (response: IOrdersResponse) => {
         return {
           ...response,
           data: {
@@ -33,18 +39,22 @@ export const orderApi = api.injectEndpoints({
       },
       providesTags: ["Order"],
     }),
+
     getOrderMetadata: builder.query<IOrderMetadataResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_METADATA(id),
         method: "GET",
       }),
     }),
+
     getOrderProducts: builder.query<IOrderProductListResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_ITEMS(id),
         method: "GET",
       }),
+      providesTags: ["OrderProducts"],
     }),
+
     getOrderPaymentHistory: builder.query<
       IOrderTransactionHistoryResponse,
       string | null
@@ -53,38 +63,92 @@ export const orderApi = api.injectEndpoints({
         url: ENDPOINTS.ORDERS.GET_ORDER_PAYMENT_TRANSACTIONS(id),
         method: "GET",
       }),
+      providesTags: ["PaymentHistory"],
     }),
-    createOrder: builder.mutation<Order, ICreateOrderRequest>({
+
+    createOrder: builder.mutation<IOrderCreateResponse, ICreateOrderRequest>({
       query: (body) => {
-        const formData = new FormData();
-
-        if (body.orderMetaData) {
-          formData.append("orderMetaData", JSON.stringify(body.orderMetaData));
-        }
-
-        if (body.orderItemsData) {
-          formData.append(
-            "orderItemsData",
-            JSON.stringify(body.orderItemsData),
-          );
-        }
-
-        if (body.paymentData) {
-          formData.append("paymentData", JSON.stringify(body.paymentData));
-        }
-
-        const paymentSlip = (body as any)["payment-slip"];
-        if (paymentSlip) {
-          formData.append("payment-slip", paymentSlip);
-        }
-
         return {
           url: ENDPOINTS.ORDERS.CREATE_ORDER,
           method: "POST",
-          body: formData,
+          body,
         };
       },
       invalidatesTags: ["Order"],
+    }),
+
+    createPaymentRecord: builder.mutation<
+      ICreatePaymentRecordResponse,
+      { id: string; data: ICreatePaymentRecordRequest }
+    >({
+      query: ({ id, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.CREATE_PAYMENT_RECORD(id),
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["PaymentHistory"],
+    }),
+
+    createOrderItem: builder.mutation<
+      ICreateOrderItemResponse,
+      { orderId: string; data: IOrderItemCreateRequest }
+    >({
+      query: ({ orderId, data }) => ({
+        url: ENDPOINTS.ORDERS.CREATE_ORDER_ITEM_RECORD(orderId),
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["OrderProducts"],
+    }),
+
+    updateOrderItemRecord: builder.mutation<
+      any,
+      {
+        itemId: string;
+        data: {
+          modified_required_qunatity: number;
+        };
+      }
+    >({
+      query: ({ itemId, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.UPDATE_ORDER_ITEM_RECORD(itemId),
+          method: "PUT",
+          body: data,
+        };
+      },
+      invalidatesTags: ["OrderProducts"],
+    }),
+
+    updateOrderMetaData: builder.mutation<
+      any,
+      { id: string; data: IUpdateOrderMetaDataRequest }
+    >({
+      query: ({ id, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.UPDATE_ORDER_META_DATA(id),
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
+
+    uploadPaymentSlip: builder.mutation<
+      IOrderTransactionSlipUploadResponse,
+      { id: string; file: File }
+    >({
+      query: ({ id, file }) => {
+        const formData = new FormData();
+        formData.append("payment-slip", file);
+        return {
+          url: ENDPOINTS.ORDERS.UPLOAD_PAYMENT_SLIP(id),
+          method: "PUT",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["PaymentHistory"],
     }),
   }),
   overrideExisting: false,
@@ -96,4 +160,9 @@ export const {
   useGetOrderMetadataQuery,
   useGetOrderProductsQuery,
   useGetOrderPaymentHistoryQuery,
+  useUploadPaymentSlipMutation,
+  useUpdateOrderMetaDataMutation,
+  useCreatePaymentRecordMutation,
+  useCreateOrderItemMutation,
+  useUpdateOrderItemRecordMutation,
 } = orderApi;

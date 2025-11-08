@@ -7,20 +7,27 @@ export const ENDPOINTS = {
   PRODUCT: {
     ALL: "/product/get-all-products",
     CREATE: "/product/create-product",
+    SEARCH: "/product/get-product-by-productName",
     SINGLE: (id: string | number) => `/product/get-product-by-id/${id}`,
     UPDATE: (id: string | number) => `/product/update-product/${id}`,
     DELETE: (id: string | number) => `/product/delete-product/${id}`,
     ADD_IMAGE: (id: string | number) => `/product/upload-product-image/${id}`,
   },
   STOCK: {
-    STOCK_NET_WORTH: "/stock/stock-net-worth",
+    STOCK_NET_WORTH: "/stock/get-stock-networth",
     UPDATE_QUANTITY: (id: string) => `/stock/${id}`,
   },
   ORDERS: {
     ALL: "/order/get-all-orders",
     CREATE_ORDER: "/order/create-order",
+    CREATE_PAYMENT_RECORD: (id: string) => `/order/create-payment-record/${id}`,
+    CREATE_ORDER_ITEM_RECORD: (id: string) =>
+      `/order/create-order-item-record/${id}`,
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
-    UPDATE_ORDER: (id: string | number) => `/order/update-order/${id}`,
+    UPDATE_ORDER_META_DATA: (id: string | number) =>
+      `/order/update-order-meta-data-by-id/${id}`,
+    UPDATE_ORDER_ITEM_RECORD: (itemId: string) =>
+      `/order/update-order-item-record/${itemId}`,
     DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
     GET_ORDER_METADATA: (id: string | number | null) =>
       `/order/get-order-meta-data-by-id/${id}`,
@@ -28,6 +35,7 @@ export const ENDPOINTS = {
       `/order/get-all-order-items-by-id/${id}`,
     GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | null) =>
       `/order/get-all-payment-transactions-by-id/${id}`,
+    UPLOAD_PAYMENT_SLIP: (id: string) => `/order/upload-payment-slip/${id}`,
   },
   DASHBOARD: {
     STATS: "/dashboard/stats",
@@ -43,4 +51,10 @@ export const SLICES = {
   ORDER_FORM: "orderForm",
 } as const;
 
-export const API_TAG_TYPES = ["Product", "StockNetWorth"];
+export const API_TAG_TYPES = [
+  "Product",
+  "StockNetWorth",
+  "Order",
+  "PaymentHistory",
+  "OrderProducts",
+] as const;

@@ -1,5 +1,6 @@
 import { PaymentHistoryCard } from "@/features/orders/components/payment-history-card";
 
+import { FileUploadWithPreview } from "./components/file-upload-with-preview";
 import { OnlineOrderPlacementForm } from "./components/online-order-placement-form";
 import { OrderDetailsTab } from "./components/order-details-tab";
 import { OrderEditViewTabs } from "./components/order-edit-view-tabs";
@@ -12,6 +13,7 @@ import { ProductsInfoTab } from "./components/products-info-tab";
 import { ViewOrdersTab } from "./components/view-orders-tab";
 
 export {
+  FileUploadWithPreview,
   OnlineOrderPlacementForm,
   OrderDetailsTab,
   OrderEditViewTabs,

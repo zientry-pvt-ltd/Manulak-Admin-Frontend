@@ -7,6 +7,9 @@ import { authApi } from "@/services";
 const initialState: IAppState = {
   appName: "App Name",
   appDescription: "App Description",
+  companyAddress: "",
+  companyEmail: "",
+  companyPhone: "",
   appLogo: "",
   faviconUrl: "",
   appTheme: "light",
@@ -31,6 +34,9 @@ const appSlice = createSlice({
           state.appDescription = company.company_description;
           state.appLogo = company.company_images?.[0] ?? state.appLogo;
           state.faviconUrl = company.company_images?.[1] ?? state.faviconUrl;
+          state.companyAddress = company.address || state.companyAddress;
+          state.companyEmail = company.email || state.companyEmail;
+          state.companyPhone = company.phone || state.companyPhone;
         }
       },
     );
@@ -42,6 +48,9 @@ const appSlice = createSlice({
         if (company) {
           state.appName = company.company_name;
           state.appDescription = company.company_description;
+          state.companyAddress = company.address || state.companyAddress;
+          state.companyEmail = company.email || state.companyEmail;
+          state.companyPhone = company.phone || state.companyPhone;
           state.appLogo = company.company_images?.[0] ?? state.appLogo;
           state.faviconUrl = company.company_images?.[1] ?? state.faviconUrl;
         }

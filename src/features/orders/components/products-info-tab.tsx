@@ -1,12 +1,18 @@
-import { Package, Plus, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Package } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { AppButton, AppIconButton, AppInput, AppText } from "@/components";
-import AppChip from "@/components/ui/app-chip";
-import AppSingleSelectAutoComplete from "@/components/ui/app-single-select-autocomplete";
-import { useGetOrderProductsQuery } from "@/services/orders";
-import { selectProducts } from "@/store/selectors";
+import { AppButton, AppInput, AppText } from "@/components";
+import AppSingleSelectAutoComplete, {
+  type SingleSelectOption,
+} from "@/components/ui/app-single-select-autocomplete";
+import { ProductCard } from "@/features/orders/components/product-info-card";
+import type { IProductInfo } from "@/features/products/types/product.type";
+import {
+  useCreateOrderItemMutation,
+  useGetOrderProductsQuery,
+} from "@/services/orders";
+import { useSearchProductsMutation } from "@/services/product";
 import { selectOrder } from "@/store/selectors/orderSelector";
 import { useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
@@ -15,69 +21,47 @@ type ProductsInfoTabProps = {
   mode: "view" | "edit";
 };
 
-const isAdding = false; // Placeholder for add loading state
-const isRemoving = false; // Placeholder for remove loading state
-const isUpdating = false; // Placeholder for update loading state
-
 export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   const { selectedOrderId } = useAppSelector(selectOrder);
+
+  const [searchProducts] = useSearchProductsMutation();
+  const [addOrderProduct, { isLoading: isAdding }] =
+    useCreateOrderItemMutation();
 
   const { data, isLoading, error } = useGetOrderProductsQuery(selectedOrderId, {
     skip: !selectedOrderId,
   });
-  const productList = useAppSelector(selectProducts).products;
 
-  const [selectedProductId, setSelectedProductId] = useState<
-    string | undefined
-  >();
-  const [quantity, setQuantity] = useState<number | undefined>();
-  const [editingQuantities, setEditingQuantities] = useState<
-    Record<string, number>
-  >({});
+  const [quantity, setQuantity] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  );
+  const [availableQuantity, setAvailableQuantity] = useState<number | null>(
+    null,
+  );
 
-  const handleSave = async () => {
-    try {
-      // Update quantities for modified products
-      const promises = Object.entries(editingQuantities).map(
-        ([orderDetailsId, newQuantity]) => {
-          const originalItem = data?.data.find(
-            (item) => item.order_details_id === orderDetailsId,
-          );
-          if (originalItem && originalItem.required_quantity !== newQuantity) {
-            // return updateQuantity({
-            //   orderId,
-            //   orderDetailsId,
-            //   quantity: newQuantity,
-            // }).unwrap();
-          }
-          return Promise.resolve();
-        },
-      );
-
-      await Promise.all(promises);
-      toast.success("Order products updated successfully");
-    } catch (error) {
-      const message = normalizeError(error);
-      toast.error(`Failed to update products: ${message.message}`);
-      console.error("Product update failed:", error);
-    }
-  };
+  const isViewMode = useMemo(() => mode === "view", [mode]);
+  const orderProducts = useMemo(() => data?.data || [], [data]);
 
   const handleAddProduct = async () => {
-    if (!selectedProductId || !quantity || quantity <= 0) {
+    if (!selectedProductId || !selectedOrderId || !quantity || quantity <= 0) {
       toast.error("Please select a product and enter a valid quantity");
       return;
     }
 
+    const data = {
+      product_id: selectedProductId,
+      required_quantity: quantity,
+    };
+
     try {
-      //   await addOrderProduct({
-      //     orderId,
-      //     productId: selectedProductId,
-      //     quantity,
-      //   }).unwrap();
+      await addOrderProduct({
+        orderId: selectedOrderId,
+        data,
+      }).unwrap();
       toast.success("Product added to order");
-      setSelectedProductId(undefined);
-      setQuantity(undefined);
+      setSelectedProductId(null);
+      setQuantity(null);
     } catch (error) {
       const message = normalizeError(error);
       toast.error(`Failed to add product: ${message.message}`);
@@ -85,66 +69,60 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     }
   };
 
-  const handleRemoveProduct = async (
-    orderDetailsId: string,
-    productName: string,
-  ) => {
-    if (
-      !confirm(
-        `Are you sure you want to remove "${productName}" from this order?`,
-      )
-    ) {
-      return;
-    }
-
-    try {
-      //   await removeOrderProduct({ orderId, orderDetailsId }).unwrap();
-      toast.success("Product removed from order");
-      // Remove from editing quantities
-      const newQuantities = { ...editingQuantities };
-      delete newQuantities[orderDetailsId];
-      setEditingQuantities(newQuantities);
-    } catch (error) {
-      const message = normalizeError(error);
-      toast.error(`Failed to remove product: ${message.message}`);
-      console.error("Remove product failed:", error);
-    }
-  };
-
-  const handleQuantityChange = (
-    orderDetailsId: string,
-    newQuantity: number,
-  ) => {
-    setEditingQuantities((prev) => ({
-      ...prev,
-      [orderDetailsId]: newQuantity,
-    }));
-  };
-
-  const productItems = useMemo(
-    () =>
-      productList
-        .filter((product) => {
-          // Filter out products already in the order
-          return !data?.data?.some((item) => item.product_id === product.id);
-        })
-        .map((product) => ({
-          label: product.product_name,
-          value: product.id,
-        })),
-    [productList, data],
+  const handleProductSelect = useCallback(
+    (value: string, item: SingleSelectOption | undefined) => {
+      if (item && item.meta && item.meta.product) {
+        const availableQuantity = item.meta.product as IProductInfo;
+        setAvailableQuantity(availableQuantity.quantity);
+      }
+      setSelectedProductId(value);
+    },
+    [],
   );
 
-  const calculateTotal = () => {
-    if (!data?.data) return 0;
-    return data.data.reduce((total, item) => {
-      const qty =
-        mode === "edit"
-          ? (editingQuantities[item.order_details_id] ?? item.required_quantity)
-          : item.required_quantity;
-      return total + item.product.selling_price * qty;
-    }, 0);
-  };
+  const handleNewItemQuantityChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!availableQuantity) return;
+      const value = Number(e.target.value);
+      if (value > availableQuantity) {
+        toast.error("Quantity exceeds available stock");
+        setQuantity(availableQuantity);
+      } else {
+        setQuantity(value);
+      }
+    },
+    [availableQuantity],
+  );
+
+  const isAlreadyAdded = useCallback(
+    (productId: string) => {
+      return orderProducts.some((item) => item.product_id === productId);
+    },
+    [orderProducts],
+  );
+
+  const handleSearch = useCallback(
+    async (query: string) => {
+      try {
+        const { data } = await searchProducts(query).unwrap();
+
+        return data.map((product) => ({
+          label: product.product_name,
+          value: product.id,
+          isDisabled: product.quantity <= 0 || isAlreadyAdded(product.id),
+          subLabel: `In Stock: ${product.quantity}`,
+          meta: {
+            product,
+          },
+        }));
+      } catch (error) {
+        const message = normalizeError(error);
+        console.error("Search error:", message);
+        return [];
+      }
+    },
+    [isAlreadyAdded, searchProducts],
+  );
 
   if (isLoading) {
     return (
@@ -164,51 +142,51 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     );
   }
 
-  const isViewMode = mode === "view";
-  const orderProducts = data?.data || [];
-  const totalAmount = calculateTotal();
-
   return (
     <div className="space-y-3 p-2">
-      {/* Header */}
       <AppText variant="caption" size="text-sm">
-        Total: Rs. {totalAmount.toFixed(2)} ({orderProducts.length} items)
+        Total: Rs. 1000 ({orderProducts.length} items)
       </AppText>
 
-      {/* Add Product Section (Edit Mode Only) */}
       {!isViewMode && (
         <div className="border rounded-lg p-4 bg-muted/30">
           <div className="flex gap-3 items-end">
             <AppSingleSelectAutoComplete
-              label="Select Product"
-              placeholder="Choose a product to add"
-              searchPlaceholder="Search products..."
               size="sm"
-              items={productItems}
-              value={selectedProductId}
-              defaultValue={selectedProductId}
-              onValueChange={setSelectedProductId}
               fullWidth
+              isServerSide
+              debounceMs={300}
+              minSearchLength={2}
+              label="Select Product"
+              onSearch={handleSearch}
+              placeholder="Choose a product"
+              value={selectedProductId ?? ""}
+              onValueChange={handleProductSelect}
+              searchPlaceholder="Search products..."
             />
             <AppInput
               label="Quantity"
-              placeholder="Qty"
+              placeholder="Enter quantity"
               type="number"
               value={quantity ?? ""}
-              onChange={(e) => setQuantity(Number(e.target.value))}
+              disabled={!selectedProductId}
+              onChange={handleNewItemQuantityChange}
               fullWidth
               size="sm"
+              onInput={(e) => {
+                const input = e.currentTarget;
+                input.value = input.value.replace(/[a-zA-Z-]/g, "");
+              }}
             />
-            <AppIconButton
-              onClick={handleAddProduct}
-              variant="outline"
+
+            <AppButton
               size="sm"
-              className="flex items-center gap-2"
-              Icon={Plus}
-              disabled={
-                !selectedProductId || !quantity || quantity <= 0 || isAdding
-              }
-            />
+              onClick={handleAddProduct}
+              disabled={isAdding}
+              className="min-w-24"
+            >
+              {`${isAdding ? "Adding..." : "Add Product"}`}
+            </AppButton>
           </div>
         </div>
       )}
@@ -224,145 +202,20 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
           </div>
         ) : (
           orderProducts.map((item) => {
-            const displayQuantity =
-              mode === "edit"
-                ? (editingQuantities[item.order_details_id] ??
-                  item.required_quantity)
-                : item.required_quantity;
-            const itemTotal = item.product.selling_price * displayQuantity;
-
+            const itemTotal = 10;
+            const displayQuantity = item.required_quantity;
             return (
-              <div
+              <ProductCard
                 key={item.order_details_id}
-                className={"border rounded-lg p-4 transition-all"}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Product Image */}
-                  <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
-                    {item.product.product_image_urls?.[0] ? (
-                      <img
-                        src={item.product.product_image_urls[0]}
-                        alt={item.product.product_name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Package className="h-8 w-8 text-muted-foreground" />
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div className="flex justify-center items-center gap-x-2">
-                        <AppText variant="subheading" size="text-base">
-                          {item.product.product_name}
-                        </AppText>
-                        <AppChip
-                          label={item.product.product_category}
-                          size="sm"
-                          variant="secondary"
-                        />
-                      </div>
-                      <div className="text-right">
-                        <AppText
-                          variant="body"
-                          size="text-sm"
-                          className="font-semibold"
-                        >
-                          Rs. {item.product.selling_price.toFixed(2)}
-                        </AppText>
-                        <AppText variant="caption" size="text-xs">
-                          per unit
-                        </AppText>
-                      </div>
-                    </div>
-
-                    {item.product.product_desc && (
-                      <AppText
-                        variant="caption"
-                        size="text-xs"
-                        className="mb-2 line-clamp-2"
-                      >
-                        {item.product.product_desc}
-                      </AppText>
-                    )}
-
-                    {/* Quantity and Actions */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {isViewMode ? (
-                          <>
-                            <AppText variant="caption" size="text-sm">
-                              Quantity:
-                            </AppText>
-                            <div className="bg-primary/10 px-3 py-1 rounded-md">
-                              <AppText
-                                variant="body"
-                                size="text-sm"
-                                className="font-medium"
-                              >
-                                {displayQuantity}
-                              </AppText>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <AppText variant="caption" size="text-sm">
-                              Quantity:
-                            </AppText>
-                            <AppInput
-                              type="number"
-                              value={displayQuantity}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  item.order_details_id,
-                                  Number(e.target.value),
-                                )
-                              }
-                              size="sm"
-                              min={1}
-                            />
-                          </>
-                        )}
-                        <AppText variant="body" size="text-sm">
-                          Subtotal: Rs. {itemTotal.toFixed(2)}
-                        </AppText>
-                      </div>
-
-                      {!isViewMode && (
-                        <AppIconButton
-                          onClick={() =>
-                            handleRemoveProduct(
-                              item.order_details_id,
-                              item.product.product_name,
-                            )
-                          }
-                          size="sm"
-                          disabled={isRemoving}
-                          Icon={Trash2}
-                          variant={"destructive"}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                item={item}
+                itemTotal={itemTotal}
+                displayQuantity={displayQuantity}
+                isViewMode={isViewMode}
+              />
             );
           })
         )}
       </div>
-
-      {!isViewMode && (
-        <AppButton
-          onClick={handleSave}
-          variant="default"
-          size="sm"
-          disabled={isUpdating || isAdding || isRemoving}
-          className="absolute bottom-0 right-4 m-4"
-        >
-          {isUpdating ? "Saving..." : "Save Changes"}
-        </AppButton>
-      )}
     </div>
   );
 };

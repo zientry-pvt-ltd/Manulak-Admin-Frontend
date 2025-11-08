@@ -34,12 +34,22 @@ export const productApi = api.injectEndpoints({
       }),
       providesTags: ["Product"],
     }),
+
     getProductById: builder.query<IProductResponse, string>({
       query: (id) => ({
         url: ENDPOINTS.PRODUCT.SINGLE(id),
         method: "GET",
       }),
     }),
+
+    searchProducts: builder.mutation<IProductListResponse, string>({
+      query: (productName) => ({
+        url: ENDPOINTS.PRODUCT.SEARCH,
+        method: "POST",
+        body: { productName },
+      }),
+    }),
+
     createProduct: builder.mutation<
       ResponseDTO<{ id: string }>,
       IProductCreateRequest
@@ -50,6 +60,7 @@ export const productApi = api.injectEndpoints({
         body: body,
       }),
     }),
+
     addProductImage: builder.mutation<
       IProductResponse,
       { id: string; file: File }
@@ -64,6 +75,7 @@ export const productApi = api.injectEndpoints({
         };
       },
     }),
+
     updateProduct: builder.mutation<IProductResponse, IUpdateProductRequest>({
       query: ({ id, ...body }) => ({
         url: ENDPOINTS.PRODUCT.UPDATE(id),
@@ -71,6 +83,7 @@ export const productApi = api.injectEndpoints({
         body,
       }),
     }),
+
     deleteProduct: builder.mutation<void, string>({
       query: (id) => ({
         url: ENDPOINTS.PRODUCT.DELETE(id),
@@ -85,6 +98,7 @@ export const {
   useGetProductsQuery,
   useLazyGetProductsQuery,
   useGetProductByIdQuery,
+  useSearchProductsMutation,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

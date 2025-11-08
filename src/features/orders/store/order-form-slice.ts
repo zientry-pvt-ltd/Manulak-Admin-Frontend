@@ -35,14 +35,16 @@ const orderFormSlice = createSlice({
         productId: string;
         productName: string;
         productPrice: number;
-        quantity?: number;
+        quantity: number;
+        availableQuantity: number;
       }>,
     ) => {
       const {
         productId,
         productName,
         productPrice,
-        quantity = 1,
+        quantity,
+        availableQuantity,
       } = action.payload;
 
       const existing = state.selectedProducts.list.find(
@@ -50,17 +52,20 @@ const orderFormSlice = createSlice({
       );
 
       if (existing) {
-        existing.quantity += quantity;
+        const newQuantity = existing.quantity + quantity;
+        existing.quantity =
+          newQuantity > availableQuantity ? availableQuantity : newQuantity;
       } else {
+        const addQuantity =
+          quantity > availableQuantity ? availableQuantity : quantity;
         state.selectedProducts.list.push({
           productId,
           productName,
           productPrice,
-          quantity,
+          quantity: addQuantity,
         });
       }
 
-      // Recalculate subtotal
       state.selectedProducts.subtotal = state.selectedProducts.list.reduce(
         (sum, p) => sum + p.productPrice * p.quantity,
         0,
@@ -69,14 +74,19 @@ const orderFormSlice = createSlice({
 
     updateProductQuantity: (
       state,
-      action: PayloadAction<{ productId: string; quantity: number }>,
+      action: PayloadAction<{
+        productId: string;
+        quantity: number;
+        availableQuantity: number;
+      }>,
     ) => {
-      const { productId, quantity } = action.payload;
+      const { productId, quantity, availableQuantity } = action.payload;
       const existing = state.selectedProducts.list.find(
         (p) => p.productId === productId,
       );
       if (existing) {
-        existing.quantity = quantity;
+        existing.quantity =
+          quantity > availableQuantity ? availableQuantity : quantity;
       }
 
       state.selectedProducts.subtotal = state.selectedProducts.list.reduce(

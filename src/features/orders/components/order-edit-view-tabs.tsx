@@ -1,7 +1,11 @@
+import { useEffect } from "react";
+
 import { AppTabs, type TabItem } from "@/components/ui/app-tabs";
 import { OrderDetailsTab } from "@/features/orders/components/order-details-tab";
 import { PaymentInfoTab } from "@/features/orders/components/payment-info-tab";
 import { ProductsInfoTab } from "@/features/orders/components/products-info-tab";
+import { setSelectedOrderId } from "@/features/orders/store/order-slice";
+import { useAppDispatch } from "@/store/utils";
 
 const getItems = (mode: "edit" | "view"): TabItem[] => [
   {
@@ -26,6 +30,14 @@ type OrderEditTabsProps = {
 };
 
 export const OrderEditViewTabs = ({ mode }: OrderEditTabsProps) => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(setSelectedOrderId(null));
+    };
+  }, [dispatch]);
+
   return (
     <AppTabs
       items={getItems(mode)}

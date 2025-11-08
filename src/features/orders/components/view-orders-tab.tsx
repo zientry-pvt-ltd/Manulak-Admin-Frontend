@@ -17,20 +17,12 @@ import { setSelectedOrderId } from "@/features/orders/store/order-slice";
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import { useGetOrdersQuery } from "@/services/orders";
-import { useGetProductsQuery } from "@/services/product";
 import { useAppDispatch } from "@/store/utils";
 
 export const ViewOrdersTab = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog } = useAppDialog();
-  useGetProductsQuery({
-    filters: {
-      query: "",
-    },
-    paging: { pageNo: 1, pageSize: 1000 },
-    sorting: { columnName: "created_at", sortOrder: -1 },
-  });
 
   const { data, isLoading } = useGetOrdersQuery({
     paging: { pageNo: 1, pageSize: 100 },
@@ -143,6 +135,7 @@ export const ViewOrdersTab = () => {
             tooltip: "Order Receipt",
             variant: "outline",
             onClick: (row) => {
+              dispatch(setSelectedOrderId(row.order_id));
               openAppDialog({
                 title: "Order Receipt",
                 disableFooter: true,
