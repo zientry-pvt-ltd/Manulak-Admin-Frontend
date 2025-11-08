@@ -15,7 +15,7 @@ interface FileUploadWithPreviewProps {
   className?: string;
 }
 
-export const FileUploadWithPreview: React.FC<FileUploadWithPreviewProps> = ({
+export const FileUploadWithPreview = ({
   file,
   onFileChange,
   accept = ".pdf,.jpg,.jpeg,.png",
@@ -23,7 +23,7 @@ export const FileUploadWithPreview: React.FC<FileUploadWithPreviewProps> = ({
   maxSizeMB,
   supportedFormatsText = "Supported formats: PDF, JPG, PNG",
   className = "",
-}) => {
+}: FileUploadWithPreviewProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
