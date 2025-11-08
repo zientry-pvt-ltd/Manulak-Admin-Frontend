@@ -135,6 +135,7 @@ export const ViewOrdersTab = () => {
             tooltip: "Order Receipt",
             variant: "outline",
             onClick: (row) => {
+              dispatch(setSelectedOrderId(row.order_id));
               openAppDialog({
                 title: "Order Receipt",
                 disableFooter: true,

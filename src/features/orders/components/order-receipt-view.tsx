@@ -1,24 +1,52 @@
+import { type ReactNode, useEffect, useMemo } from "react";
+
 import { AppButton, AppText } from "@/components";
+import { setSelectedOrderId } from "@/features/orders/store/order-slice";
+import { useGetOrderMetadataQuery } from "@/services/orders";
 import { selectApp } from "@/store/selectors";
-import { useAppSelector } from "@/store/utils";
+import { selectOrder } from "@/store/selectors/orderSelector";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 
 type OrderReceiptViewProps = {
   orderId: string;
 };
 
+// Reusable wrapper component
+const ReceiptContainer = ({ children }: { children: ReactNode }) => {
+  return <div className="w-md mx-auto h-[450px] flex flex-col">{children}</div>;
+};
+
 export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
   const { appLogo, appName } = useAppSelector(selectApp);
+  const dispatch = useAppDispatch();
+
+  const { selectedOrderId } = useAppSelector(selectOrder);
+
+  const shouldSkip = useMemo(
+    () => ({ skip: !selectedOrderId }),
+    [selectedOrderId],
+  );
+  const { data, isLoading, isError } = useGetOrderMetadataQuery(
+    selectedOrderId,
+    shouldSkip,
+  );
 
   const receiptData = {
     companyName: appName || "My Company",
     companyAddress: "123 Main Street, Colombo 00700, Sri Lanka",
     companyPhone: "+94 11 234 5678",
-    receiverName: "John Doe",
-    receiverAddress: "456 Galle Road, Dehiwala",
-    postalCode: "10350",
-    contactNo: "+94 77 123 4567",
-    packageDescription: "Electronic items - Laptop and accessories",
-    packageValue: "125,000.00",
+
+    receiverName: data?.data
+      ? `${data.data.first_name} ${data.data.last_name}`
+      : "N/A",
+    receiverAddress:
+      `${data?.data?.address_line_1 || ""} ${
+        data?.data?.address_line_2 || ""
+      } ${data?.data?.address_line_3 || ""}`.trim() || "N/A",
+    postalCode: data?.data?.postal_code || "N/A",
+    contactNo: data?.data?.primary_phone_number || "N/A",
+    packageDescription: "N/A",
+    packageValue: data?.data?.order_value || "N/A",
     orderId: orderId,
     date: new Date().toLocaleDateString("en-GB"),
   };
@@ -132,8 +160,46 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
     printWindow.document.close();
   };
 
+  useEffect(() => {
+    return () => {
+      dispatch(setSelectedOrderId(null));
+    };
+  }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <ReceiptContainer>
+        <div className="flex justify-center items-center h-full">
+          <AppText variant="body">Generating receipt...</AppText>
+        </div>
+      </ReceiptContainer>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ReceiptContainer>
+        <div className="flex justify-center items-center h-full">
+          <AppText variant="body" color="destructive">
+            Failed to generate receipt
+          </AppText>
+        </div>
+      </ReceiptContainer>
+    );
+  }
+
+  if (!data) {
+    return (
+      <ReceiptContainer>
+        <div className="flex justify-center items-center h-full">
+          <AppText variant="body">No order data available</AppText>
+        </div>
+      </ReceiptContainer>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <ReceiptContainer>
       <div className="border p-6 rounded-md space-y-3">
         {/* Header with Logo and Company Address */}
         <div className="flex justify-between items-start border-b">
@@ -164,19 +230,19 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
             Receiver Details
           </AppText>
           <div className="space-y-0.5 text-sm">
-            <div className="flex">
+            <div className="flex gap-x-1">
               <AppText variant="caption">Name:</AppText>
               <AppText variant="caption">{receiptData.receiverName}</AppText>
             </div>
-            <div className="flex">
+            <div className="flex gap-x-1">
               <AppText variant="caption">Address:</AppText>
               <AppText variant="caption">{receiptData.receiverAddress}</AppText>
             </div>
-            <div className="flex">
+            <div className="flex gap-x-1">
               <AppText variant="caption">Postal Code:</AppText>
               <AppText variant="caption">{receiptData.postalCode}</AppText>
             </div>
-            <div className="flex">
+            <div className="flex gap-x-1">
               <AppText variant="caption">Contact No.:</AppText>
               <AppText variant="caption">{receiptData.contactNo}</AppText>
             </div>
@@ -189,13 +255,13 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
             Package Details
           </AppText>
           <div className="space-y-2 text-sm">
-            <div className="flex">
+            <div className="flex gap-x-1">
               <AppText variant="caption">Description:</AppText>
               <AppText variant="caption">
                 {receiptData.packageDescription}
               </AppText>
             </div>
-            <div className="flex ml-auto">
+            <div className="flex gap-x-1">
               <AppText variant="caption" weight="font-bold">
                 Value (Rs.):
               </AppText>
@@ -208,12 +274,12 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-6 flex justify-center gap-4">
+      <div className="mt-auto flex justify-center gap-4">
         <AppButton onClick={handleDownloadPDF} size="sm" fullWidth>
           Download/Print PDF
         </AppButton>
       </div>
-    </div>
+    </ReceiptContainer>
   );
 };
 
