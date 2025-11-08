@@ -91,22 +91,27 @@ export interface FullOrder {
   orderItemsData: OrderItem[];
 }
 
+type UpdatePaymentRecordResponse = Partial<PaymentData> & {
+  payment_id: string;
+  order_id: string;
+  payment_slip_url: string;
+};
+
 export type ICreateOrderRequest = FullOrder;
 
+export type ICreatePaymentRecordRequest = Partial<PaymentData>;
+
 export type IUpdateOrderMetaDataRequest = Partial<OrderMetaData>;
+
+export type ICreatePaymentRecordResponse =
+  ApiResource<UpdatePaymentRecordResponse>;
 
 export type IOrderCreateResponse = ApiResource<
   Order & { order_id: string; paymentId: string }
 >;
 
-export type IOrderTransactionSlipUploadResponse = ApiResource<{
-  payment_id: string;
-  payment_date: string;
-  paid_amount: number;
-  payment_slip_number: string;
-  payment_slip_url: string;
-  order_id: string;
-}>;
+export type IOrderTransactionSlipUploadResponse =
+  ApiResource<UpdatePaymentRecordResponse>;
 
 export type IOrdersResponse = ApiResourceList<ModifiedOrder>;
 
