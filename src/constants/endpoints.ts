@@ -21,6 +21,8 @@ export const ENDPOINTS = {
     ALL: "/order/get-all-orders",
     CREATE_ORDER: "/order/create-order",
     CREATE_PAYMENT_RECORD: (id: string) => `/order/create-payment-record/${id}`,
+    CREATE_ORDER_ITEM_RECORD: (id: string) =>
+      `/order/create-order-item-record/${id}`,
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
     UPDATE_ORDER_META_DATA: (id: string | number) =>
       `/order/update-order-meta-data-by-id/${id}`,
@@ -52,4 +54,5 @@ export const API_TAG_TYPES = [
   "StockNetWorth",
   "Order",
   "PaymentHistory",
+  "OrderProducts",
 ] as const;
