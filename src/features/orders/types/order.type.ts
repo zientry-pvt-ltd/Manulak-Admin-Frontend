@@ -11,8 +11,8 @@ export type Order = {
   selling_method: SellingMethod;
   order_value: number;
   payment_method: PaymentMethod;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
+  created_at: string;
+  updated_at: string;
   is_deleted: boolean;
   first_name: string;
   last_name: string;
@@ -25,7 +25,7 @@ export type Order = {
   email: string | null;
   alternate_phone_number_1: string | null;
   alternate_phone_number_2: string | null;
-  status: OrderStatus; // use literal types if you know all possible statuses
+  status: OrderStatus;
 };
 
 export type ModifiedOrder = Order & {
@@ -43,7 +43,6 @@ export type OrderBasicInfo = {
   payment_method: string;
 };
 
-// Order Metadata Interface
 export interface OrderMetaData {
   first_name: string;
   last_name: string;
@@ -74,28 +73,27 @@ export interface OrderProductListItem {
   product: IProductInfo;
 }
 
-// Order Item Interface
 export interface OrderItem {
   product_id: string;
   required_quantity: number;
 }
 
-// Payment Data Interface
 export interface PaymentData {
-  payment_date: string; // ISO 8601 format (e.g., "2025-10-15T10:00:00Z")
-  paid_amount: number;
-  payment_slip_number: string;
+  payment_date: string;
+  paid_amount?: number;
+  payment_slip_number?: string;
   payment_method?: PaymentMethod;
 }
 
-// Full Order Interface (combines all)
 export interface FullOrder {
   orderMetaData: OrderMetaData;
   paymentData: PaymentData;
-  "payment-slip"?: File;
+  orderItemsData: OrderItem[];
 }
 
 export type ICreateOrderRequest = FullOrder;
+
+export type IUpdateOrderMetaDataRequest = Partial<OrderMetaData>;
 
 export type IOrderCreateResponse = ApiResource<
   Order & { order_id: string; paymentId: string }
