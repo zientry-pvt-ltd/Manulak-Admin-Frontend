@@ -73,3 +73,5 @@ export const plantNurseryOrderSchema = z.object({
     paid_amount: true,
   }),
 });
+
+export const paymentRecordSchema = paymentDataSchema;
