@@ -21,7 +21,8 @@ export const ENDPOINTS = {
     ALL: "/order/get-all-orders",
     CREATE_ORDER: "/order/create-order",
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
-    UPDATE_ORDER: (id: string | number) => `/order/update-order/${id}`,
+    UPDATE_ORDER_META_DATA: (id: string | number) =>
+      `/order/update-order-meta-data-by-id/${id}`,
     DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
     GET_ORDER_METADATA: (id: string | number | null) =>
       `/order/get-order-meta-data-by-id/${id}`,

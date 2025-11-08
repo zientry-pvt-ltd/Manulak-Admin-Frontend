@@ -7,6 +7,7 @@ import type {
   IOrdersResponse,
   IOrderTransactionHistoryResponse,
   IOrderTransactionSlipUploadResponse,
+  IUpdateOrderMetaDataRequest,
 } from "@/features/orders/types/order.type";
 import { api } from "@/services/api";
 import type { ResourceListQueryParams } from "@/types";
@@ -65,6 +66,19 @@ export const orderApi = api.injectEndpoints({
       },
       invalidatesTags: ["Order"],
     }),
+    updateOrderMetaData: builder.mutation<
+      any,
+      { id: string; data: IUpdateOrderMetaDataRequest }
+    >({
+      query: ({ id, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.UPDATE_ORDER_META_DATA(id),
+          method: "PUT",
+          body: data,
+        };
+      },
+      invalidatesTags: ["Order"],
+    }),
     uploadPaymentSlip: builder.mutation<
       IOrderTransactionSlipUploadResponse,
       { id: string; file: File }
@@ -90,4 +104,5 @@ export const {
   useGetOrderProductsQuery,
   useGetOrderPaymentHistoryQuery,
   useUploadPaymentSlipMutation,
+  useUpdateOrderMetaDataMutation,
 } = orderApi;
