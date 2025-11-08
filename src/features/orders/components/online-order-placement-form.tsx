@@ -1,23 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FileText, Image, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
+import { type z } from "zod";
 
-import { AppButton, AppInput, AppSelect, AppText } from "@/components";
-import AppDateInput from "@/components/ui/app-date-input";
-import AppSingleSelectAutoComplete from "@/components/ui/app-single-select-autocomplete";
-import { PAYMENT_METHOD_OPTIONS } from "@/features/orders/constants";
-import { onlineManualOrderSchema } from "@/features/orders/schema";
 import {
-  addProductToList,
-  clearSelectedProducts,
-  removeProductFromList,
-} from "@/features/orders/store/order-form-slice";
-import { cn } from "@/lib/utils";
-import { useCreateOrderMutation } from "@/services/orders";
-import { selectProducts } from "@/store/selectors";
+  AppButton,
+  AppIcon,
+  AppIconButton,
+  AppInput,
+  AppSelect,
+  AppText,
+} from "@/components";
+import AppDateInput from "@/components/ui/app-date-input";
+import ProductSelectorCard from "@/features/orders/components/product-selector-card";
+import {
+  PAYMENT_METHOD_OPTIONS,
+  type PaymentMethod,
+} from "@/features/orders/constants";
+import { onlineManualOrderSchema } from "@/features/orders/schema";
+import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
+import { useAppDialog } from "@/providers";
+import {
+  useCreateOrderMutation,
+  useUploadPaymentSlipMutation,
+} from "@/services/orders";
 import { selectOrderForm } from "@/store/selectors/orderFormSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
@@ -26,24 +34,13 @@ export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
-  const productList = useAppSelector(selectProducts).products;
+  const { closeAppDialog } = useAppDialog();
   const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
+  const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [quantity, setQuantity] = useState<number | undefined>();
-  const [selectedProductId, setSelectedProductId] = useState<
-    string | undefined
-  >();
-
-  const productItems = useMemo(
-    () =>
-      productList.map((product) => ({
-        label: product.product_name,
-        value: product.id,
-      })),
-    [productList],
-  );
+  const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
 
   const validatePhoneMatch = () => {
     const primaryPhone = form.getValues("orderMetaData.primary_phone_number");
@@ -74,13 +71,6 @@ export const OnlineOrderPlacementForm = () => {
     return true;
   };
 
-  const setOrderValue = () => {
-    form.setValue("orderMetaData.order_value", selectedProducts.subtotal, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-  };
-
   const form = useForm<FormFieldValues>({
     resolver: zodResolver(onlineManualOrderSchema),
     defaultValues: {
@@ -94,22 +84,29 @@ export const OnlineOrderPlacementForm = () => {
         address_line_2: "Sri Lanka",
         address_line_3: "",
         postal_code: 20000,
-        primary_phone_number: "1111111111",
-        confirm_phone_number: "",
+        primary_phone_number: "0774455675",
+        confirm_phone_number: "0774455675",
         status: "PENDING",
         payment_method: "COD",
       },
       paymentData: {
-        paid_amount: 4500,
+        paid_amount: 0,
         payment_date: "2023-10-10T00:00:00.000Z",
-        payment_slip_number: "12122",
+        payment_slip_number: "",
       },
     },
   });
 
-  const handleSubmit = async (data: FormFieldValues) => {
-    console.log("Form Data:", data);
+  const handleImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) return;
+      const files = Array.from(e.target.files);
+      setLocalSlipFile(files[0]);
+    },
+    [],
+  );
 
+  const handleSubmit = async (data: FormFieldValues) => {
     const { orderItemsData, orderMetaData, paymentData } = data;
 
     // eslint-disable-next-line no-unused-vars
@@ -125,74 +122,39 @@ export const OnlineOrderPlacementForm = () => {
       orderMetaData: updatedOrderMetaData,
       orderItemsData: orderItemsData,
       paymentData: paymentData,
-      "payment-slip": fileInputRef.current?.files
-        ? fileInputRef.current.files[0]
-        : undefined,
     };
 
     if (!validatePhoneMatch()) {
       return;
     }
 
-    console.log({ Success: updatedData });
+    const toastId = toast.loading("Creating order...");
 
     try {
-      await createOrder(updatedData).unwrap();
-      toast.success("Order created successfully");
+      const result = await createOrder(updatedData).unwrap();
+
+      toast.loading("Uploading payment slip...", { id: toastId });
+
+      if (localSlipFile) {
+        await uploadPaymentSlip({
+          id: result.data.paymentId,
+          file: localSlipFile,
+        }).unwrap();
+      }
+
+      toast.success("Order created successfully", { id: toastId });
+
       form.reset();
+      setLocalSlipFile(null);
       dispatch(clearSelectedProducts());
+
+      setTimeout(() => {
+        closeAppDialog();
+      }, 700);
     } catch (error) {
       const message = normalizeError(error);
-      toast.error(`Failed to create order: ${message.message}`);
-      console.error("Product creation failed:", error);
+      toast.error(`Failed: ${message.message}`, { id: toastId });
     }
-  };
-
-  const handleAddProduct = () => {
-    if (!selectedProductId || !quantity || quantity <= 0) return;
-
-    const product = productList.find((p) => p.id === selectedProductId);
-    if (!product) return;
-
-    dispatch(
-      addProductToList({
-        productId: product.id,
-        productName: product.product_name,
-        productPrice: product.selling_price,
-        quantity,
-      }),
-    );
-
-    const newOrderItems = [
-      ...form.getValues().orderItemsData,
-      { product_id: product.id, required_quantity: quantity },
-    ];
-    form.setValue("orderItemsData", newOrderItems, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-
-    setOrderValue();
-
-    // Reset input state
-    setSelectedProductId(undefined);
-    setQuantity(undefined);
-  };
-
-  const handleRemoveProduct = (productId: string) => {
-    dispatch(removeProductFromList(productId));
-
-    const newOrderItems = form
-      .getValues()
-      .orderItemsData.filter((item) => item.product_id !== productId);
-    form.setValue("orderItemsData", newOrderItems, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-  };
-
-  const handleProductSelect = (value: string) => {
-    setSelectedProductId(value);
   };
 
   useEffect(() => {
@@ -202,330 +164,300 @@ export const OnlineOrderPlacementForm = () => {
   }, [dispatch]);
 
   return (
-    <form
-      id="online-order-placement-form"
-      onSubmit={form.handleSubmit(handleSubmit)}
-      className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
-    >
-      <div className="pr-4">
-        <AppText variant="subheading">Order Information</AppText>
-        <div className="flex flex-row justify-center gap-x-4">
-          {/* LEFT: Selection Form */}
-          <div className="flex flex-col mt-2 w-1/2 space-y-3">
-            <AppSingleSelectAutoComplete
-              label="Select Product"
-              placeholder="Choose a product"
-              searchPlaceholder="Search products..."
-              size="sm"
-              items={productItems}
-              value={selectedProductId}
-              defaultValue={selectedProductId}
-              onValueChange={handleProductSelect}
-              fullWidth
-            />
-
-            <div className="flex flex-row gap-x-2 items-end">
-              <AppInput
-                label="Quantity"
-                placeholder="Enter quantity"
-                type="number"
-                value={quantity ?? ""}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                fullWidth
-                size="sm"
-              />
-              <AppButton
-                onClick={handleAddProduct}
-                variant="outline"
-                size="sm"
-                className="rounded-md flex items-center gap-x-1"
-                disabled={!selectedProductId || !quantity || quantity <= 0}
-              >
-                Add
-              </AppButton>
-            </div>
-          </div>
-
-          {/* RIGHT: Selected Products List */}
-          <div className="flex flex-col w-1/2">
-            <AppText variant="caption" size="text-xs" className="mb-2">
-              Selected Products{" "}
-              {selectedProducts.subtotal > 0 &&
-                `(Subtotal Rs:${selectedProducts.subtotal.toFixed(2)})`}
-            </AppText>
-            <div className="flex flex-wrap gap-2 border rounded-md p-2 min-h-[42px]">
-              {form.formState.errors.orderItemsData?.message && (
-                <AppText size="text-xs" color="destructive">
-                  {form.formState.errors.orderItemsData?.message}
-                </AppText>
-              )}
-
-              {selectedProducts.list.length > 0 &&
-                selectedProducts.list.map((product) => (
-                  <div
-                    key={product.productId}
-                    className={cn(
-                      "flex items-center gap-x-1 rounded-full border border-border bg-muted/30 px-2 py-1.5",
-                      "transition-all hover:bg-muted/50 hover:shadow-sm",
-                    )}
-                  >
-                    <AppText
-                      variant="caption"
-                      size="text-xs"
-                      className="truncate max-w-[100px]"
-                    >
-                      {product.productName}
-                    </AppText>
-
-                    <AppText
-                      variant="caption"
-                      size="text-xs"
-                      className="bg-ring px-2 rounded-full font-medium text-primary"
-                    >
-                      {product.quantity}
-                    </AppText>
-
-                    <button
-                      onClick={() => handleRemoveProduct(product.productId)}
-                      className="ml-1 inline-flex items-center justify-center rounded-full p-0.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      aria-label={`Remove ${product.productName}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <AppButton
-        type="button"
-        onClick={() =>
-          console.log({
-            error: form.formState.errors,
-          })
-        }
+    <FormProvider {...form}>
+      <form
+        id="online-order-placement-form"
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
       >
-        Debug Values
-      </AppButton>
-
-      <div className="pr-4">
-        <AppText variant="subheading">Billing Information</AppText>
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="First Name"
-            placeholder="Enter first name"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.first_name?.message}
-            {...form.register("orderMetaData.first_name")}
-          />
-          <AppInput
-            label="Last Name"
-            placeholder="Enter last name"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.last_name?.message}
-            {...form.register("orderMetaData.last_name")}
-          />
+        <div className="pr-4">
+          <AppText variant="subheading">Order Information</AppText>
+          <ProductSelectorCard />
         </div>
 
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Address Line 1"
-            placeholder="Enter address line 1"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.address_line_1?.message}
-            {...form.register("orderMetaData.address_line_1")}
-          />
-          <AppInput
-            label="Address Line 2"
-            placeholder="Enter address line 2"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.address_line_2?.message}
-            {...form.register("orderMetaData.address_line_2")}
-          />
-        </div>
-
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Address Line 3"
-            placeholder="Enter address line 3"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.address_line_3?.message}
-            {...form.register("orderMetaData.address_line_3")}
-          />
-          <AppInput
-            label="Postal Code"
-            placeholder="Enter postal code"
-            fullWidth
-            size="sm"
-            type="number"
-            error={form.formState.errors.orderMetaData?.postal_code?.message}
-            {...form.register("orderMetaData.postal_code", {
-              valueAsNumber: true,
-            })}
-          />
-        </div>
-
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Primary Phone"
-            placeholder="Enter primary phone"
-            fullWidth
-            size="sm"
-            type="tel"
-            error={
-              form.formState.errors.orderMetaData?.primary_phone_number?.message
-            }
-            {...form.register("orderMetaData.primary_phone_number")}
-          />
-          <AppInput
-            label="Confirm Phone"
-            placeholder="Re-enter phone number"
-            fullWidth
-            size="sm"
-            type="tel"
-            error={
-              form.formState.errors.orderMetaData?.confirm_phone_number?.message
-            }
-            {...form.register("orderMetaData.confirm_phone_number")}
-          />
-        </div>
-      </div>
-
-      <div className="pr-4">
-        <AppText variant="subheading">Additional Information</AppText>
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Company Name"
-            placeholder="Enter company name"
-            fullWidth
-            size="sm"
-          />
-          <AppInput
-            label="Email"
-            placeholder="Enter email"
-            type="email"
-            fullWidth
-            size="sm"
-          />
-        </div>
-
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Alternate Phone 1"
-            placeholder="Enter alternate phone number 1"
-            type="tel"
-            fullWidth
-            size="sm"
-          />
-          <AppInput
-            label="Alternate Phone 2"
-            placeholder="Enter alternate phone number 2"
-            type="tel"
-            fullWidth
-            size="sm"
-          />
-        </div>
-      </div>
-
-      <div className="pr-4">
-        <AppText variant="subheading">Payment Information</AppText>
-
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppSelect
-            label="Payment Method"
-            placeholder="Select payment method"
-            items={PAYMENT_METHOD_OPTIONS}
-            fullWidth
-            size="sm"
-            error={form.formState.errors.orderMetaData?.payment_method?.message}
-            {...form.register("orderMetaData.payment_method")}
-          />
-
-          <AppDateInput
-            label="Payment Date"
-            value={form.getValues("paymentData.payment_date")}
-            onChange={(value) =>
-              form.setValue("paymentData.payment_date", value || "", {
-                shouldValidate: true,
-                shouldDirty: true,
-              })
-            }
-            size="sm"
-            variant="outline"
-            placeholder="Select date"
-            error={form.formState.errors.paymentData?.payment_date?.message}
-            fullWidth
-          />
-        </div>
-
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Paid Amount"
-            placeholder="Enter paid amount"
-            type="number"
-            fullWidth
-            size="sm"
-            error={form.formState.errors.paymentData?.paid_amount?.message}
-            {...form.register("paymentData.paid_amount", {
-              valueAsNumber: true,
-            })}
-          />
-          <AppInput
-            label="Remaining Amount"
-            placeholder="Enter remaining amount"
-            type="number"
-            fullWidth
-            size="sm"
-            disabled
-          />
-        </div>
-        <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
-          <AppInput
-            label="Payment Slip Number"
-            placeholder="Enter payment slip number"
-            size="sm"
-            fullWidth
-            error={
-              form.formState.errors.paymentData?.payment_slip_number?.message
-            }
-            {...form.register("paymentData.payment_slip_number")}
-          />
-          <div className="w-full" />
-        </div>
-        <div className="flex flex-col mt-2 gap-y-2">
-          <AppText variant="caption" size="text-xs">
-            Upload Payment Slip
-          </AppText>
-          <div className="h-36 border rounded-lg flex justify-center items-center flex-col">
+        <div className="pr-4">
+          <AppText variant="subheading">Billing Information</AppText>
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
-              size="sm"
+              label="First Name"
+              placeholder="Enter first name"
               fullWidth
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              className="hidden"
-              ref={fileInputRef}
-            />
-            <AppText variant="caption" size="text-xs">
-              Supported formats: PDF, JPG, PNG
-            </AppText>
-            <AppButton
-              variant="outline"
               size="sm"
-              className="m-2"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Choose File
-            </AppButton>
+              error={form.formState.errors.orderMetaData?.first_name?.message}
+              {...form.register("orderMetaData.first_name")}
+            />
+            <AppInput
+              label="Last Name"
+              placeholder="Enter last name"
+              fullWidth
+              size="sm"
+              error={form.formState.errors.orderMetaData?.last_name?.message}
+              {...form.register("orderMetaData.last_name")}
+            />
+          </div>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Address Line 1"
+              placeholder="Enter address line 1"
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.address_line_1?.message
+              }
+              {...form.register("orderMetaData.address_line_1")}
+            />
+            <AppInput
+              label="Address Line 2"
+              placeholder="Enter address line 2"
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.address_line_2?.message
+              }
+              {...form.register("orderMetaData.address_line_2")}
+            />
+          </div>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Address Line 3"
+              placeholder="Enter address line 3"
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.address_line_3?.message
+              }
+              {...form.register("orderMetaData.address_line_3")}
+            />
+            <AppInput
+              label="Postal Code"
+              placeholder="Enter postal code"
+              fullWidth
+              size="sm"
+              type="number"
+              error={form.formState.errors.orderMetaData?.postal_code?.message}
+              {...form.register("orderMetaData.postal_code", {
+                valueAsNumber: true,
+              })}
+            />
+          </div>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Primary Phone"
+              placeholder="Enter primary phone"
+              fullWidth
+              size="sm"
+              type="tel"
+              error={
+                form.formState.errors.orderMetaData?.primary_phone_number
+                  ?.message
+              }
+              {...form.register("orderMetaData.primary_phone_number")}
+            />
+            <AppInput
+              label="Confirm Phone"
+              placeholder="Re-enter phone number"
+              fullWidth
+              size="sm"
+              type="tel"
+              error={
+                form.formState.errors.orderMetaData?.confirm_phone_number
+                  ?.message
+              }
+              {...form.register("orderMetaData.confirm_phone_number")}
+            />
           </div>
         </div>
-      </div>
-    </form>
+
+        <div className="pr-4">
+          <AppText variant="subheading">Additional Information</AppText>
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Company Name"
+              placeholder="Enter company name"
+              fullWidth
+              size="sm"
+              error={form.formState.errors.orderMetaData?.company_name?.message}
+              {...form.register("orderMetaData.company_name")}
+            />
+            <AppInput
+              label="Email"
+              placeholder="Enter email"
+              type="email"
+              fullWidth
+              size="sm"
+              error={form.formState.errors.orderMetaData?.email?.message}
+              {...form.register("orderMetaData.email")}
+            />
+          </div>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Alternate Phone 1"
+              placeholder="Enter alternate phone number 1"
+              type="tel"
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.alternate_phone_number_1
+                  ?.message
+              }
+              {...form.register("orderMetaData.alternate_phone_number_1")}
+            />
+            <AppInput
+              label="Alternate Phone 2"
+              placeholder="Enter alternate phone number 2"
+              type="tel"
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.alternate_phone_number_2
+                  ?.message
+              }
+              {...form.register("orderMetaData.alternate_phone_number_2")}
+            />
+          </div>
+        </div>
+
+        <div className="pr-4">
+          <AppText variant="subheading">Payment Information</AppText>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppSelect
+              label="Payment Method"
+              placeholder="Select payment method"
+              value={form.getValues("orderMetaData.payment_method")}
+              items={PAYMENT_METHOD_OPTIONS}
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.payment_method?.message
+              }
+              onValueChange={(value) =>
+                form.setValue(
+                  "orderMetaData.payment_method",
+                  value as PaymentMethod,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
+              }
+              {...form.register("orderMetaData.payment_method")}
+            />
+
+            <AppDateInput
+              label="Payment Date"
+              value={form.getValues("paymentData.payment_date")}
+              onChange={(value) =>
+                form.setValue("paymentData.payment_date", value || "", {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              size="sm"
+              variant="outline"
+              placeholder="Select date"
+              error={form.formState.errors.paymentData?.payment_date?.message}
+              fullWidth
+            />
+          </div>
+
+          <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Paid Amount"
+              placeholder="Enter paid amount"
+              type="number"
+              fullWidth
+              size="sm"
+              error={form.formState.errors.paymentData?.paid_amount?.message}
+              {...form.register("paymentData.paid_amount", {
+                valueAsNumber: true,
+              })}
+            />
+            <AppInput
+              label="Payment Slip Number"
+              placeholder="Enter payment slip number"
+              size="sm"
+              fullWidth
+              error={
+                form.formState.errors.paymentData?.payment_slip_number?.message
+              }
+              {...form.register("paymentData.payment_slip_number")}
+            />
+          </div>
+
+          <div className="flex flex-col mt-2 gap-y-2">
+            <AppText variant="caption" size="text-xs">
+              Upload Payment Slip
+            </AppText>
+
+            {localSlipFile && (
+              <div className="flex items-center justify-between rounded-md border p-2 max-w-xs">
+                <div className="flex items-center space-x-3">
+                  {/* File Icon */}
+                  <div className="flex h-10 w-10 items-center justify-center bg-accent rounded-sm">
+                    {localSlipFile.type.startsWith("image/") ? (
+                      <AppIcon Icon={Image} className="h-6 w-6 text-blue-500" />
+                    ) : (
+                      <AppIcon
+                        Icon={FileText}
+                        className="h-6 w-6 text-amber-500"
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col">
+                    <AppText variant="caption" size="text-sm">
+                      {localSlipFile.name}
+                    </AppText>
+                    <AppText variant="caption" size="text-xs" color="muted">
+                      {(localSlipFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </AppText>
+                  </div>
+                </div>
+
+                <AppIconButton
+                  Icon={X}
+                  onClick={() => setLocalSlipFile(null)}
+                  aria-label="Remove file"
+                  rounded="full"
+                  size="sm"
+                  variant={"outline"}
+                />
+              </div>
+            )}
+
+            {!localSlipFile && (
+              <div className="h-36 border rounded-lg flex justify-center items-center flex-col">
+                <AppInput
+                  size="sm"
+                  fullWidth
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                />
+                <AppText variant="caption" size="text-xs">
+                  Supported formats: PDF, JPG, PNG
+                </AppText>
+                <AppButton
+                  variant="outline"
+                  size="sm"
+                  className="m-2"
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                >
+                  Choose File
+                </AppButton>
+              </div>
+            )}
+          </div>
+        </div>
+      </form>
+    </FormProvider>
   );
 };
