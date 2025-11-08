@@ -1,27 +1,88 @@
-import { useMemo, useRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
 
 import { AppButton, AppInput, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
+import { FileUploadWithPreview } from "@/features/orders/components/file-upload-with-preview";
 import { PaymentHistoryCard } from "@/features/orders/components/payment-history-card";
-import { useGetOrderPaymentHistoryQuery } from "@/services/orders";
+import { paymentDataSchema } from "@/features/orders/schema";
+import {
+  useCreatePaymentRecordMutation,
+  useGetOrderPaymentHistoryQuery,
+  useUploadPaymentSlipMutation,
+} from "@/services/orders";
 import { selectOrder } from "@/store/selectors/orderSelector";
 import { useAppSelector } from "@/store/utils";
+import { normalizeError } from "@/utils/error-handler";
 
 type PaymentInfoTabProps = {
   mode: "view" | "edit";
 };
 
+type FormFieldValues = z.infer<typeof paymentDataSchema>;
+
 export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const isEditMode = useMemo(() => mode === "edit", [mode]);
+
   const { selectedOrderId } = useAppSelector(selectOrder);
+
+  const shouldSkip = useMemo(
+    () => ({ skip: !selectedOrderId }),
+    [selectedOrderId],
+  );
+
+  const [uploadPaymentSlip, { isLoading: isUploadingPaymentSlip }] =
+    useUploadPaymentSlipMutation();
+  const [createPaymentRecord, { isLoading: isCreatingPaymentRecord }] =
+    useCreatePaymentRecordMutation();
+
   const { data, isLoading, isError } = useGetOrderPaymentHistoryQuery(
     selectedOrderId,
-    {
-      skip: !selectedOrderId,
-    },
+    shouldSkip,
   );
   const paymentHistory = useMemo(() => data?.data, [data]);
-  const isEditMode = useMemo(() => mode === "edit", [mode]);
+
+  const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
+
+  const form = useForm<FormFieldValues>({
+    resolver: zodResolver(paymentDataSchema),
+    defaultValues: {
+      paid_amount: 0,
+    },
+  });
+
+  const handleSubmit = async (data: FormFieldValues) => {
+    if (!selectedOrderId) return;
+
+    const toastId = toast.loading("Creating payment record...");
+
+    try {
+      const result = await createPaymentRecord({
+        id: selectedOrderId,
+        data,
+      }).unwrap();
+
+      toast.loading("Uploading payment slip...", { id: toastId });
+
+      if (localSlipFile) {
+        await uploadPaymentSlip({
+          id: result.data.payment_id,
+          file: localSlipFile,
+        }).unwrap();
+      }
+
+      toast.success("Payment record created successfully!", { id: toastId });
+      form.reset();
+      setLocalSlipFile(null);
+    } catch (error) {
+      const message = normalizeError(error);
+      toast.error(`Failed: ${message.message}`, { id: toastId });
+      console.error("Error creating payment record:", error);
+    }
+  };
 
   if (isLoading)
     return (
@@ -40,15 +101,26 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
     );
 
   return (
-    <div className="flex gap-4 h-full overflow-hidden">
+    <div className="flex gap-4 h-[70vh]">
       {/* form for add payment*/}
-      <form className="min-w-1/2 h-full overflow-hidden space-y-6 pr-1">
+      <form
+        className="min-w-1/2 space-y-6 pr-1 flex flex-col"
+        onSubmit={form.handleSubmit(handleSubmit)}
+      >
         <AppInput
           label="Paid Amount"
           placeholder="Enter paid amount"
           fullWidth
           size="sm"
           disabled={!isEditMode}
+          error={form.formState.errors.paid_amount?.message}
+          {...form.register("paid_amount", {
+            valueAsNumber: true,
+          })}
+          onInput={(e) => {
+            const input = e.currentTarget;
+            input.value = input.value.replace(/[a-zA-Z-]/g, "");
+          }}
         />
         <AppDateInput
           label="Payment Date"
@@ -56,7 +128,15 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           variant="outline"
           placeholder="Select date"
           fullWidth
+          value={form.getValues("payment_date")}
           disabled={!isEditMode}
+          error={form.formState.errors.payment_date?.message}
+          onChange={(value) =>
+            form.setValue("payment_date", value || "", {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
         />
         <AppInput
           label="Payment Slip Number"
@@ -64,36 +144,23 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           size="sm"
           fullWidth
           disabled={!isEditMode}
+          error={form.formState.errors.payment_slip_number?.message}
+          {...form.register("payment_slip_number")}
         />
+
         <div className="flex flex-col mt-2 gap-y-2">
           <AppText variant="caption" size="text-xs">
             Upload Payment Slip
           </AppText>
-          <div className="h-36 border rounded-lg flex justify-center items-center flex-col">
-            <AppInput
-              size="sm"
-              fullWidth
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              className="hidden"
-              ref={fileInputRef}
-            />
-            <AppText variant="caption" size="text-xs">
-              Supported formats: PDF, JPG, PNG
-            </AppText>
-            <AppButton
-              variant="outline"
-              size="sm"
-              className="m-2"
-              onClick={(e) => {
-                e.preventDefault();
-                fileInputRef.current?.click();
-              }}
-              disabled={!isEditMode}
-            >
-              Choose File
-            </AppButton>
-          </div>
+
+          <FileUploadWithPreview
+            file={localSlipFile}
+            onFileChange={setLocalSlipFile}
+            accept=".pdf,.jpg,.jpeg,.png"
+            disabled={!isEditMode}
+            maxSizeMB={10}
+            supportedFormatsText="Supported formats: PDF, JPG, PNG (Max 10MB)"
+          />
         </div>
 
         <AppButton
@@ -101,7 +168,9 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           variant="default"
           size="sm"
           fullWidth
-          className="mt-4"
+          className="mt-auto"
+          isLoading={isCreatingPaymentRecord || isUploadingPaymentSlip}
+          type="submit"
         >
           Add
         </AppButton>
