@@ -1,6 +1,8 @@
 import { ENDPOINTS } from "@/constants";
 import type {
   ICreateOrderRequest,
+  ICreatePaymentRecordRequest,
+  ICreatePaymentRecordResponse,
   IOrderCreateResponse,
   IOrderMetadataResponse,
   IOrderProductListResponse,
@@ -35,18 +37,21 @@ export const orderApi = api.injectEndpoints({
       },
       providesTags: ["Order"],
     }),
+
     getOrderMetadata: builder.query<IOrderMetadataResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_METADATA(id),
         method: "GET",
       }),
     }),
+
     getOrderProducts: builder.query<IOrderProductListResponse, string | null>({
       query: (id) => ({
         url: ENDPOINTS.ORDERS.GET_ORDER_ITEMS(id),
         method: "GET",
       }),
     }),
+
     getOrderPaymentHistory: builder.query<
       IOrderTransactionHistoryResponse,
       string | null
@@ -55,7 +60,9 @@ export const orderApi = api.injectEndpoints({
         url: ENDPOINTS.ORDERS.GET_ORDER_PAYMENT_TRANSACTIONS(id),
         method: "GET",
       }),
+      providesTags: ["PaymentHistory"],
     }),
+
     createOrder: builder.mutation<IOrderCreateResponse, ICreateOrderRequest>({
       query: (body) => {
         return {
@@ -66,6 +73,21 @@ export const orderApi = api.injectEndpoints({
       },
       invalidatesTags: ["Order"],
     }),
+
+    createPaymentRecord: builder.mutation<
+      ICreatePaymentRecordResponse,
+      { id: string; data: ICreatePaymentRecordRequest }
+    >({
+      query: ({ id, data }) => {
+        return {
+          url: ENDPOINTS.ORDERS.CREATE_PAYMENT_RECORD(id),
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["PaymentHistory"],
+    }),
+
     updateOrderMetaData: builder.mutation<
       any,
       { id: string; data: IUpdateOrderMetaDataRequest }
@@ -77,8 +99,8 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["Order"],
     }),
+
     uploadPaymentSlip: builder.mutation<
       IOrderTransactionSlipUploadResponse,
       { id: string; file: File }
@@ -92,6 +114,7 @@ export const orderApi = api.injectEndpoints({
           body: formData,
         };
       },
+      invalidatesTags: ["PaymentHistory"],
     }),
   }),
   overrideExisting: false,
@@ -105,4 +128,5 @@ export const {
   useGetOrderPaymentHistoryQuery,
   useUploadPaymentSlipMutation,
   useUpdateOrderMetaDataMutation,
+  useCreatePaymentRecordMutation,
 } = orderApi;
