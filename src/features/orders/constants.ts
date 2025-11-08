@@ -1,6 +1,6 @@
 export const SELLING_METHODS = {
   ONLINE: "ONLINE",
-  OFFLINE: "OFFLINE",
+  PLANT_NURSERY: "PLANT_NURSERY",
 } as const;
 
 export const PAYMENT_METHODS = {
@@ -65,7 +65,7 @@ export const SELLING_METHODS_OPTIONS = [
     value: SELLING_METHODS.ONLINE,
   },
   {
-    label: "Offline",
-    value: SELLING_METHODS.OFFLINE,
+    label: "Plant Nursery",
+    value: SELLING_METHODS.PLANT_NURSERY,
   },
 ];
