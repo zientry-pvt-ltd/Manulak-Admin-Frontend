@@ -20,6 +20,7 @@ export const ENDPOINTS = {
   ORDERS: {
     ALL: "/order/get-all-orders",
     CREATE_ORDER: "/order/create-order",
+    CREATE_PAYMENT_RECORD: (id: string) => `/order/create-payment-record/${id}`,
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
     UPDATE_ORDER_META_DATA: (id: string | number) =>
       `/order/update-order-meta-data-by-id/${id}`,
@@ -46,4 +47,9 @@ export const SLICES = {
   ORDER_FORM: "orderForm",
 } as const;
 
-export const API_TAG_TYPES = ["Product", "StockNetWorth"];
+export const API_TAG_TYPES = [
+  "Product",
+  "StockNetWorth",
+  "Order",
+  "PaymentHistory",
+] as const;
