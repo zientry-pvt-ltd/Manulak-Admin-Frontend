@@ -123,7 +123,7 @@ export const orderApi = api.injectEndpoints({
     }),
 
     updateOrderMetaData: builder.mutation<
-      any,
+      void,
       { id: string; data: IUpdateOrderMetaDataRequest }
     >({
       query: ({ id, data }) => {
@@ -133,6 +133,7 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: ["Order"],
     }),
 
     uploadPaymentSlip: builder.mutation<
