@@ -4,7 +4,10 @@ import { toast } from "sonner";
 import type { z } from "zod";
 
 import { AppButton, AppInput, AppSelect, AppText } from "@/components";
-import { ORDER_STATUS_OPTIONS } from "@/features/orders/constants";
+import {
+  ORDER_STATUS_OPTIONS,
+  type OrderStatus,
+} from "@/features/orders/constants";
 import { orderMetaDataSchema } from "@/features/orders/schema";
 import {
   useGetOrderMetadataQuery,
@@ -287,6 +290,12 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
               disabled={isViewMode}
               error={form.formState.errors.status?.message}
               value={form.getValues("status")}
+              onValueChange={(value) => {
+                form.setValue("status", value as OrderStatus, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }}
               {...form.register("status")}
             />
           </div>
