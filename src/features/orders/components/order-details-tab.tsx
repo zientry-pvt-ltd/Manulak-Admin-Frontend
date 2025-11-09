@@ -285,6 +285,7 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
               label="Order Status"
               placeholder="Select order status"
               items={ORDER_STATUS_OPTIONS}
+              defaultValue={data.data.status}
               fullWidth
               size="sm"
               disabled={isViewMode}
