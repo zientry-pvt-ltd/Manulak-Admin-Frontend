@@ -5,7 +5,11 @@ import { toast } from "sonner";
 import { AppButton, AppIconButton, AppInput, AppText } from "@/components";
 import AppChip from "@/components/ui/app-chip";
 import type { OrderProductListItem } from "@/features/orders/types/order.type";
-import { useUpdateOrderItemRecordMutation } from "@/services/orders";
+import { useConfirmDialog } from "@/providers";
+import {
+  useDeleteOrderItemRecordMutation,
+  useUpdateOrderItemRecordMutation,
+} from "@/services/orders";
 import { normalizeError } from "@/utils/error-handler";
 
 type ProductCardProps = {
@@ -14,6 +18,7 @@ type ProductCardProps = {
   itemAvailableQuantity: number;
   displayQuantity: number;
   isViewMode: boolean;
+  isLastProductItem: boolean;
 };
 
 export const ProductCard = ({
@@ -22,11 +27,16 @@ export const ProductCard = ({
   itemAvailableQuantity,
   displayQuantity,
   isViewMode,
+  isLastProductItem,
 }: ProductCardProps) => {
   const [newQuantity, setNewQuantity] = useState<number>(displayQuantity);
 
+  const { confirm } = useConfirmDialog();
+
   const [updateOrderItem, { isLoading: isUpdating }] =
     useUpdateOrderItemRecordMutation();
+  const [deleteOrderItem, { isLoading: isDeleting }] =
+    useDeleteOrderItemRecordMutation();
 
   const handleUpdateQuantity = useCallback(async () => {
     if (!newQuantity || newQuantity <= 0) return;
@@ -62,6 +72,34 @@ export const ProductCard = ({
     },
     [newQuantity, itemAvailableQuantity, displayQuantity],
   );
+
+  const handleDeleteOrderItem = useCallback(async () => {
+    try {
+      await deleteOrderItem(item.order_details_id).unwrap();
+      toast.success("Order item removed successfully");
+    } catch (error) {
+      const message = normalizeError(error);
+      toast.error("Failed to remove order item");
+      console.log(message.message);
+    }
+  }, [deleteOrderItem, item.order_details_id]);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (isLastProductItem)
+      return toast.error(
+        "Cannot remove the last item from the order. Please delete the entire order instead.",
+      );
+
+    confirm({
+      title: "Remove Order Item",
+      description:
+        "You're going to remove this item from the order. This action is irreversible. Are you sure you want to continue?",
+      variant: "destructive",
+      confirmText: "Yes, Remove!",
+      cancelText: "No, keep it",
+      onSubmit: handleDeleteOrderItem,
+    });
+  }, [confirm, handleDeleteOrderItem, isLastProductItem]);
 
   return (
     <div
@@ -162,6 +200,8 @@ export const ProductCard = ({
                   size="sm"
                   Icon={Trash2}
                   variant={"destructive"}
+                  onClick={handleConfirmDelete}
+                  isLoading={isDeleting}
                 />
                 <AppButton
                   size="sm"
