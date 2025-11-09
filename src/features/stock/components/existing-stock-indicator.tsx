@@ -35,8 +35,9 @@ export const ExistingStockIndicator = () => {
         variant="caption"
         className="underline cursor-pointer"
         color={isError ? "destructive" : "muted"}
+        role="button"
       >
-        {isFetching ? "Refreshing..." : "Refresh"}
+        Refresh
       </AppText>
     </div>
   );
