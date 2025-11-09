@@ -29,6 +29,8 @@ export const ENDPOINTS = {
     UPDATE_ORDER_ITEM_RECORD: (itemId: string) =>
       `/order/update-order-item-record/${itemId}`,
     DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
+    DELETE_ORDER_ITEM_RECORD: (itemId: string) =>
+      `/order/delete-single-order-item/${itemId}`,
     GET_ORDER_METADATA: (id: string | number | null) =>
       `/order/get-order-meta-data-by-id/${id}`,
     GET_ORDER_ITEMS: (id: string | number | null) =>

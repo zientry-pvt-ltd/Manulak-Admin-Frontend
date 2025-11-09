@@ -150,6 +150,16 @@ export const orderApi = api.injectEndpoints({
       },
       invalidatesTags: ["PaymentHistory"],
     }),
+
+    deleteOrderItemRecord: builder.mutation<void, string>({
+      query: (itemId) => {
+        return {
+          url: ENDPOINTS.ORDERS.DELETE_ORDER_ITEM_RECORD(itemId),
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["OrderProducts"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -165,4 +175,5 @@ export const {
   useCreatePaymentRecordMutation,
   useCreateOrderItemMutation,
   useUpdateOrderItemRecordMutation,
+  useDeleteOrderItemRecordMutation,
 } = orderApi;
