@@ -11,6 +11,7 @@ import { normalizeError } from "@/utils/error-handler";
 type ProductCardProps = {
   item: OrderProductListItem;
   itemTotal: number;
+  itemAvailableQuantity: number;
   displayQuantity: number;
   isViewMode: boolean;
 };
@@ -18,6 +19,7 @@ type ProductCardProps = {
 export const ProductCard = ({
   item,
   itemTotal,
+  itemAvailableQuantity,
   displayQuantity,
   isViewMode,
 }: ProductCardProps) => {
@@ -44,10 +46,27 @@ export const ProductCard = ({
     }
   }, [item, newQuantity, updateOrderItem]);
 
+  const handleQuantityChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const quantity = Number(e.target.value);
+
+      if (quantity < newQuantity) return setNewQuantity(quantity);
+
+      if (quantity > itemAvailableQuantity + displayQuantity) {
+        toast.error(`Only ${itemAvailableQuantity} units available in stock`);
+        setNewQuantity(itemAvailableQuantity + displayQuantity);
+        return;
+      }
+
+      setNewQuantity(quantity);
+    },
+    [newQuantity, itemAvailableQuantity, displayQuantity],
+  );
+
   return (
     <div
       key={item.order_details_id}
-      className={"border rounded-lg p-4 transition-all relative"}
+      className={"border rounded-lg p-4 relative"}
     >
       <div className="flex items-start gap-4">
         {/* Product Image */}
@@ -124,11 +143,7 @@ export const ProductCard = ({
                     value={newQuantity}
                     size="sm"
                     min={1}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/[a-zA-Z-]/g, "");
-                      const quantity = val === "" ? 0 : parseInt(val, 10);
-                      setNewQuantity(quantity);
-                    }}
+                    onChange={handleQuantityChange}
                     onInput={(e) => {
                       const input = e.currentTarget;
                       input.value = input.value.replace(/[a-zA-Z-]/g, "");
@@ -152,8 +167,9 @@ export const ProductCard = ({
                   size="sm"
                   disabled={isUpdating || newQuantity === displayQuantity}
                   onClick={() => handleUpdateQuantity()}
+                  className="min-w-24"
                 >
-                  Update
+                  {isUpdating ? "Updating..." : "Update"}
                 </AppButton>
               </div>
             )}
