@@ -28,9 +28,18 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   const [addOrderProduct, { isLoading: isAdding }] =
     useCreateOrderItemMutation();
 
-  const { data, isLoading, error } = useGetOrderProductsQuery(selectedOrderId, {
-    skip: !selectedOrderId,
-  });
+  const shouldSkip = useMemo(
+    () => ({ skip: !selectedOrderId }),
+    [selectedOrderId],
+  );
+
+  const { data, isLoading, isError } = useGetOrderProductsQuery(
+    selectedOrderId,
+    shouldSkip,
+  );
+
+  const isViewMode = useMemo(() => mode === "view", [mode]);
+  const orderProducts = useMemo(() => data?.data || [], [data]);
 
   const [quantity, setQuantity] = useState<number | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
@@ -40,10 +49,20 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     null,
   );
 
-  const isViewMode = useMemo(() => mode === "view", [mode]);
-  const orderProducts = useMemo(() => data?.data || [], [data]);
+  const isAlreadyAdded = useCallback(
+    (productId: string) => {
+      return orderProducts.some((item) => item.product_id === productId);
+    },
+    [orderProducts],
+  );
 
-  const handleAddProduct = async () => {
+  const calculateTotalSellingPrice = useCallback(() => {
+    return orderProducts.reduce((total, item) => {
+      return total + item.product.selling_price * item.required_quantity;
+    }, 0);
+  }, [orderProducts]);
+
+  const handleAddProduct = useCallback(async () => {
     if (!selectedProductId || !selectedOrderId || !quantity || quantity <= 0) {
       toast.error("Please select a product and enter a valid quantity");
       return;
@@ -59,7 +78,9 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
         orderId: selectedOrderId,
         data,
       }).unwrap();
+
       toast.success("Product added to order");
+
       setSelectedProductId(null);
       setQuantity(null);
     } catch (error) {
@@ -67,7 +88,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
       toast.error(`Failed to add product: ${message.message}`);
       console.error("Add product failed:", error);
     }
-  };
+  }, [selectedProductId, selectedOrderId, quantity, addOrderProduct]);
 
   const handleProductSelect = useCallback(
     (value: string, item: SingleSelectOption | undefined) => {
@@ -85,20 +106,13 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
       if (!availableQuantity) return;
       const value = Number(e.target.value);
       if (value > availableQuantity) {
-        toast.error("Quantity exceeds available stock");
+        toast.error(`Only ${availableQuantity} units available in stock`);
         setQuantity(availableQuantity);
       } else {
         setQuantity(value);
       }
     },
     [availableQuantity],
-  );
-
-  const isAlreadyAdded = useCallback(
-    (productId: string) => {
-      return orderProducts.some((item) => item.product_id === productId);
-    },
-    [orderProducts],
   );
 
   const handleSearch = useCallback(
@@ -124,6 +138,14 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     [isAlreadyAdded, searchProducts],
   );
 
+  if (!selectedOrderId) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <AppText variant="body">No order selected</AppText>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -132,7 +154,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex justify-center items-center p-8">
         <AppText variant="body" color="destructive">
@@ -145,7 +167,8 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   return (
     <div className="space-y-3 p-2">
       <AppText variant="caption" size="text-sm">
-        Total: Rs. 1000 ({orderProducts.length} items)
+        Total: Rs. {calculateTotalSellingPrice().toFixed(2)} (
+        {orderProducts.length} items)
       </AppText>
 
       {!isViewMode && (
@@ -182,7 +205,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
             <AppButton
               size="sm"
               onClick={handleAddProduct}
-              disabled={isAdding}
+              disabled={isAdding || !selectedProductId || !quantity}
               className="min-w-24"
             >
               {`${isAdding ? "Adding..." : "Add Product"}`}
@@ -202,13 +225,15 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
           </div>
         ) : (
           orderProducts.map((item) => {
-            const itemTotal = 10;
+            const itemTotal =
+              item.product.selling_price * item.required_quantity;
             const displayQuantity = item.required_quantity;
             return (
               <ProductCard
                 key={item.order_details_id}
                 item={item}
                 itemTotal={itemTotal}
+                itemAvailableQuantity={item.product.quantity}
                 displayQuantity={displayQuantity}
                 isViewMode={isViewMode}
               />
