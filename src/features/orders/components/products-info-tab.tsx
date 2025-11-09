@@ -59,7 +59,9 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
         orderId: selectedOrderId,
         data,
       }).unwrap();
+
       toast.success("Product added to order");
+
       setSelectedProductId(null);
       setQuantity(null);
     } catch (error) {
