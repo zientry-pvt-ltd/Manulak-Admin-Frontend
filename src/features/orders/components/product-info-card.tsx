@@ -1,4 +1,4 @@
-import { Package, Trash2 } from "lucide-react";
+import { Package, Trash2, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -47,7 +47,7 @@ export const ProductCard = ({
   return (
     <div
       key={item.order_details_id}
-      className={"border rounded-lg p-4 transition-all"}
+      className={"border rounded-lg p-4 transition-all relative"}
     >
       <div className="flex items-start gap-4">
         {/* Product Image */}
@@ -159,6 +159,18 @@ export const ProductCard = ({
             )}
           </div>
         </div>
+
+        {/* close button */}
+        {newQuantity !== displayQuantity && !isViewMode && (
+          <AppIconButton
+            Icon={X}
+            size="sm"
+            variant={"outline"}
+            onClick={() => setNewQuantity(displayQuantity)}
+            className="absolute -top-2 -right-2 rounded-full"
+            aria-label={`Remove ${item.product.product_name} from order`}
+          />
+        )}
       </div>
     </div>
   );
