@@ -228,6 +228,8 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
             const itemTotal =
               item.product.selling_price * item.required_quantity;
             const displayQuantity = item.required_quantity;
+            const isLastProductItem = orderProducts.length === 1;
+
             return (
               <ProductCard
                 key={item.order_details_id}
@@ -236,6 +238,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
                 itemAvailableQuantity={item.product.quantity}
                 displayQuantity={displayQuantity}
                 isViewMode={isViewMode}
+                isLastProductItem={isLastProductItem}
               />
             );
           })

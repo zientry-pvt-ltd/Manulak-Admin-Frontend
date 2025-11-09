@@ -1,5 +1,6 @@
 import { Download, Edit, Eye, Trash } from "lucide-react";
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
@@ -16,13 +17,18 @@ import {
 import { setSelectedOrderId } from "@/features/orders/store/order-slice";
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
-import { useGetOrdersQuery } from "@/services/orders";
+import {
+  useGetOrdersQuery,
+  useUpdateOrderMetaDataMutation,
+} from "@/services/orders";
 import { useAppDispatch } from "@/store/utils";
+import { normalizeError } from "@/utils/error-handler";
 
 export const ViewOrdersTab = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog } = useAppDialog();
+  const [deleteFullOrder] = useUpdateOrderMetaDataMutation();
 
   const { data, isLoading } = useGetOrdersQuery({
     paging: { pageNo: 1, pageSize: 100 },
@@ -31,6 +37,23 @@ export const ViewOrdersTab = () => {
   });
 
   const handleDeleteOrder = useCallback(
+    async (orderId: string) => {
+      try {
+        await deleteFullOrder({
+          id: orderId,
+          data: { status: "CANCELLED" },
+        }).unwrap();
+        toast.success("Order deleted successfully");
+      } catch (error) {
+        const message = normalizeError(error);
+        toast.error(`Failed to delete order: ${message.message}`);
+        console.error("Error deleting order:", error);
+      }
+    },
+    [deleteFullOrder],
+  );
+
+  const handleConfirmDeleteOrder = useCallback(
     (orderId: string) => {
       confirm({
         title: "Delete Order",
@@ -39,12 +62,10 @@ export const ViewOrdersTab = () => {
         variant: "destructive",
         confirmText: "Yes, Delete!",
         cancelText: "No, keep it",
-        onSubmit: () => {
-          console.log("Deleting order with ID:", orderId);
-        },
+        onSubmit: () => handleDeleteOrder(orderId),
       });
     },
-    [confirm],
+    [confirm, handleDeleteOrder],
   );
 
   const config: TableConfig<ModifiedOrder> = {
@@ -147,7 +168,7 @@ export const ViewOrdersTab = () => {
             Icon: Trash,
             tooltip: "Delete Order",
             variant: "destructive",
-            onClick: (row) => handleDeleteOrder(row.order_id),
+            onClick: (row) => handleConfirmDeleteOrder(row.order_id),
           },
         ],
       },

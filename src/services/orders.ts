@@ -123,7 +123,7 @@ export const orderApi = api.injectEndpoints({
     }),
 
     updateOrderMetaData: builder.mutation<
-      any,
+      void,
       { id: string; data: IUpdateOrderMetaDataRequest }
     >({
       query: ({ id, data }) => {
@@ -133,6 +133,7 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: ["Order"],
     }),
 
     uploadPaymentSlip: builder.mutation<
@@ -150,6 +151,16 @@ export const orderApi = api.injectEndpoints({
       },
       invalidatesTags: ["PaymentHistory"],
     }),
+
+    deleteOrderItemRecord: builder.mutation<void, string>({
+      query: (itemId) => {
+        return {
+          url: ENDPOINTS.ORDERS.DELETE_ORDER_ITEM_RECORD(itemId),
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["OrderProducts"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -165,4 +176,5 @@ export const {
   useCreatePaymentRecordMutation,
   useCreateOrderItemMutation,
   useUpdateOrderItemRecordMutation,
+  useDeleteOrderItemRecordMutation,
 } = orderApi;
