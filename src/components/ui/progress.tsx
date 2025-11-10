@@ -8,28 +8,20 @@ function Progress({
   value,
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root>) {
-  const isIndeterminate = value === undefined;
-
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
       className={cn(
-        "relative h-1 w-full overflow-hidden rounded-full bg-primary/20",
+        "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
         className,
       )}
       {...props}
     >
-      {isIndeterminate ? (
-        <>
-          <span className="absolute inset-0 animate-indeterminate bg-primary" />
-        </>
-      ) : (
-        <ProgressPrimitive.Indicator
-          data-slot="progress-indicator"
-          className="bg-primary h-full transition-transform"
-          style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
-        />
-      )}
+      <ProgressPrimitive.Indicator
+        data-slot="progress-indicator"
+        className="bg-primary h-full w-full flex-1 transition-all"
+        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+      />
     </ProgressPrimitive.Root>
   );
 }
