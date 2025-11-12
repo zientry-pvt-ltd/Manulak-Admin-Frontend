@@ -2,9 +2,9 @@ import { AppText, Card } from "@/components";
 
 export const SummeryCardList = () => {
   return (
-    <div className="flex space-x-2 py-1">
+    <div className="flex flex-col space-y-2">
       {/* today's sales  */}
-      <Card className="w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
+      <Card className="min-w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
         <div className="flex justify-between w-full">
           <AppText variant="caption" size="text-sm">
             Today's Sales
@@ -20,7 +20,7 @@ export const SummeryCardList = () => {
       </Card>
 
       {/* Today's revenue */}
-      <Card className="w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
+      <Card className="min-w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
         <AppText variant="caption" size="text-sm">
           Today's Revenue
         </AppText>
@@ -31,7 +31,7 @@ export const SummeryCardList = () => {
       </Card>
 
       {/* Existing Customers */}
-      <Card className="w-[280px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
+      <Card className="min-w-[280px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
         <AppText variant="caption" size="text-sm">
           Existing stock net worth (as of today)
         </AppText>
