@@ -1,4 +1,5 @@
 import {
+  LatestOrderTable,
   MostSoldItems,
   SummeryCardList,
   TotalChartRevenue,
@@ -6,12 +7,15 @@ import {
 
 export const Dashboard = () => {
   return (
-    <div className="space-y-1 pt-1">
-      <SummeryCardList />
-      <div className="flex">
-        <TotalChartRevenue />
-        <MostSoldItems />
+    <div className="space-y-2 py-2">
+      <div className="flex space-x-2">
+        <LatestOrderTable />
+        <div className="flex flex-col space-y-2">
+          <SummeryCardList />
+          <MostSoldItems />
+        </div>
       </div>
+      <TotalChartRevenue />
     </div>
   );
 };
