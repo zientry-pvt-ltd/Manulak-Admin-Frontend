@@ -60,7 +60,9 @@ const AppSelect: React.FC<AppSelectProps> = ({
   startIcon,
 }) => {
   return (
-    <div className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]")}>
+    <div
+      className={cn(fullWidth ? "w-full" : "w-fit", "min-w-[200px]", className)}
+    >
       {label && (
         <AppText
           as="label"
