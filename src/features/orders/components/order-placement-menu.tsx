@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   OnlineOrderPlacementForm,
+  OrderTextParser,
   PlantNurseryOrderPlacementForm,
 } from "@/features/orders";
 import { useAppDialog } from "@/providers";
@@ -28,9 +29,9 @@ export const OrderPlacementMenu = () => {
   const handleOrderPlacementFromText = useCallback(() => {
     setOpen(false);
     openAppDialog({
-      description: "Order placement from text message",
+      description: "Paste your order message and we'll parse it instantly",
       title: "Order Placement",
-      content: <div>Order placement form goes here</div>,
+      content: <OrderTextParser />,
       disableFooter: true,
     });
   }, [openAppDialog]);
