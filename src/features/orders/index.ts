@@ -7,6 +7,7 @@ import { OrderEditViewTabs } from "./components/order-edit-view-tabs";
 import { OrderPlacementMenu } from "./components/order-placement-menu";
 import { OrderReceiptView } from "./components/order-receipt-view";
 import { OrderTabs } from "./components/order-tabs";
+import { OrderTextParser } from "./components/order-text-parser";
 import { PaymentInfoTab } from "./components/payment-info-tab";
 import { PlantNurseryOrderPlacementForm } from "./components/plant-nursery-order-placement-form";
 import { ProductsInfoTab } from "./components/products-info-tab";
@@ -20,6 +21,7 @@ export {
   OrderPlacementMenu,
   OrderReceiptView,
   OrderTabs,
+  OrderTextParser,
   PaymentHistoryCard,
   PaymentInfoTab,
   PlantNurseryOrderPlacementForm,
