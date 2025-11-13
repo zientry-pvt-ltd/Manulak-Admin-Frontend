@@ -1,44 +1,144 @@
+import { useMemo } from "react";
+
 import { AppText, Card } from "@/components";
+import {
+  useGetProfitByTimePeriodQuery,
+  useGetTotalRevenueByTimePeriodQuery,
+  useGetTotalSalesByTimePeriodQuery,
+} from "@/services/dashboard";
 
 export const SummeryCardList = () => {
+  const {
+    data: totalSalesData,
+    isError: isErrorSales,
+    isLoading: isLoadingSales,
+  } = useGetTotalSalesByTimePeriodQuery({
+    dashboard_view_days: 1,
+  });
+
+  const {
+    data: totalRevenueData,
+    isError: isErrorRevenue,
+    isLoading: isLoadingRevenue,
+  } = useGetTotalRevenueByTimePeriodQuery({
+    dashboard_view_days: 1,
+  });
+
+  const {
+    data: profitData,
+    isError: isErrorProfit,
+    isLoading: isLoadingProfit,
+  } = useGetProfitByTimePeriodQuery({
+    dashboard_view_days: 1,
+  });
+
+  const totalSales = useMemo(() => totalSalesData?.data ?? 0, [totalSalesData]);
+  const totalRevenue = useMemo(
+    () => totalRevenueData?.data ?? 0,
+    [totalRevenueData],
+  );
+  const profit = useMemo(() => profitData?.data ?? 0, [profitData?.data]);
+
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
   return (
     <div className="flex flex-col space-y-2">
-      {/* today's sales  */}
-      <Card className="min-w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
+      {/* Today's Sales */}
+      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
         <div className="flex justify-between w-full">
           <AppText variant="caption" size="text-sm">
             Today's Sales
           </AppText>
           <AppText variant="caption" size="text-sm">
-            28 june 2025
+            {formattedDate}
           </AppText>
         </div>
-        <AppText variant="subheading">RS: 200,000.00</AppText>
-        <AppText variant="caption" size="text-xs">
-          We have sold 30 orders
-        </AppText>
+
+        {isLoadingSales ? (
+          <AppText variant="caption" size="text-xs" color="muted">
+            Loading...
+          </AppText>
+        ) : isErrorSales ? (
+          <AppText variant="caption" size="text-xs" color="destructive">
+            Failed to load sales data
+          </AppText>
+        ) : (
+          <>
+            <AppText variant="subheading">
+              Rs: {totalSales.toLocaleString()}
+            </AppText>
+            <AppText variant="caption" size="text-xs">
+              A summary of today's sales performance.
+            </AppText>
+          </>
+        )}
       </Card>
 
-      {/* Today's revenue */}
-      <Card className="min-w-[240px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
-        <AppText variant="caption" size="text-sm">
-          Today's Revenue
-        </AppText>
-        <AppText variant="subheading">Rs: 170,000.00</AppText>
-        <AppText variant="caption" size="text-xs">
-          We have completed 20 sales
-        </AppText>
+      {/* Today's Revenue */}
+      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
+        <div className="flex justify-between w-full">
+          <AppText variant="caption" size="text-sm">
+            Today's Revenue
+          </AppText>
+          <AppText variant="caption" size="text-sm">
+            {formattedDate}
+          </AppText>
+        </div>
+
+        {isLoadingRevenue ? (
+          <AppText variant="caption" size="text-xs" color="muted">
+            Loading...
+          </AppText>
+        ) : isErrorRevenue ? (
+          <AppText variant="caption" size="text-xs" color="destructive">
+            Failed to load revenue data
+          </AppText>
+        ) : (
+          <>
+            <AppText variant="subheading">
+              Rs: {totalRevenue.toLocaleString()}
+            </AppText>
+            <AppText variant="caption" size="text-xs">
+              Total revenue generated today.
+            </AppText>
+          </>
+        )}
       </Card>
 
-      {/* Existing Customers */}
-      <Card className="min-w-[280px] shadow-none flex flex-col gap-2 p-4 rounded-lg">
-        <AppText variant="caption" size="text-sm">
-          Existing stock net worth (as of today)
-        </AppText>
-        <AppText variant="subheading">Rs: 100,000.00</AppText>
-        <AppText variant="caption" size="text-xs">
-          Total selling price of current stock
-        </AppText>
+      {/* Today's Profit */}
+      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
+        <div className="flex justify-between w-full">
+          <AppText variant="caption" size="text-sm">
+            Today's Profit
+          </AppText>
+          <AppText variant="caption" size="text-sm">
+            {formattedDate}
+          </AppText>
+        </div>
+
+        {isLoadingProfit ? (
+          <AppText variant="caption" size="text-xs" color="muted">
+            Loading...
+          </AppText>
+        ) : isErrorProfit ? (
+          <AppText variant="caption" size="text-xs" color="destructive">
+            Failed to load profit data
+          </AppText>
+        ) : (
+          <>
+            <AppText variant="subheading">
+              Rs: {profit.toLocaleString()}
+            </AppText>
+            <AppText variant="caption" size="text-xs">
+              Net profit earned today.
+            </AppText>
+          </>
+        )}
       </Card>
     </div>
   );
