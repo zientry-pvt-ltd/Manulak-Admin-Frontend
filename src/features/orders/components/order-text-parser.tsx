@@ -1,80 +1,33 @@
 import { ClipboardPaste, Send } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { AppButton, AppTextarea } from "@/components";
-
-interface OrderItem {
-  product: string;
-  quantity: number;
-  notes?: string;
-}
-
-interface ParsedOrder {
-  items: OrderItem[];
-  customerInfo?: string;
-  totalItems: number;
-}
+import { useCreateOrderByMessageMutation } from "@/services/orders";
+import { normalizeError } from "@/utils/error-handler";
 
 export const OrderTextParser = () => {
   const [textMessage, setTextMessage] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
 
-  const parseTextMessage = (text: string): ParsedOrder => {
-    const lines = text.split("\n").filter((line) => line.trim());
-    const items: OrderItem[] = [];
-    let customerInfo = "";
-
-    lines.forEach((line) => {
-      const match = line.match(/(\d+)\s*[x×]?\s*(.+?)(?:\s*[-–]\s*(.+))?$/i);
-
-      if (match) {
-        const quantity = parseInt(match[1]);
-        const product = match[2].trim();
-        const notes = match[3]?.trim();
-
-        items.push({ product, quantity, notes });
-      } else if (
-        line.toLowerCase().includes("name:") ||
-        line.toLowerCase().includes("customer:")
-      ) {
-        customerInfo = line;
-      }
-    });
-
-    return {
-      items,
-      customerInfo,
-      totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
-    };
-  };
+  const [createOrderByMessage, { isLoading }] =
+    useCreateOrderByMessageMutation();
 
   const handleSubmit = async () => {
     if (!textMessage.trim()) {
       setError("Please enter your order message");
       return;
     }
-
-    setIsProcessing(true);
-    setError("");
-
-    setTimeout(() => {
-      try {
-        const parsed = parseTextMessage(textMessage);
-
-        if (parsed.items.length === 0) {
-          setError(
-            'No items found. Try format like: "2x Pizza" or "3 Burgers"',
-          );
-        } else {
-          setError("");
-        }
-      } catch (e) {
-        setError("Failed to parse order. Please check your format.");
-        console.error("Error parsing order:", e);
-      }
-      setIsProcessing(false);
-    }, 800);
+    try {
+      await createOrderByMessage({ orderMessage: textMessage }).unwrap();
+      toast.success("Order created successfully");
+      setTextMessage("");
+      setError("");
+    } catch (error) {
+      const message = normalizeError(error);
+      toast.error(message.message || "Failed to create order from message");
+      console.error("Order creation error:", error);
+    }
   };
 
   const handlePaste = async () => {
@@ -92,7 +45,7 @@ export const OrderTextParser = () => {
         fullWidth
         value={textMessage}
         onChange={(e) => setTextMessage(e.target.value)}
-        placeholder="Example:&#10;2x Margherita Pizza&#10;3 Coke - cold&#10;1x Garlic Bread&#10;&#10;Name: John Doe"
+        placeholder="Example:&#10;නම: Piyath&#10;ලිපිනය: 22, Read Avenue, Colombo&#10;දුරකථන අංකය: 0712617261&#10;තැපැල් කේතය: 11550&#10;ගෙවූ මුදල: 1776.95&#10;ගෙවූ දිනය: 2025-10-15&#10;SLIP අංකය: SLIP767612&#10;නිෂ්පාදන: 74a9eaee-fd46-4f68-8436-8806fc0cef84 x24"
         className="h-64 p-3 resize-none font-mono text-sm"
         label="Enter your order details"
         error={error}
@@ -110,12 +63,12 @@ export const OrderTextParser = () => {
         </AppButton>
         <AppButton
           onClick={handleSubmit}
-          disabled={isProcessing}
+          disabled={isLoading}
           variant="default"
           size="lg"
           Icon={Send}
           fullWidth
-          isLoading={isProcessing}
+          isLoading={isLoading}
         >
           Parse Order
         </AppButton>

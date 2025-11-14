@@ -103,6 +103,20 @@ export const orderApi = api.injectEndpoints({
       invalidatesTags: ["OrderProducts"],
     }),
 
+    createOrderByMessage: builder.mutation<
+      IOrderCreateResponse,
+      { orderMessage: string }
+    >({
+      query: ({ orderMessage }) => {
+        return {
+          url: ENDPOINTS.ORDERS.CREATE_ORDER_BY_MESSAGE,
+          method: "POST",
+          body: { orderMessage },
+        };
+      },
+      invalidatesTags: ["Order"],
+    }),
+
     updateOrderItemRecord: builder.mutation<
       any,
       {
@@ -166,15 +180,16 @@ export const orderApi = api.injectEndpoints({
 });
 
 export const {
-  useCreateOrderMutation,
   useGetOrdersQuery,
   useGetOrderMetadataQuery,
   useGetOrderProductsQuery,
   useGetOrderPaymentHistoryQuery,
+  useCreateOrderMutation,
+  useCreateOrderItemMutation,
   useUploadPaymentSlipMutation,
   useUpdateOrderMetaDataMutation,
   useCreatePaymentRecordMutation,
-  useCreateOrderItemMutation,
+  useCreateOrderByMessageMutation,
   useUpdateOrderItemRecordMutation,
   useDeleteOrderItemRecordMutation,
 } = orderApi;

@@ -24,6 +24,7 @@ export const ENDPOINTS = {
     CREATE_ORDER_ITEM_RECORD: (id: string) =>
       `/order/create-order-item-record/${id}`,
     GET_ORDER: (id: string | number) => `/order/get-order/${id}`,
+    CREATE_ORDER_BY_MESSAGE: "/order/create-order-by-message",
     UPDATE_ORDER_META_DATA: (id: string | number) =>
       `/order/update-order-meta-data-by-id/${id}`,
     UPDATE_ORDER_ITEM_RECORD: (itemId: string) =>
