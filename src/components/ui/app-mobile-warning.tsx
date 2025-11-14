@@ -30,11 +30,11 @@ const AppMobileWarning = ({ children }: AppMobileWarningProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="bg-background rounded-sm border p-8 max-w-md w-full">
         <div className="flex justify-center mb-6">
-          <div className="bg-red-100 rounded-full p-4">
-            <Smartphone className="w-12 h-12 text-red-600" />
+          <div className="bg-destructive/10 rounded-full p-4">
+            <Smartphone className="w-12 h-12 text-destructive" />
           </div>
         </div>
 
@@ -50,28 +50,28 @@ const AppMobileWarning = ({ children }: AppMobileWarningProps) => {
 
         <div className="space-y-3 text-gray-600">
           <p className="flex items-start gap-2">
-            <AppText className="text-red-500 font-bold">•</AppText>
+            <AppText className="text-destructive font-bold">•</AppText>
             <AppText>
               Complex data visualizations require larger screens
             </AppText>
           </p>
           <p className="flex items-start gap-2">
-            <AppText className="text-red-500 font-bold">•</AppText>
+            <AppText className="text-destructive font-bold">•</AppText>
             <AppText>
               Multiple panels and controls need more screen space
             </AppText>
           </p>
           <p className="flex items-start gap-2">
-            <AppText className="text-red-500 font-bold">•</AppText>
+            <AppText className="text-destructive font-bold">•</AppText>
             <AppText>
               Optimal experience is on desktop or tablet devices
             </AppText>
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="flex items-center justify-center gap-2 text-gray-500">
-            <Monitor className="w-5 h-5" />
+        <div className="mt-8 pt-6 border-t">
+          <div className="flex items-center justify-center gap-2">
+            <Monitor className="w-5 h-5 text-muted-foreground" />
             <AppText variant="caption" color="muted">
               Please access from a desktop computer
             </AppText>
