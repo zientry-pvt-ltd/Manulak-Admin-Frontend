@@ -5,12 +5,13 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import {
   AppMetadata,
+  AppMobileWarning,
+  AppOnlineStatusBanner,
   LoadingFallback,
   MainErrorFallback,
   Toaster,
 } from "@/components";
 import { ThemeEffect } from "@/features/settings";
-import useOnlineStatus from "@/hooks/use-online-status";
 import {
   AppDialogProvider,
   AuthRefreshProvider,
@@ -23,24 +24,25 @@ type AppProviderProps = {
 };
 
 export const AppProvider = ({ children }: AppProviderProps) => {
-  useOnlineStatus();
-
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <ErrorBoundary FallbackComponent={MainErrorFallback}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <AuthRefreshProvider>
-              <ConfirmDialogProvider>
-                <AppDialogProvider>{children}</AppDialogProvider>
-              </ConfirmDialogProvider>
-            </AuthRefreshProvider>
-            <Toaster expand theme="light" richColors closeButton />
-            <AppMetadata />
-            <ThemeEffect />
-          </PersistGate>
-        </Provider>
-      </ErrorBoundary>
-    </Suspense>
+    <AppMobileWarning>
+      <Suspense fallback={<LoadingFallback />}>
+        <ErrorBoundary FallbackComponent={MainErrorFallback}>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <AuthRefreshProvider>
+                <ConfirmDialogProvider>
+                  <AppDialogProvider>{children}</AppDialogProvider>
+                </ConfirmDialogProvider>
+              </AuthRefreshProvider>
+              <Toaster expand theme="light" richColors closeButton />
+              <AppMetadata />
+              <ThemeEffect />
+              <AppOnlineStatusBanner />
+            </PersistGate>
+          </Provider>
+        </ErrorBoundary>
+      </Suspense>
+    </AppMobileWarning>
   );
 };
