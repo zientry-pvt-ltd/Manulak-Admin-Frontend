@@ -3,6 +3,12 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 
 import { AppIconButton, AppText } from "@/components";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ProductCustomIdCellProps = {
   value: string | number | boolean | string[];
@@ -18,6 +24,15 @@ export const ProductCustomIdCell = ({ value }: ProductCustomIdCellProps) => {
         ? value.join(", ")
         : String(value);
 
+  const getMiddleTruncated = (str: string, maxLength = 16) => {
+    if (str.length <= maxLength) return str;
+    const keep = Math.floor((maxLength - 3) / 2);
+    return `${str.slice(0, keep)}.....${str.slice(-keep)}`;
+  };
+
+  const displayText =
+    typeof text === "string" ? getMiddleTruncated(text, 16) : text;
+
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -29,18 +44,29 @@ export const ProductCustomIdCell = ({ value }: ProductCustomIdCellProps) => {
   }, [text]);
 
   return (
-    <div className="flex items-center gap-x-3">
-      <AppText size="text-xs" className="truncate max-w-[170px]">
-        {text}
-      </AppText>
-
-      <AppIconButton
-        variant={"outline"}
-        Icon={Copy}
-        size="sm"
-        onClick={handleCopy}
-        disabled={text === "N/A"}
-      />
-    </div>
+    <TooltipProvider>
+      <div className="flex items-center gap-x-3">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AppText
+              size="text-xs"
+              className="truncate max-w-[170px] cursor-pointer"
+            >
+              {displayText}
+            </AppText>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>{text}</span>
+          </TooltipContent>
+        </Tooltip>
+        <AppIconButton
+          variant={"outline"}
+          Icon={Copy}
+          size="sm"
+          onClick={handleCopy}
+          disabled={text === "N/A"}
+        />
+      </div>
+    </TooltipProvider>
   );
 };
