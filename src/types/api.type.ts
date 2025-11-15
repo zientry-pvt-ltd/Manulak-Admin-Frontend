@@ -21,10 +21,11 @@ export type ApiResource<T> = ResponseDTO<T>;
 
 export type ApiResourceList<T> = ListResponseDTO<T>;
 
-export interface ResourceListQueryParams {
-  filters: {
-    query?: string;
-  };
+export type ResourceListQueryParams = {
+  filters?: {
+    queryAttribute: string;
+    query: string;
+  }[];
   paging: {
     pageNo: number;
     pageSize: number;
@@ -33,7 +34,7 @@ export interface ResourceListQueryParams {
     columnName: string;
     sortOrder: 1 | -1; // 1 : ascending, -1 : descending
   };
-}
+};
 
 export type NormalizedAPIError = {
   status: number | string;
