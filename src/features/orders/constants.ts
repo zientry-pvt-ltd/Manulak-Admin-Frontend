@@ -15,6 +15,7 @@ export const ORDER_STATUSES = {
   SHIPPED: "SHIPPED",
   DELIVERED: "DELIVERED",
   CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
 } as const;
 
 export type OrderStatus = keyof typeof ORDER_STATUSES;
@@ -56,6 +57,10 @@ export const ORDER_STATUS_OPTIONS = [
   {
     label: "Cancelled",
     value: ORDER_STATUSES.CANCELLED,
+  },
+  {
+    label: "Completed",
+    value: ORDER_STATUSES.COMPLETED,
   },
 ];
 
