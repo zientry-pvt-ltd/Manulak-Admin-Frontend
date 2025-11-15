@@ -1,9 +1,10 @@
 import { Download, Edit, Eye, Trash } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
+import { INITIAL_PAGING, INITIAL_SORTING } from "@/constants";
 import {
   OrderEditViewTabs,
   OrderPlacementMenu,
@@ -18,10 +19,13 @@ import { setSelectedOrderId } from "@/features/orders/store/order-slice";
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import {
+  orderApi,
   useGetOrdersQuery,
   useUpdateOrderMetaDataMutation,
 } from "@/services/orders";
+import { store } from "@/store";
 import { useAppDispatch } from "@/store/utils";
+import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
 
 export const ViewOrdersTab = () => {
@@ -30,10 +34,16 @@ export const ViewOrdersTab = () => {
   const { openAppDialog } = useAppDialog();
   const [deleteFullOrder] = useUpdateOrderMetaDataMutation();
 
-  const { data, isLoading } = useGetOrdersQuery({
-    paging: { pageNo: 1, pageSize: 100 },
-    sorting: { columnName: "created_at", sortOrder: -1 },
-    filters: { query: "" },
+  const [filters, setFilters] = useState<
+    ResourceListQueryParams["filters"] | undefined
+  >();
+  const [pagination, setPagination] =
+    useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
+
+  const { data, isLoading, isFetching } = useGetOrdersQuery({
+    paging: pagination,
+    filters: filters,
+    sorting: INITIAL_SORTING,
   });
 
   const handleDeleteOrder = useCallback(
@@ -72,18 +82,87 @@ export const ViewOrdersTab = () => {
     data: data?.data.entities || [],
     columns: [
       {
-        header: "Customer Name",
-        accessorKey: "full_name",
-        id: "customer_name",
-        mutationKey: "full_name",
+        header: "Customer F Name",
+        accessorKey: "first_name",
+        id: "first_name",
+        mutationKey: "first_name",
         type: "text",
+        filtering: {
+          enabled: true,
+          filterType: "auto-complete",
+          asyncOptions: {
+            fetchOptions: async (query: string) => {
+              const result = await store.dispatch(
+                orderApi.endpoints.getOrders.initiate({
+                  paging: INITIAL_PAGING,
+                  sorting: INITIAL_SORTING,
+                  filters: [
+                    {
+                      queryAttribute: "first_name",
+                      query: query,
+                    },
+                  ],
+                }),
+              );
+
+              if (result.data) {
+                return result.data.data.entities.map((order) => ({
+                  label: `${order.first_name} ${order.last_name}`,
+                  value: order.first_name,
+                }));
+              }
+
+              return [];
+            },
+          },
+        },
+      },
+      {
+        header: "Customer L Name",
+        accessorKey: "last_name",
+        id: "last_name",
+        mutationKey: "last_name",
+        type: "text",
+        filtering: {
+          enabled: true,
+          filterType: "auto-complete",
+          asyncOptions: {
+            fetchOptions: async (query: string) => {
+              const result = await store.dispatch(
+                orderApi.endpoints.getOrders.initiate({
+                  paging: INITIAL_PAGING,
+                  sorting: INITIAL_SORTING,
+                  filters: [
+                    {
+                      queryAttribute: "last_name",
+                      query: query,
+                    },
+                  ],
+                }),
+              );
+
+              if (result.data) {
+                return result.data.data.entities.map((order) => ({
+                  label: `${order.first_name} ${order.last_name}`,
+                  value: order.last_name,
+                }));
+              }
+
+              return [];
+            },
+          },
+        },
       },
       {
         header: "Customer Phone",
         accessorKey: "primary_phone_number",
-        id: "customer_phone",
+        id: "primary_phone_number",
         mutationKey: "primary_phone_number",
         type: "text",
+        filtering: {
+          enabled: true,
+          filterType: "text",
+        },
       },
       {
         header: "Selling Method",
@@ -92,21 +171,24 @@ export const ViewOrdersTab = () => {
         mutationKey: "selling_method",
         type: "single-select",
         options: SELLING_METHODS_OPTIONS,
+        filtering: {
+          enabled: true,
+          filterType: "single-select",
+          filterOptions: SELLING_METHODS_OPTIONS,
+        },
       },
       {
         header: "Order Status",
         accessorKey: "status",
-        id: "order_status",
+        id: "status",
         mutationKey: "status",
         type: "single-select",
         options: ORDER_STATUS_OPTIONS,
-      },
-      {
-        header: "Order Value",
-        accessorKey: "order_value",
-        id: "order_value",
-        mutationKey: "order_value",
-        type: "number",
+        filtering: {
+          enabled: true,
+          filterType: "single-select",
+          filterOptions: ORDER_STATUS_OPTIONS,
+        },
       },
       {
         header: "Payment Method",
@@ -115,6 +197,18 @@ export const ViewOrdersTab = () => {
         mutationKey: "payment_method",
         type: "single-select",
         options: PAYMENT_METHOD_OPTIONS,
+        filtering: {
+          enabled: true,
+          filterType: "single-select",
+          filterOptions: PAYMENT_METHOD_OPTIONS,
+        },
+      },
+      {
+        header: "Order Value",
+        accessorKey: "order_value",
+        id: "order_value",
+        mutationKey: "order_value",
+        type: "number",
       },
       {
         header: "Actions",
@@ -175,14 +269,33 @@ export const ViewOrdersTab = () => {
     ],
     pagination: {
       enabled: true,
+      initialState: {
+        pageIndex: pagination.pageNo - 1,
+        pageSize: pagination.pageSize,
+      },
+      onPaginationChange(value) {
+        setPagination({
+          pageNo: value.pageIndex + 1,
+          pageSize: value.pageSize,
+        });
+      },
     },
     filtering: {
       enabled: true,
+      onColumnFilterChange(value) {
+        const newFilters = value.map((filter) => ({
+          queryAttribute: filter.id,
+          query: String(filter.value),
+        }));
+        setFilters(newFilters);
+      },
     },
     columnVisibility: {
       enabled: true,
     },
     customToolBar: OrderPlacementMenu,
   };
-  return <ConfigurableTable config={config} isFetching={isLoading} />;
+  return (
+    <ConfigurableTable config={config} isFetching={isLoading || isFetching} />
+  );
 };

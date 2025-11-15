@@ -1,18 +1,21 @@
 import { MinusCircle, PlusCircle } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
+import { INITIAL_PAGING, INITIAL_SORTING } from "@/constants";
 import { CATEGORIES } from "@/features/products/constants";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { ExistingStockIndicator, QuantityForm } from "@/features/stock";
 import type { StockOperationType } from "@/features/stock/types/stock.type";
 import { useAppDialog } from "@/providers";
-import { useGetProductsQuery } from "@/services/product";
+import { productApi, useGetProductsQuery } from "@/services/product";
 import { useUpdateStockQuantityMutation } from "@/services/stock";
+import { store } from "@/store";
 import { selectProducts } from "@/store/selectors";
 import { useAppSelector } from "@/store/utils";
+import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
 
 export const ViewStock = () => {
@@ -20,6 +23,18 @@ export const ViewStock = () => {
   const { products } = useAppSelector(selectProducts);
 
   const [updateStockQuantity] = useUpdateStockQuantityMutation();
+
+  const [filters, setFilters] = useState<
+    ResourceListQueryParams["filters"] | undefined
+  >();
+  const [pagination, setPagination] =
+    useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
+
+  const { isLoading, isFetching } = useGetProductsQuery({
+    filters: filters,
+    paging: pagination,
+    sorting: INITIAL_SORTING,
+  });
 
   const handleUpdateProductQuantity = useCallback(
     async ({
@@ -54,14 +69,6 @@ export const ViewStock = () => {
     [closeAppDialog, updateStockQuantity],
   );
 
-  const { isLoading } = useGetProductsQuery({
-    filters: {
-      query: "",
-    },
-    paging: { pageNo: 1, pageSize: 10 },
-    sorting: { columnName: "created_at", sortOrder: -1 },
-  });
-
   const config: TableConfig<IProductInfo> = useMemo(
     () => ({
       data: products,
@@ -75,7 +82,32 @@ export const ViewStock = () => {
           hideable: true,
           filtering: {
             enabled: true,
-            filterType: "text",
+            filterType: "auto-complete",
+            asyncOptions: {
+              fetchOptions: async (query: string) => {
+                const result = await store.dispatch(
+                  productApi.endpoints.getProducts.initiate({
+                    paging: INITIAL_PAGING,
+                    sorting: INITIAL_SORTING,
+                    filters: [
+                      {
+                        queryAttribute: "product_name",
+                        query: query,
+                      },
+                    ],
+                  }),
+                );
+
+                if (result.data) {
+                  return result.data.data.entities.map((product) => ({
+                    label: product.product_name,
+                    value: product.product_name,
+                  }));
+                }
+
+                return [];
+              },
+            },
           },
         },
         {
@@ -155,16 +187,41 @@ export const ViewStock = () => {
       ],
       pagination: {
         enabled: true,
+        initialState: {
+          pageIndex: pagination.pageNo - 1,
+          pageSize: pagination.pageSize,
+        },
+        onPaginationChange(value) {
+          setPagination({
+            pageNo: value.pageIndex + 1,
+            pageSize: value.pageSize,
+          });
+        },
       },
       filtering: {
         enabled: true,
+        onColumnFilterChange(value) {
+          const newFilters = value.map((filter) => ({
+            queryAttribute: filter.id,
+            query: String(filter.value),
+          }));
+          setFilters(newFilters);
+        },
       },
       columnVisibility: {
         enabled: true,
       },
       customToolBar: () => <ExistingStockIndicator />,
     }),
-    [handleUpdateProductQuantity, openAppDialog, products],
+    [
+      handleUpdateProductQuantity,
+      openAppDialog,
+      pagination.pageNo,
+      pagination.pageSize,
+      products,
+    ],
   );
-  return <ConfigurableTable config={config} isFetching={isLoading} />;
+  return (
+    <ConfigurableTable config={config} isFetching={isLoading || isFetching} />
+  );
 };
