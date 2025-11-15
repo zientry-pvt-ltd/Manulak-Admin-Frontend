@@ -1,5 +1,5 @@
 import { ClipboardPaste, Send } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { AppButton, AppTextarea } from "@/components";
@@ -13,7 +13,7 @@ export const OrderTextParser = () => {
   const [createOrderByMessage, { isLoading }] =
     useCreateOrderByMessageMutation();
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!textMessage.trim()) {
       setError("Please enter your order message");
       return;
@@ -28,23 +28,33 @@ export const OrderTextParser = () => {
       toast.error(message.message || "Failed to create order from message");
       console.error("Order creation error:", error);
     }
-  };
+  }, [textMessage, createOrderByMessage]);
 
-  const handlePaste = async () => {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setTextMessage(e.target.value);
+      if (error) {
+        setError("");
+      }
+    },
+    [error],
+  );
+
+  const handlePaste = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
       setTextMessage((prev) => prev + (prev ? "\n" : "") + text);
     } catch {
       setError("Failed to read clipboard. Please allow clipboard access.");
     }
-  };
+  }, []);
 
   return (
     <div className="w-full">
       <AppTextarea
         fullWidth
         value={textMessage}
-        onChange={(e) => setTextMessage(e.target.value)}
+        onChange={handleChange}
         placeholder="Example:&#10;නම: Piyath&#10;ලිපිනය: 22, Read Avenue, Colombo&#10;දුරකථන අංකය: 0712617261&#10;තැපැල් කේතය: 11550&#10;ගෙවූ මුදල: 1776.95&#10;ගෙවූ දිනය: 2025-10-15&#10;SLIP අංකය: SLIP767612&#10;නිෂ්පාදන: 74a9eaee-fd46-4f68-8436-8806fc0cef84 x24"
         className="h-64 p-3 resize-none font-mono text-sm"
         label="Enter your order details"
