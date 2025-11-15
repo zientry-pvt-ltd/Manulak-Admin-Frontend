@@ -21,7 +21,7 @@ export interface AppSelectProps {
   variant?: "outline" | "fill";
   fullWidth?: boolean;
   className?: string;
-  items: { label: string; value: string }[];
+  items: { label: string; value: string; disabled?: boolean }[];
   value?: string;
   defaultValue?: string;
   // eslint-disable-next-line no-unused-vars
@@ -114,7 +114,11 @@ const AppSelect: React.FC<AppSelectProps> = ({
         <SelectContent>
           <SelectGroup>
             {items.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
+              <SelectItem
+                key={item.value}
+                value={item.value}
+                disabled={item.disabled}
+              >
                 <AppText size={fontSizeMap[size]}>{item.label}</AppText>
               </SelectItem>
             ))}
