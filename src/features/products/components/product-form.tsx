@@ -70,14 +70,14 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
             ...selectedProduct,
           }
         : {
-            product_name: "Black Rose",
-            product_desc: "This is a sample description for Black Rose",
+            product_name: "",
+            product_desc: "",
             product_category: "PLANTS",
-            selling_price: 10,
-            bought_price: 20,
-            unit_weight: 30,
-            courier_chargers_1kg: 30,
-            courier_chargers_more_than_1kg: 220,
+            selling_price: 0,
+            bought_price: 0,
+            unit_weight: 0,
+            courier_chargers_1kg: 0,
+            courier_chargers_more_than_1kg: 0,
             product_image_urls: [],
           },
   });
