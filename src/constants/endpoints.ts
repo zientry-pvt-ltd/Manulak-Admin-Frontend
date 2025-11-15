@@ -1,3 +1,5 @@
+import type { ResourceListQueryParams } from "@/types";
+
 export const ENDPOINTS = {
   AUTH: {
     LOGIN: "/auth/login",
@@ -64,3 +66,13 @@ export const API_TAG_TYPES = [
   "PaymentHistory",
   "OrderProducts",
 ] as const;
+
+export const INITIAL_PAGING = {
+  pageNo: 1,
+  pageSize: 10,
+};
+
+export const INITIAL_SORTING = {
+  columnName: "created_at",
+  sortOrder: -1,
+} as ResourceListQueryParams["sorting"];
