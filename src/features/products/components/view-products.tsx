@@ -6,6 +6,7 @@ import type { z } from "zod";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
+import { ProductCustomIdCell } from "@/features/products/components/product-custom-id-cell";
 import ProductForm, {
   type ProductFormMode,
   type ProductFormSubmitData,
@@ -318,6 +319,16 @@ export const ViewProducts = () => {
     data: products || [],
     tableName: "Product",
     columns: [
+      {
+        id: "id",
+        accessorKey: "readable_id",
+        mutationKey: "readable_id",
+        header: "Product ID",
+        type: "custom",
+        sortable: false,
+        hideable: true,
+        CustomCell: ProductCustomIdCell,
+      },
       {
         id: "name",
         accessorKey: "product_name",

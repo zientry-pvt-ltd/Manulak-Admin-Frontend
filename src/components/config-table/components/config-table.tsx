@@ -518,6 +518,18 @@ export const ConfigurableTable = <
             return <AutoCompleteCell {...cellProps} />;
           case "icon-buttons":
             return <CellIconButtons {...cellProps} row={row.original} />;
+          case "custom": {
+            if (colConfig.CustomCell)
+              return colConfig.CustomCell({
+                value: getValue() as TData[typeof colConfig.accessorKey],
+                rowData: row.original,
+                onSave: cellProps.onSave,
+              });
+
+            return (
+              <p>Error: CustomCell not provided for column {colConfig.id}</p>
+            );
+          }
           default:
             return <TextCell {...cellProps} />;
         }

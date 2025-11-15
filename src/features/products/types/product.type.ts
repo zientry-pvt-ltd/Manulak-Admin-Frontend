@@ -10,6 +10,7 @@ export type ProductCategoryType =
 
 export type IProductInfo = {
   id: string;
+  readable_id: string;
   product_name: string;
   product_desc: string;
   product_category: string;

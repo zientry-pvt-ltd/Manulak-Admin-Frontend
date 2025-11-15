@@ -51,7 +51,13 @@ export interface ColumnConfig<TData, TKey extends keyof TData = keyof TData> {
     | "boolean"
     | "date"
     | "auto-complete"
-    | "icon-buttons";
+    | "icon-buttons"
+    | "custom";
+  CustomCell?: (props: {
+    value: TData[TKey];
+    rowData: TData;
+    onSave: ((newValue: MetaCellData) => Promise<void>) | undefined;
+  }) => React.ReactNode;
   options?: SelectOption[];
   width?: number;
   sortable?: boolean;
