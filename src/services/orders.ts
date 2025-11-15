@@ -12,6 +12,7 @@ import type {
   IOrderTransactionHistoryResponse,
   IOrderTransactionSlipUploadResponse,
   IUpdateOrderMetaDataRequest,
+  IUpdateOrderMetaDataResponse,
 } from "@/features/orders/types/order.type";
 import { api } from "@/services/api";
 import type { ResourceListQueryParams } from "@/types";
@@ -45,6 +46,11 @@ export const orderApi = api.injectEndpoints({
         url: ENDPOINTS.ORDERS.GET_ORDER_METADATA(id),
         method: "GET",
       }),
+      providesTags(result) {
+        return result
+          ? [{ type: "Order", id: result.data.order_id }]
+          : ["Order"];
+      },
     }),
 
     getOrderProducts: builder.query<IOrderProductListResponse, string | null>({
@@ -137,7 +143,7 @@ export const orderApi = api.injectEndpoints({
     }),
 
     updateOrderMetaData: builder.mutation<
-      void,
+      IUpdateOrderMetaDataResponse,
       { id: string; data: IUpdateOrderMetaDataRequest }
     >({
       query: ({ id, data }) => {
@@ -147,7 +153,11 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["Order"],
+      invalidatesTags(result) {
+        return result
+          ? [{ type: "Order", id: result.data.order_id }, "Order"]
+          : ["Order"];
+      },
     }),
 
     uploadPaymentSlip: builder.mutation<
