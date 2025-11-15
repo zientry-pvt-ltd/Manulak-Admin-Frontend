@@ -23,6 +23,19 @@ type OrderDetailsTabProps = {
 
 type FormFieldValues = z.infer<typeof orderMetaDataSchema>;
 
+const getDisabledStatuses = (currentStatus: OrderStatus): OrderStatus[] => {
+  const statusRules: Record<OrderStatus, OrderStatus[]> = {
+    PENDING: [], // Can transition to any status
+    CONFIRMED: ["PENDING"], // Cannot go back to pending
+    SHIPPED: ["PENDING", "CONFIRMED"],
+    DELIVERED: ["PENDING", "CONFIRMED", "SHIPPED"],
+    COMPLETE: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED"],
+    CANCELLED: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "COMPLETE"],
+  };
+
+  return statusRules[currentStatus] || [];
+};
+
 export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
   const { selectedOrderId } = useAppSelector(selectOrder);
   const { data, isLoading, error } = useGetOrderMetadataQuery(selectedOrderId, {
@@ -139,6 +152,13 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
   }
 
   const isViewMode = mode === "view";
+
+  const currentStatus = data.data.status;
+  const disabledStatuses = getDisabledStatuses(currentStatus);
+  const filteredStatusOptions = ORDER_STATUS_OPTIONS.map((option) => ({
+    ...option,
+    disabled: disabledStatuses.includes(option.value as OrderStatus),
+  }));
 
   return (
     <div className="space-y-6 p-2 mb-10">
@@ -284,7 +304,7 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
             <AppSelect
               label="Order Status"
               placeholder="Select order status"
-              items={ORDER_STATUS_OPTIONS}
+              items={filteredStatusOptions}
               defaultValue={data.data.status}
               fullWidth
               size="sm"
