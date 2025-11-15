@@ -121,6 +121,8 @@ export type IOrdersResponse = ApiResourceList<ModifiedOrder>;
 
 export type IOrderProductListResponse = ApiResource<OrderProductListItem[]>;
 
+export type IUpdateOrderMetaDataResponse = ApiResource<Order>;
+
 export type IOrderTransactionHistoryResponse = ApiResource<
   OrderTransactionHistoryItem[]
 >;
