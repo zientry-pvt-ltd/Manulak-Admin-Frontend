@@ -666,7 +666,7 @@ export const ConfigurableTable = <
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={(value) => table.setPageSize(Number(value))}
             >
-              <SelectTrigger className="h-8 w-[4rem] [&[data-size]]:h-8">
+              <SelectTrigger className="h-8 max-w-[4.2rem] [&[data-size]]:h-8">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent side="top">
