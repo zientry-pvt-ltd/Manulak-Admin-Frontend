@@ -321,8 +321,8 @@ export const ViewProducts = () => {
     columns: [
       {
         id: "id",
-        accessorKey: "readable_id",
-        mutationKey: "readable_id",
+        accessorKey: "id",
+        mutationKey: "id",
         header: "Product ID",
         type: "custom",
         sortable: false,
