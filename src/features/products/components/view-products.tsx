@@ -1,11 +1,11 @@
-import type { PaginationState, SortingState } from "@tanstack/react-table";
 import { Edit, Eye, Trash } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { z } from "zod";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
+import { INITIAL_PAGING, INITIAL_SORTING } from "@/constants";
 import { ProductCustomIdCell } from "@/features/products/components/product-custom-id-cell";
 import ProductForm, {
   type ProductFormMode,
@@ -17,15 +17,17 @@ import { selectProduct } from "@/features/products/store/product-slice";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import {
+  productApi,
   useAddProductImageMutation,
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
-  useLazyGetProductsQuery,
   useUpdateProductMutation,
 } from "@/services/product";
+import { store } from "@/store";
 import { selectProducts } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
+import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
 
 const getChangedFields = (
@@ -54,56 +56,22 @@ export const ViewProducts = () => {
   const { openAppDialog, closeAppDialog } = useAppDialog();
   const { products } = useAppSelector(selectProducts);
 
-  const { isFetching } = useGetProductsQuery({
-    filters: {
-      query: "",
-    },
-    paging: { pageNo: 1, pageSize: 10 },
-    sorting: { columnName: "created_at", sortOrder: -1 },
+  const [filters, setFilters] = useState<
+    ResourceListQueryParams["filters"] | undefined
+  >();
+  const [pagination, setPagination] =
+    useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
+
+  const { isFetching, isLoading } = useGetProductsQuery({
+    paging: pagination,
+    filters: filters,
+    sorting: INITIAL_SORTING,
   });
 
   const [createProduct] = useCreateProductMutation();
   const [addProductImage] = useAddProductImageMutation();
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
-  const [trigger] = useLazyGetProductsQuery();
-
-  const handlePaginationChange = (value: PaginationState) => {
-    trigger({
-      filters: {
-        query: "",
-      },
-      paging: {
-        pageNo: value.pageIndex + 1,
-        pageSize: value.pageSize,
-      },
-      sorting: { columnName: "created_at", sortOrder: -1 },
-    });
-  };
-
-  const handleSortingChange = (sorting: SortingState) => {
-    if (sorting.length > 0) {
-      const sort = sorting[0];
-      trigger({
-        filters: {
-          query: "",
-        },
-        paging: { pageNo: 1, pageSize: 10 },
-        sorting: {
-          columnName: sort.id,
-          sortOrder: sort.desc ? -1 : 1,
-        },
-      });
-    } else {
-      trigger({
-        filters: {
-          query: "",
-        },
-        paging: { pageNo: 1, pageSize: 10 },
-        sorting: { columnName: "created_at", sortOrder: -1 },
-      });
-    }
-  };
 
   const handleDeleteProduct = useCallback(
     (productId: string) => {
@@ -339,7 +307,32 @@ export const ViewProducts = () => {
         hideable: true,
         filtering: {
           enabled: true,
-          filterType: "text",
+          filterType: "auto-complete",
+          asyncOptions: {
+            fetchOptions: async (query: string) => {
+              const result = await store.dispatch(
+                productApi.endpoints.getProducts.initiate({
+                  paging: INITIAL_PAGING,
+                  sorting: INITIAL_SORTING,
+                  filters: [
+                    {
+                      queryAttribute: "product_name",
+                      query: query,
+                    },
+                  ],
+                }),
+              );
+
+              if (result.data) {
+                return result.data.data.entities.map((product) => ({
+                  label: product.product_name,
+                  value: product.product_name,
+                }));
+              }
+
+              return [];
+            },
+          },
         },
       },
       {
@@ -430,19 +423,28 @@ export const ViewProducts = () => {
         ],
       },
     ],
+    pagination: {
+      enabled: true,
+      initialState: {
+        pageIndex: pagination.pageNo - 1,
+        pageSize: pagination.pageSize,
+      },
+      onPaginationChange(value) {
+        setPagination({
+          pageNo: value.pageIndex + 1,
+          pageSize: value.pageSize,
+        });
+      },
+    },
     filtering: {
       enabled: true,
       onColumnFilterChange(value) {
-        console.log("Column Filter Changed: ", value);
+        const newFilters = value.map((filter) => ({
+          queryAttribute: filter.id,
+          query: String(filter.value),
+        }));
+        setFilters(newFilters);
       },
-    },
-    pagination: {
-      enabled: true,
-      onPaginationChange: handlePaginationChange,
-    },
-    sorting: {
-      enabled: true,
-      onColumnSortingChange: handleSortingChange,
     },
     columnVisibility: {
       enabled: true,
@@ -456,5 +458,7 @@ export const ViewProducts = () => {
       },
     },
   };
-  return <ConfigurableTable config={config} isFetching={isFetching} />;
+  return (
+    <ConfigurableTable config={config} isFetching={isFetching || isLoading} />
+  );
 };
