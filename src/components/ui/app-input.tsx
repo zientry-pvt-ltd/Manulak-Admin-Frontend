@@ -2,6 +2,7 @@ import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
 import AppIcon from "@/components/ui/app-icon";
+import AppIconButton from "@/components/ui/app-icon-button";
 import AppText, { type FontSize } from "@/components/ui/app-text";
 import { cn } from "@/lib/utils";
 
@@ -100,17 +101,15 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           />
 
           {endIcon && (
-            <button
+            <AppIconButton
               type="button"
               onClick={onEndIconClick}
-              className={cn(
-                "ml-2 text-muted-foreground",
-                onEndIconClick &&
-                  "cursor-pointer hover:text-foreground transition-colors",
-              )}
-            >
-              <AppIcon Icon={endIcon} size={size} />
-            </button>
+              disabled={!onEndIconClick}
+              size={"sm"}
+              Icon={endIcon}
+              className="ml-2 text-muted-foreground rounded-full"
+              variant={"ghost"}
+            />
           )}
         </div>
 
