@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, User } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { AppButton, AppInput, Form } from "@/components";
@@ -29,6 +30,7 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
   const onSubmit = async (data: z.infer<typeof loginInputSchema>) => {
     try {
       await login(data).unwrap();
+      toast.success("You have logged in successfully!");
       onLoginSuccess();
     } catch (error) {
       const message = normalizeError(error);
