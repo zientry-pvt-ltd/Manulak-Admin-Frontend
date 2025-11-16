@@ -22,8 +22,8 @@ export type ApiResource<T> = ResponseDTO<T>;
 export type ApiResourceList<T> = ListResponseDTO<T>;
 
 export type ResourceListQueryParams = {
-  filters?: {
-    queryAttribute: string;
+  filters: {
+    query_attribute: string;
     query: string;
   }[];
   paging: {

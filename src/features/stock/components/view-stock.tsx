@@ -13,24 +13,25 @@ import { useAppDialog } from "@/providers";
 import { productApi, useGetProductsQuery } from "@/services/product";
 import { useUpdateStockQuantityMutation } from "@/services/stock";
 import { store } from "@/store";
-import { selectProducts } from "@/store/selectors";
-import { useAppSelector } from "@/store/utils";
 import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
 
 export const ViewStock = () => {
   const { openAppDialog, closeAppDialog } = useAppDialog();
-  const { products } = useAppSelector(selectProducts);
 
   const [updateStockQuantity] = useUpdateStockQuantityMutation();
 
-  const [filters, setFilters] = useState<
-    ResourceListQueryParams["filters"] | undefined
-  >();
+  const [filters, setFilters] = useState<ResourceListQueryParams["filters"]>(
+    [],
+  );
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
-  const { isLoading, isFetching } = useGetProductsQuery({
+  const {
+    data: productData,
+    isLoading,
+    isFetching,
+  } = useGetProductsQuery({
     filters: filters,
     paging: pagination,
     sorting: INITIAL_SORTING,
@@ -71,10 +72,10 @@ export const ViewStock = () => {
 
   const config: TableConfig<IProductInfo> = useMemo(
     () => ({
-      data: products,
+      data: productData?.data.entities || [],
       columns: [
         {
-          id: "name",
+          id: "product_name",
           accessorKey: "product_name",
           header: "Product Name",
           mutationKey: "product_name",
@@ -91,7 +92,7 @@ export const ViewStock = () => {
                     sorting: INITIAL_SORTING,
                     filters: [
                       {
-                        queryAttribute: "product_name",
+                        query_attribute: "product_name",
                         query: query,
                       },
                     ],
@@ -202,7 +203,7 @@ export const ViewStock = () => {
         enabled: true,
         onColumnFilterChange(value) {
           const newFilters = value.map((filter) => ({
-            queryAttribute: filter.id,
+            query_attribute: filter.id,
             query: String(filter.value),
           }));
           setFilters(newFilters);
@@ -218,7 +219,7 @@ export const ViewStock = () => {
       openAppDialog,
       pagination.pageNo,
       pagination.pageSize,
-      products,
+      productData?.data.entities,
     ],
   );
   return (
