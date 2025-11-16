@@ -25,8 +25,7 @@ import {
   useUpdateProductMutation,
 } from "@/services/product";
 import { store } from "@/store";
-import { selectProducts } from "@/store/selectors";
-import { useAppDispatch, useAppSelector } from "@/store/utils";
+import { useAppDispatch } from "@/store/utils";
 import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
 
@@ -54,15 +53,18 @@ export const ViewProducts = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog, closeAppDialog } = useAppDialog();
-  const { products } = useAppSelector(selectProducts);
 
-  const [filters, setFilters] = useState<
-    ResourceListQueryParams["filters"] | undefined
-  >();
+  const [filters, setFilters] = useState<ResourceListQueryParams["filters"]>(
+    [],
+  );
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
-  const { isFetching, isLoading } = useGetProductsQuery({
+  const {
+    data: productData,
+    isFetching,
+    isLoading,
+  } = useGetProductsQuery({
     paging: pagination,
     filters: filters,
     sorting: INITIAL_SORTING,
@@ -234,7 +236,7 @@ export const ViewProducts = () => {
 
     const productId = data.fieldData.id;
     const updatedProduct = data.fieldData;
-    const productBeforeUpdate = products?.find(
+    const productBeforeUpdate = productData?.data.entities?.find(
       (p) => p.id === updatedProduct.id,
     );
 
@@ -284,7 +286,7 @@ export const ViewProducts = () => {
   };
 
   const config: TableConfig<IProductInfo> = {
-    data: products || [],
+    data: productData?.data.entities || [],
     tableName: "Product",
     columns: [
       {
@@ -298,7 +300,7 @@ export const ViewProducts = () => {
         CustomCell: ProductCustomIdCell,
       },
       {
-        id: "name",
+        id: "product_name",
         accessorKey: "product_name",
         mutationKey: "product_name",
         header: "Name",
@@ -316,7 +318,7 @@ export const ViewProducts = () => {
                   sorting: INITIAL_SORTING,
                   filters: [
                     {
-                      queryAttribute: "product_name",
+                      query_attribute: "product_name",
                       query: query,
                     },
                   ],
@@ -440,7 +442,7 @@ export const ViewProducts = () => {
       enabled: true,
       onColumnFilterChange(value) {
         const newFilters = value.map((filter) => ({
-          queryAttribute: filter.id,
+          query_attribute: filter.id,
           query: String(filter.value),
         }));
         setFilters(newFilters);

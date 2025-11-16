@@ -128,7 +128,7 @@ export const orderApi = api.injectEndpoints({
       {
         itemId: string;
         data: {
-          modified_required_qunatity: number;
+          modified_required_quantity: number;
         };
       }
     >({

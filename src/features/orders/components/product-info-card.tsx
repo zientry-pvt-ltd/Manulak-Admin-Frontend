@@ -45,7 +45,7 @@ export const ProductCard = ({
       await updateOrderItem({
         itemId: item.order_details_id,
         data: {
-          modified_required_qunatity: newQuantity,
+          modified_required_quantity: newQuantity,
         },
       });
       toast.success("Order item quantity updated successfully");

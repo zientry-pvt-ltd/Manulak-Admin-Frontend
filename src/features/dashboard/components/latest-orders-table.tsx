@@ -20,6 +20,7 @@ export const LatestOrderTable = () => {
   const { data, isLoading, isFetching } = useGetOrdersQuery({
     paging: pagination,
     sorting: INITIAL_SORTING,
+    filters: [],
   });
 
   const config: TableConfig<ModifiedOrder> = {

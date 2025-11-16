@@ -34,9 +34,9 @@ export const ViewOrdersTab = () => {
   const { openAppDialog } = useAppDialog();
   const [deleteFullOrder] = useUpdateOrderMetaDataMutation();
 
-  const [filters, setFilters] = useState<
-    ResourceListQueryParams["filters"] | undefined
-  >();
+  const [filters, setFilters] = useState<ResourceListQueryParams["filters"]>(
+    [],
+  );
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
@@ -98,7 +98,7 @@ export const ViewOrdersTab = () => {
                   sorting: INITIAL_SORTING,
                   filters: [
                     {
-                      queryAttribute: "first_name",
+                      query_attribute: "first_name",
                       query: query,
                     },
                   ],
@@ -134,7 +134,7 @@ export const ViewOrdersTab = () => {
                   sorting: INITIAL_SORTING,
                   filters: [
                     {
-                      queryAttribute: "last_name",
+                      query_attribute: "last_name",
                       query: query,
                     },
                   ],
@@ -284,7 +284,7 @@ export const ViewOrdersTab = () => {
       enabled: true,
       onColumnFilterChange(value) {
         const newFilters = value.map((filter) => ({
-          queryAttribute: filter.id,
+          query_attribute: filter.id,
           query: String(filter.value),
         }));
         setFilters(newFilters);
