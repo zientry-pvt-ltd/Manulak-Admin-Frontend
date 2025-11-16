@@ -2,6 +2,7 @@ import type { LucideProps } from "lucide-react";
 import * as React from "react";
 
 import AppIcon from "@/components/ui/app-icon";
+import AppIconButton from "@/components/ui/app-icon-button";
 import AppText, { type FontSize } from "@/components/ui/app-text";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ export interface AppInputProps
   endIcon?: React.ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
+  onEndIconClick?: () => void;
   size?: "sm" | "md" | "lg";
   variant?: "outline" | "fill";
   className?: string;
@@ -40,6 +42,7 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
       error,
       startIcon,
       endIcon,
+      onEndIconClick,
       size = "md",
       variant = "outline",
       className,
@@ -98,10 +101,14 @@ const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           />
 
           {endIcon && (
-            <AppIcon
+            <AppIconButton
+              type="button"
+              onClick={onEndIconClick}
+              disabled={!onEndIconClick}
+              size={"sm"}
               Icon={endIcon}
-              size={size}
-              className="ml-2 text-muted-foreground"
+              className="ml-2 text-muted-foreground rounded-full"
+              variant={"ghost"}
             />
           )}
         </div>

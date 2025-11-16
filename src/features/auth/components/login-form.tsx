@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, User } from "lucide-react";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,6 +19,7 @@ type LoginFormProps = {
 
 const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
   const [login, { isLoading }] = useLoginMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof loginInputSchema>>({
     resolver: zodResolver(loginInputSchema),
@@ -53,10 +55,13 @@ const LoginForm = ({ onLoginSuccess, onLoginError }: LoginFormProps) => {
         />
 
         <AppInput
+          key={showPassword ? "text" : "password"}
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="••••••"
           startIcon={Lock}
+          endIcon={showPassword ? EyeOff : Eye}
+          onEndIconClick={() => setShowPassword(!showPassword)}
           fullWidth
           error={form.formState.errors.password?.message}
           {...form.register("password")}
