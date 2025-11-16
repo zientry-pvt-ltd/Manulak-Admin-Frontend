@@ -158,7 +158,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
 
         <AppInput
-          label="Selling Price"
+          label="Selling Price (Rs)"
           type="number"
           size="md"
           placeholder="Enter selling price"
@@ -169,7 +169,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
 
         <AppInput
-          label="Bought Price"
+          label="Bought Price (Rs)"
           type="number"
           size="md"
           placeholder="Enter bought price"
@@ -210,7 +210,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
 
         <AppInput
-          label="Courier Charge (1st Kg)"
+          label="Courier Charge for the 1st Kilogram (Rs)"
           type="number"
           size="md"
           placeholder="Enter charge"
@@ -223,7 +223,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
 
         <AppInput
-          label="Courier Charge (Other Kg)"
+          label="Courier Charge per Kilogram (Excluding 1st Kilogram) (Rs)"
           type="number"
           size="md"
           placeholder="Enter charge"
