@@ -16,6 +16,7 @@ export type Order = {
   is_deleted: boolean;
   first_name: string;
   last_name: string;
+  admin_message: string | null;
   address_line_1: string;
   address_line_2: string;
   address_line_3: string;

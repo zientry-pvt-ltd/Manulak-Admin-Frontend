@@ -3,7 +3,13 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { AppButton, AppInput, AppSelect, AppText } from "@/components";
+import {
+  AppButton,
+  AppInput,
+  AppSelect,
+  AppText,
+  AppTextarea,
+} from "@/components";
 import {
   ORDER_STATUS_OPTIONS,
   type OrderStatus,
@@ -51,6 +57,7 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
           first_name: data.data.first_name,
           last_name: data.data.last_name,
           selling_method: data.data.selling_method,
+          admin_message: data.data.admin_message || "",
           order_value: data.data.order_value,
           address_line_1: data.data.address_line_1,
           address_line_2: data.data.address_line_2,
@@ -318,6 +325,16 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
                 });
               }}
               {...form.register("status")}
+            />
+
+            <AppTextarea
+              label="Admin Note"
+              placeholder="Enter admin note"
+              fullWidth
+              size="sm"
+              disabled={isViewMode}
+              error={form.formState.errors?.admin_message?.message}
+              {...form.register("admin_message")}
             />
           </div>
         </div>
