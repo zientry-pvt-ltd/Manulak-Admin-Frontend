@@ -13,6 +13,10 @@ const SellingMethodSchema = z.nativeEnum(SELLING_METHODS);
 export const orderMetaDataSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
+  admin_message: z
+    .string()
+    .max(500, "Admin message must be at most 500 characters")
+    .optional(),
   selling_method: SellingMethodSchema,
   order_value: z.number().min(0, "Order value must be at least 0"),
   address_line_1: z.string().min(1, "Address line 1 is required"),
