@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { AppButton, AppInput, AppText } from "@/components";
+import { AppInput, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
 import ProductSelectorCard from "@/features/orders/components/product-selector-card";
 import { plantNurseryOrderSchema } from "@/features/orders/schema";
@@ -118,13 +118,6 @@ export const PlantNurseryOrderPlacementForm = () => {
           <AppText variant="subheading">Order Information</AppText>
           <ProductSelectorCard />
         </div>
-
-        <AppButton
-          type="button"
-          onClick={() => console.log(form.formState.errors, form.getValues())}
-        >
-          Debug Values
-        </AppButton>
 
         {/* Billing Information Section */}
         <div className="pr-4">
