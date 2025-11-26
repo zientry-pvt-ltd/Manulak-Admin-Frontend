@@ -55,7 +55,7 @@ export const orderItemsDataSchema = z
 export const paymentDataSchema = z.object({
   payment_date: z.string().min(1, "Payment date is required"),
   paid_amount: z.number().min(100, "Paid amount must be at least 100"),
-  payment_slip_number: z.string().min(1, "Payment slip number is required"),
+  payment_slip_number: z.string().optional(),
 });
 
 export const onlineManualOrderSchema = z.object({
