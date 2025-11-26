@@ -18,6 +18,7 @@ import {
 } from "@/features/orders/store/order-form-slice";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { cn } from "@/lib/utils";
+import { useCalculateOrderValueMutation } from "@/services/orders";
 import { useSearchProductsMutation } from "@/services/product";
 import { selectOrderForm } from "@/store/selectors/orderFormSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
@@ -33,58 +34,82 @@ function ProductSelectorCard() {
   const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
 
   const [searchProducts] = useSearchProductsMutation();
+  const [
+    calculateOrderValue,
+    { isLoading: isCalculatingOrderValue, isError: isCalculateOrderValueError },
+  ] = useCalculateOrderValueMutation();
 
   const [quantity, setQuantity] = useState<number | undefined>();
   const [pickedProduct, setPickedProduct] = useState<IProductInfo | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>();
 
-  const setOrderValue = () => {
-    setValue("orderMetaData.order_value", selectedProducts.subtotal, {
+  const setOrderValue = (subtotal: number) => {
+    setValue("orderMetaData.order_value", subtotal, {
       shouldValidate: true,
       shouldDirty: true,
     });
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!selectedProductId || !quantity || quantity <= 0) return;
-
     if (!pickedProduct) return;
 
-    dispatch(
-      addProductToList({
-        productId: pickedProduct.id,
-        productName: pickedProduct.product_name,
-        productPrice: pickedProduct.selling_price,
-        quantity,
-        availableQuantity: pickedProduct.quantity,
-      }),
-    );
+    try {
+      const orderItemsArray = [
+        ...getValues().orderItemsData,
+        { product_id: pickedProduct.id, required_quantity: quantity },
+      ];
 
-    const newOrderItems = [
-      ...getValues().orderItemsData,
-      { product_id: pickedProduct.id, required_quantity: quantity },
-    ];
-    setValue("orderItemsData", newOrderItems, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
+      const { data: totalResult } = await calculateOrderValue({
+        orderItemsArray,
+      }).unwrap();
 
-    setOrderValue();
+      setOrderValue(totalResult.totalValue);
+
+      setValue("orderItemsData", orderItemsArray, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      dispatch(
+        addProductToList({
+          productId: pickedProduct.id,
+          productName: pickedProduct.product_name,
+          productPrice: pickedProduct.selling_price,
+          quantity,
+          availableQuantity: pickedProduct.quantity,
+        }),
+      );
+    } catch (error) {
+      setOrderValue(0);
+      console.log(error);
+    }
+
     setSelectedProductId(null);
     setQuantity(undefined);
     setPickedProduct(null);
   };
 
-  const handleRemoveProduct = (productId: string) => {
-    dispatch(removeProductFromList(productId));
-
-    const newOrderItems = getValues().orderItemsData.filter(
+  const handleRemoveProduct = async (productId: string) => {
+    const orderItemsArray = getValues().orderItemsData.filter(
       (item) => item.product_id !== productId,
     );
-    setValue("orderItemsData", newOrderItems, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
+    dispatch(removeProductFromList(productId));
+
+    try {
+      const { data: totalResult } = await calculateOrderValue({
+        orderItemsArray,
+      }).unwrap();
+
+      setOrderValue(totalResult.totalValue);
+
+      setValue("orderItemsData", orderItemsArray, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    } catch (error) {
+      setOrderValue(0);
+      console.log(error);
+    }
   };
 
   const handleProductSelect = (
@@ -193,8 +218,19 @@ function ProductSelectorCard() {
       <div className="flex flex-col w-1/2">
         <AppText variant="caption" size="text-xs" className="mb-2">
           Selected Products{" "}
-          {selectedProducts.subtotal > 0 &&
-            `(Subtotal Rs:${selectedProducts.subtotal.toFixed(2)})`}
+          {!isCalculateOrderValueError &&
+            !isCalculatingOrderValue &&
+            getValues().orderMetaData.order_value > 0 &&
+            getValues().orderItemsData.length > 0 &&
+            `(Total with Courier Charges Rs:${getValues().orderMetaData.order_value.toFixed(2)})`}
+          {/*  */}
+          {isCalculateOrderValueError && (
+            <AppText size="text-xs" color="destructive">
+              - Error calculating order value.
+            </AppText>
+          )}
+          {/*  */}
+          {isCalculatingOrderValue && "- Calculating..."}
         </AppText>
         <div
           className={cn(

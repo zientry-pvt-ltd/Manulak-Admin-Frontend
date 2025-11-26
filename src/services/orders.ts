@@ -1,5 +1,7 @@
 import { ENDPOINTS } from "@/constants";
 import type {
+  ICalculateOrderValueRequest,
+  ICalculateOrderValueResponse,
   ICreateOrderItemResponse,
   ICreateOrderRequest,
   ICreatePaymentRecordRequest,
@@ -185,6 +187,19 @@ export const orderApi = api.injectEndpoints({
       },
       invalidatesTags: ["OrderProducts"],
     }),
+
+    calculateOrderValue: builder.mutation<
+      ICalculateOrderValueResponse,
+      ICalculateOrderValueRequest
+    >({
+      query: ({ orderItemsArray }) => {
+        return {
+          url: ENDPOINTS.ORDERS.CALCULATE_ORDER_VALUE(),
+          method: "POST",
+          body: { orderItemsArray },
+        };
+      },
+    }),
   }),
   overrideExisting: false,
 });
@@ -202,4 +217,5 @@ export const {
   useCreateOrderByMessageMutation,
   useUpdateOrderItemRecordMutation,
   useDeleteOrderItemRecordMutation,
+  useCalculateOrderValueMutation,
 } = orderApi;

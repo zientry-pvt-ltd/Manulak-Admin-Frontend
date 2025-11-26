@@ -106,6 +106,13 @@ export type IUpdateOrderMetaDataRequest = Partial<OrderMetaData>;
 
 export type IOrderItemCreateRequest = OrderItem;
 
+export type ICalculateOrderValueRequest = {
+  orderItemsArray: Array<{
+    product_id: string;
+    required_quantity: number;
+  }>;
+};
+
 export type ICreateOrderItemResponse = ApiResource<OrderProductListItem>;
 
 export type ICreatePaymentRecordResponse =
@@ -129,3 +136,9 @@ export type IOrderTransactionHistoryResponse = ApiResource<
 >;
 
 export type IOrderMetadataResponse = ApiResource<Order>;
+
+export type ICalculateOrderValueResponse = ApiResource<{
+  itemsValue: number;
+  courierValue: number;
+  totalValue: number;
+}>;

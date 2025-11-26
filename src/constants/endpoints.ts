@@ -41,6 +41,7 @@ export const ENDPOINTS = {
     GET_ORDER_PAYMENT_TRANSACTIONS: (id: string | null) =>
       `/order/get-all-payment-transactions-by-id/${id}`,
     UPLOAD_PAYMENT_SLIP: (id: string) => `/order/upload-payment-slip/${id}`,
+    CALCULATE_ORDER_VALUE: () => "/order/calculate-order-value",
   },
   DASHBOARD: {
     GET_TOTAL_SALES_BY_TIME_PERIOD: "/dashboard/get-total-sales",
