@@ -1,20 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, Image, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
 
-import {
-  AppButton,
-  AppIcon,
-  AppIconButton,
-  AppInput,
-  AppSelect,
-  AppText,
-  AppTextarea,
-} from "@/components";
+import { AppInput, AppSelect, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
+import { FileUploadWithPreview } from "@/features/orders/components/file-upload-with-preview";
 import ProductSelectorCard from "@/features/orders/components/product-selector-card";
 import {
   PAYMENT_METHOD_OPTIONS,
@@ -39,7 +31,6 @@ export const OnlineOrderPlacementForm = () => {
   const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
 
@@ -97,15 +88,6 @@ export const OnlineOrderPlacementForm = () => {
       },
     },
   });
-
-  const handleImageUpload = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) return;
-      const files = Array.from(e.target.files);
-      setLocalSlipFile(files[0]);
-    },
-    [],
-  );
 
   const handleSubmit = async (data: FormFieldValues) => {
     const { orderItemsData, orderMetaData, paymentData } = data;
@@ -174,19 +156,6 @@ export const OnlineOrderPlacementForm = () => {
         <div className="pr-4">
           <AppText variant="subheading">Order Information</AppText>
           <ProductSelectorCard />
-
-          <div className="flex flex-row w-1/2 mt-2 justify-center items-end gap-x-4">
-            <AppTextarea
-              label="Admin Note"
-              placeholder="Enter admin note"
-              fullWidth
-              size="sm"
-              error={
-                form.formState.errors.orderMetaData?.admin_message?.message
-              }
-              {...form.register("orderMetaData.admin_message")}
-            />
-          </div>
         </div>
 
         <div className="pr-4">
@@ -408,67 +377,13 @@ export const OnlineOrderPlacementForm = () => {
               Upload Payment Slip
             </AppText>
 
-            {localSlipFile && (
-              <div className="flex items-center justify-between rounded-md border p-2 max-w-xs">
-                <div className="flex items-center space-x-3">
-                  {/* File Icon */}
-                  <div className="flex h-10 w-10 items-center justify-center bg-accent rounded-sm">
-                    {localSlipFile.type.startsWith("image/") ? (
-                      <AppIcon Icon={Image} className="h-6 w-6 text-blue-500" />
-                    ) : (
-                      <AppIcon
-                        Icon={FileText}
-                        className="h-6 w-6 text-amber-500"
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex flex-col">
-                    <AppText variant="caption" size="text-sm">
-                      {localSlipFile.name}
-                    </AppText>
-                    <AppText variant="caption" size="text-xs" color="muted">
-                      {(localSlipFile.size / (1024 * 1024)).toFixed(2)} MB
-                    </AppText>
-                  </div>
-                </div>
-
-                <AppIconButton
-                  Icon={X}
-                  onClick={() => setLocalSlipFile(null)}
-                  aria-label="Remove file"
-                  rounded="full"
-                  size="sm"
-                  variant={"outline"}
-                />
-              </div>
-            )}
-
-            {!localSlipFile && (
-              <div className="h-36 border rounded-lg flex justify-center items-center flex-col">
-                <AppInput
-                  size="sm"
-                  fullWidth
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                />
-                <AppText variant="caption" size="text-xs">
-                  Supported formats: PDF, JPG, PNG
-                </AppText>
-                <AppButton
-                  variant="outline"
-                  size="sm"
-                  className="m-2"
-                  onClick={() => fileInputRef.current?.click()}
-                  type="button"
-                >
-                  Choose File
-                </AppButton>
-              </div>
-            )}
+            <FileUploadWithPreview
+              file={localSlipFile}
+              onFileChange={setLocalSlipFile}
+              accept=".pdf,.jpg,.jpeg,.png"
+              maxSizeMB={10}
+              supportedFormatsText="Supported formats: PDF, JPG, PNG (Max 10MB)"
+            />
           </div>
         </div>
       </form>

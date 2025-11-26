@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { AppInput, AppText, AppTextarea } from "@/components";
+import { AppInput, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
 import ProductSelectorCard from "@/features/orders/components/product-selector-card";
 import { plantNurseryOrderSchema } from "@/features/orders/schema";
@@ -117,19 +117,6 @@ export const PlantNurseryOrderPlacementForm = () => {
         <div className="pr-4">
           <AppText variant="subheading">Order Information</AppText>
           <ProductSelectorCard />
-
-          <div className="flex flex-row w-1/2 mt-2 justify-center items-end gap-x-4">
-            <AppTextarea
-              label="Admin Note"
-              placeholder="Enter admin note"
-              fullWidth
-              size="sm"
-              error={
-                form.formState.errors.orderMetaData?.admin_message?.message
-              }
-              {...form.register("orderMetaData.admin_message")}
-            />
-          </div>
         </div>
 
         {/* Billing Information Section */}
