@@ -60,11 +60,7 @@ export const ViewProducts = () => {
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
-  const {
-    data: productData,
-    isFetching,
-    isLoading,
-  } = useGetProductsQuery({
+  const { data: productData, isLoading } = useGetProductsQuery({
     paging: pagination,
     filters: filters,
     sorting: INITIAL_SORTING,
@@ -261,7 +257,7 @@ export const ViewProducts = () => {
       await updateProduct({
         id: productId,
         ...changes,
-      });
+      }).unwrap();
 
       await handleImageUpload(productId, data, loadingToastId, "edit");
 
@@ -344,6 +340,7 @@ export const ViewProducts = () => {
         header: "Description",
         type: "text",
         hideable: true,
+        width: 300,
       },
       {
         id: "category",
@@ -460,7 +457,5 @@ export const ViewProducts = () => {
       },
     },
   };
-  return (
-    <ConfigurableTable config={config} isFetching={isFetching || isLoading} />
-  );
+  return <ConfigurableTable config={config} isFetching={isLoading} />;
 };
