@@ -83,6 +83,7 @@ export const productApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
+      invalidatesTags: ["Product"],
     }),
 
     deleteProduct: builder.mutation<void, string>({

@@ -34,13 +34,14 @@ export const TextCell = <TData, TKey extends keyof TData>({
   }
 
   return (
-    <div
-      className={`text-xs p-2 min-h-[32px] flex items-center cursor-pointer font-normal ${
+    <span
+      className={`text-xs p-2 min-h-[32px] flex items-center cursor-pointer font-normal h-auto flex-wrap break-words whitespace-pre-line ${
         columnConfig?.editable ? "border border-transparent" : ""
       }`}
+      style={{ wordBreak: "break-word", whiteSpace: "pre-line" }}
       onClick={columnConfig?.editable ? onEdit : undefined}
     >
       <>{value || "-"}</>
-    </div>
+    </span>
   );
 };
