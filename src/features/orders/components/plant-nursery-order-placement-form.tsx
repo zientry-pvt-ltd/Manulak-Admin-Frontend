@@ -3,9 +3,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
-import { AppInput, AppText } from "@/components";
+import { AppInput, AppSelect, AppText } from "@/components";
 import AppDateInput from "@/components/ui/app-date-input";
 import ProductSelectorCard from "@/features/orders/components/product-selector-card";
+import {
+  PAYMENT_METHOD_OPTIONS,
+  type PaymentMethod,
+} from "@/features/orders/constants";
 import { plantNurseryOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
 import { useCreateOrderMutation } from "@/services/orders";
@@ -69,6 +73,7 @@ export const PlantNurseryOrderPlacementForm = () => {
       },
       paymentData: {
         payment_date: "",
+        paid_amount: 0,
       },
     },
   });
@@ -220,7 +225,29 @@ export const PlantNurseryOrderPlacementForm = () => {
         <div className="pr-4">
           <AppText variant="subheading">Payment Information</AppText>
 
-          <div className="flex w-1/2">
+          <div className="flex w-full flex-row mt-2 justify-center items-end gap-x-4">
+            <AppSelect
+              label="Payment Method"
+              placeholder="Select payment method"
+              value={form.getValues("orderMetaData.payment_method")}
+              items={PAYMENT_METHOD_OPTIONS}
+              fullWidth
+              size="sm"
+              error={
+                form.formState.errors.orderMetaData?.payment_method?.message
+              }
+              onValueChange={(value) =>
+                form.setValue(
+                  "orderMetaData.payment_method",
+                  value as PaymentMethod,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
+              }
+              {...form.register("orderMetaData.payment_method")}
+            />
             <AppDateInput
               label="Payment Date"
               value={form.getValues("paymentData.payment_date")}
@@ -235,6 +262,20 @@ export const PlantNurseryOrderPlacementForm = () => {
               placeholder="Select date"
               error={form.formState.errors.paymentData?.payment_date?.message}
               fullWidth
+            />
+          </div>
+
+          <div className="flex w-1/2 flex-row mt-2 justify-center items-end gap-x-4">
+            <AppInput
+              label="Paid Amount"
+              placeholder="Enter paid amount"
+              type="number"
+              fullWidth
+              size="sm"
+              error={form.formState.errors.paymentData?.paid_amount?.message}
+              {...form.register("paymentData.paid_amount", {
+                valueAsNumber: true,
+              })}
             />
           </div>
         </div>

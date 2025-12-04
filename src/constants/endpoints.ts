@@ -48,6 +48,8 @@ export const ENDPOINTS = {
     GET_TOTAL_REVENUE_BY_TIME_PERIOD: "/dashboard/get-total-revenue",
     GET_MOST_SOLD_ITEM_BY_TIME_PERIOD: "dashboard/most-sold-items",
     GET_PROFIT_BY_ITEM_PERIOD: "dashboard/get-profit",
+    GET_TOTAL_SALES_BY_SELLING_METHOD:
+      "dashboard/get-total-sales-by-selling-method",
   },
 } as const;
 

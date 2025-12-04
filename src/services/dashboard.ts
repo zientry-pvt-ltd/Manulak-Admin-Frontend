@@ -5,6 +5,7 @@ import type {
   GetProfitByTimeResponse,
   GetTotalRevenueByTimeResponse,
   GetTotalSaleByTimeResponse,
+  GetTotalSalesBySellingMethodResponse,
 } from "@/features/dashboard/types/stock.type";
 import { api } from "@/services/api";
 
@@ -16,6 +17,16 @@ export const dashboardApi = api.injectEndpoints({
     >({
       query: ({ dashboard_view_days }) => ({
         url: ENDPOINTS.DASHBOARD.GET_TOTAL_SALES_BY_TIME_PERIOD,
+        method: "GET",
+        params: { dashboard_view_days },
+      }),
+    }),
+    getTotalSalesBySellingMethod: builder.query<
+      GetTotalSalesBySellingMethodResponse,
+      DashboardViewDaysRequest
+    >({
+      query: ({ dashboard_view_days }) => ({
+        url: ENDPOINTS.DASHBOARD.GET_TOTAL_SALES_BY_SELLING_METHOD,
         method: "GET",
         params: { dashboard_view_days },
       }),
@@ -59,4 +70,5 @@ export const {
   useGetTotalRevenueByTimePeriodQuery,
   useGetMostSoldItemByTimePeriodQuery,
   useGetProfitByTimePeriodQuery,
+  useGetTotalSalesBySellingMethodQuery,
 } = dashboardApi;
