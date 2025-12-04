@@ -2,6 +2,12 @@ import type { ApiResource } from "@/types";
 
 export type DashboardViewDays = 1 | 7 | 30 | 90;
 
+export type PeriodsState = {
+  sales: DashboardViewDays;
+  revenue: DashboardViewDays;
+  profit: DashboardViewDays;
+};
+
 type MostSoldItem = {
   product_id: string;
   product_name: string;
