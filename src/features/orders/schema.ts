@@ -74,7 +74,6 @@ export const plantNurseryOrderSchema = z.object({
   orderItemsData: orderItemsDataSchema,
   paymentData: paymentDataSchema.omit({
     payment_slip_number: true,
-    paid_amount: true,
   }),
 });
 
