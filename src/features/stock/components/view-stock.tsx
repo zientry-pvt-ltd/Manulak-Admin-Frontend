@@ -1,6 +1,5 @@
 import { MinusCircle, PlusCircle } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
@@ -8,18 +7,13 @@ import { INITIAL_PAGING, INITIAL_SORTING } from "@/constants";
 import { CATEGORIES } from "@/features/products/constants";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { ExistingStockIndicator, QuantityForm } from "@/features/stock";
-import type { StockOperationType } from "@/features/stock/types/stock.type";
 import { useAppDialog } from "@/providers";
 import { productApi, useGetProductsQuery } from "@/services/product";
-import { useUpdateStockQuantityMutation } from "@/services/stock";
 import { store } from "@/store";
 import type { ResourceListQueryParams } from "@/types";
-import { normalizeError } from "@/utils/error-handler";
 
 export const ViewStock = () => {
-  const { openAppDialog, closeAppDialog } = useAppDialog();
-
-  const [updateStockQuantity] = useUpdateStockQuantityMutation();
+  const { openAppDialog } = useAppDialog();
 
   const [filters, setFilters] = useState<ResourceListQueryParams["filters"]>(
     [],
@@ -36,39 +30,6 @@ export const ViewStock = () => {
     paging: pagination,
     sorting: INITIAL_SORTING,
   });
-
-  const handleUpdateProductQuantity = useCallback(
-    async ({
-      productId,
-      action,
-      quantity,
-    }: {
-      action: StockOperationType;
-      productId: string;
-      quantity: number;
-    }) => {
-      try {
-        await updateStockQuantity({
-          productId: productId,
-          body: {
-            operation: action,
-            quantity: quantity,
-          },
-        }).unwrap();
-
-        toast.success("Stock quantity update successfully");
-
-        setTimeout(() => {
-          closeAppDialog();
-        }, 1000);
-      } catch (error) {
-        const message = normalizeError(error);
-        toast.error(`Failed to update quantity: ${message.message}`);
-        console.error("Product update failed:", error);
-      }
-    },
-    [closeAppDialog, updateStockQuantity],
-  );
 
   const config: TableConfig<IProductInfo> = useMemo(
     () => ({
@@ -152,12 +113,12 @@ export const ViewStock = () => {
                   title: "Change of Stock Quantity",
                   description: "Add stock to the existing quantity.",
                   formId: "quantity-add-form",
+                  disableFooter: true,
                   content: (
                     <QuantityForm
                       formId="quantity-add-form"
                       action="ADD"
                       productId={row.id}
-                      onSubmit={handleUpdateProductQuantity}
                     />
                   ),
                 });
@@ -172,12 +133,12 @@ export const ViewStock = () => {
                   title: "Change of Stock Quantity",
                   formId: "quantity-remove-form",
                   description: "Remove stock from the existing quantity.",
+                  disableFooter: true,
                   content: (
                     <QuantityForm
                       formId="quantity-remove-form"
                       action="REMOVE"
                       productId={row.id}
-                      onSubmit={handleUpdateProductQuantity}
                     />
                   ),
                 });
@@ -215,7 +176,6 @@ export const ViewStock = () => {
       customToolBar: () => <ExistingStockIndicator />,
     }),
     [
-      handleUpdateProductQuantity,
       openAppDialog,
       pagination.pageNo,
       pagination.pageSize,

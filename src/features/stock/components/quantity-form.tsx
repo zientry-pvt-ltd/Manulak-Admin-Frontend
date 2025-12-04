@@ -1,34 +1,30 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-import { AppInput } from "@/components";
+import { AppButton, AppInput } from "@/components";
 import { stockSchema } from "@/features/stock/schema";
 import type { StockOperationType } from "@/features/stock/types/stock.type";
+import { useAppDialog } from "@/providers";
+import { useUpdateStockQuantityMutation } from "@/services/stock";
 import type { FormIds } from "@/types";
+import { normalizeError } from "@/utils/error-handler";
 
 type QuantityFormProps = {
   productId: string;
   action: StockOperationType;
   formId: FormIds;
-  onSubmit: ({
-    // eslint-disable-next-line no-unused-vars
-    productId,
-    // eslint-disable-next-line no-unused-vars
-    action,
-    // eslint-disable-next-line no-unused-vars
-    quantity,
-  }: {
-    action: StockOperationType;
-    productId: string;
-    quantity: number;
-  }) => void;
 };
+
 export const QuantityForm = ({
   action,
   formId,
-  onSubmit,
   productId,
 }: QuantityFormProps) => {
+  const [updateStockQuantity, { isLoading }] = useUpdateStockQuantityMutation();
+  const { closeAppDialog } = useAppDialog();
+
   const form = useForm<{
     quantity: number;
   }>({
@@ -36,21 +32,51 @@ export const QuantityForm = ({
     defaultValues: { quantity: 0 },
   });
 
-  const handleUpdateProductQuantity = (data: { quantity: number }) => {
-    const { quantity } = data;
-
-    onSubmit({
-      action,
+  const handleUpdateProductQuantity = useCallback(
+    async ({
       productId,
+      action,
       quantity,
-    });
-  };
+    }: {
+      action: StockOperationType;
+      productId: string;
+      quantity: number;
+    }) => {
+      try {
+        await updateStockQuantity({
+          productId: productId,
+          body: {
+            operation: action,
+            quantity: quantity,
+          },
+        }).unwrap();
+
+        toast.success("Stock quantity update successfully");
+
+        setTimeout(() => {
+          closeAppDialog();
+        }, 1000);
+      } catch (error) {
+        const message = normalizeError(error);
+        toast.error(`Failed to update quantity: ${message.message}`);
+        console.error("Product update failed:", error);
+      }
+    },
+    [updateStockQuantity, closeAppDialog],
+  );
 
   return (
     <form
       id={formId}
       action="submit"
-      onSubmit={form.handleSubmit(handleUpdateProductQuantity)}
+      className="flex gap-y-8 flex-col"
+      onSubmit={form.handleSubmit((data) => {
+        handleUpdateProductQuantity({
+          action,
+          productId,
+          quantity: data.quantity,
+        });
+      })}
     >
       <AppInput
         size="md"
@@ -69,6 +95,10 @@ export const QuantityForm = ({
           target.value = target.value.replace(/\D/g, "");
         }}
       />
+
+      <AppButton type="submit" size="md" fullWidth isLoading={isLoading}>
+        {action === "ADD" ? "Add" : "Remove"} Quantity
+      </AppButton>
     </form>
   );
 };
