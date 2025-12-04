@@ -211,6 +211,13 @@ export const ViewOrdersTab = () => {
         type: "number",
       },
       {
+        header: "Created At",
+        accessorKey: "created_at",
+        id: "created_at",
+        mutationKey: "created_at",
+        type: "date",
+      },
+      {
         header: "Actions",
         accessorKey: "order_id",
         id: "actions",
