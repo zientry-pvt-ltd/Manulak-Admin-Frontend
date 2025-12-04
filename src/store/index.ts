@@ -18,7 +18,7 @@ import ordersReducer from "@/features/orders/store/order-slice";
 import productsReducer from "@/features/products/store/product-slice";
 import appConfigReducer from "@/features/settings/store/appConfigSlice";
 import stockReducer from "@/features/stock/store/stock-slice";
-import { authApi } from "@/services/auth";
+import { api } from "@/services";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -27,7 +27,7 @@ const rootReducer = combineReducers({
   products: productsReducer,
   orders: ordersReducer,
   stock: stockReducer,
-  [authApi.reducerPath]: authApi.reducer,
+  [api.reducerPath]: api.reducer,
 });
 
 const persistConfig = {
@@ -46,7 +46,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(authApi.middleware),
+    }).concat(api.middleware),
 });
 
 setupListeners(store.dispatch);

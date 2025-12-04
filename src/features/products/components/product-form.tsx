@@ -197,7 +197,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
         />
 
         <AppInput
-          label="Unit Weight (kg)"
+          label="Unit Weight (g)"
           type="number"
           inputMode="decimal"
           step="0.5"

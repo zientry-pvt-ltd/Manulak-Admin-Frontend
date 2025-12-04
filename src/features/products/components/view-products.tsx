@@ -371,7 +371,7 @@ export const ViewProducts = () => {
         id: "unit_weight",
         accessorKey: "unit_weight",
         mutationKey: "unit_weight",
-        header: "Unit Weight(kg)",
+        header: "Unit Weight(g)",
         type: "text",
         hideable: true,
       },

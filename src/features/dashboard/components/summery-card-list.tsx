@@ -1,6 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import { AppText, Card } from "@/components";
+import { AppSelect, AppText, Card } from "@/components";
+import {
+  DASHBOARD_VIEW_DAYS_OPTIONS,
+  DEFAULT_DASHBOARD_VIEW_DAYS,
+} from "@/features/dashboard/constants";
+import type {
+  DashboardViewDays,
+  PeriodsState,
+} from "@/features/dashboard/types/stock.type";
 import {
   useGetProfitByTimePeriodQuery,
   useGetTotalRevenueByTimePeriodQuery,
@@ -8,28 +16,31 @@ import {
 } from "@/services/dashboard";
 
 export const SummeryCardList = () => {
+  const [periods, setPeriods] = useState<PeriodsState>(
+    DEFAULT_DASHBOARD_VIEW_DAYS,
+  );
   const {
     data: totalSalesData,
     isError: isErrorSales,
-    isLoading: isLoadingSales,
+    isFetching: isLoadingSales,
   } = useGetTotalSalesByTimePeriodQuery({
-    dashboard_view_days: 1,
+    dashboard_view_days: periods.sales,
   });
 
   const {
     data: totalRevenueData,
     isError: isErrorRevenue,
-    isLoading: isLoadingRevenue,
+    isFetching: isLoadingRevenue,
   } = useGetTotalRevenueByTimePeriodQuery({
-    dashboard_view_days: 1,
+    dashboard_view_days: periods.revenue,
   });
 
   const {
     data: profitData,
     isError: isErrorProfit,
-    isLoading: isLoadingProfit,
+    isFetching: isLoadingProfit,
   } = useGetProfitByTimePeriodQuery({
-    dashboard_view_days: 1,
+    dashboard_view_days: periods.profit,
   });
 
   const totalSales = useMemo(() => totalSalesData?.data ?? 0, [totalSalesData]);
@@ -39,24 +50,27 @@ export const SummeryCardList = () => {
   );
   const profit = useMemo(() => profitData?.data ?? 0, [profitData?.data]);
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
   return (
     <div className="flex flex-col space-y-2">
-      {/* Today's Sales */}
-      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
-        <div className="flex justify-between w-full">
+      {/* Sales */}
+      <Card className="min-w-[240px] h-32 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
+        <div className="flex h-full justify-between w-full">
           <AppText variant="caption" size="text-sm">
-            Today's Sales
+            Sales
           </AppText>
-          <AppText variant="caption" size="text-sm">
-            {formattedDate}
-          </AppText>
+
+          <AppSelect
+            size="sm"
+            className="flex w-[120px] min-w-0"
+            value={periods.sales.toString()}
+            items={DASHBOARD_VIEW_DAYS_OPTIONS}
+            onValueChange={(val) =>
+              setPeriods((prev) => ({
+                ...prev,
+                sales: Number(val) as DashboardViewDays,
+              }))
+            }
+          />
         </div>
 
         {isLoadingSales ? (
@@ -65,7 +79,7 @@ export const SummeryCardList = () => {
           </AppText>
         ) : isErrorSales ? (
           <AppText variant="caption" size="text-xs" color="destructive">
-            Failed to load sales data
+            Failed to load sales data.
           </AppText>
         ) : (
           <>
@@ -73,21 +87,30 @@ export const SummeryCardList = () => {
               Rs: {totalSales.toLocaleString()}
             </AppText>
             <AppText variant="caption" size="text-xs">
-              A summary of today's sales performance.
+              A summary of sales performance.
             </AppText>
           </>
         )}
       </Card>
 
-      {/* Today's Revenue */}
-      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
-        <div className="flex justify-between w-full">
+      {/* Revenue */}
+      <Card className="min-w-[240px] h-32 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
+        <div className="flex h-full justify-between w-full">
           <AppText variant="caption" size="text-sm">
-            Today's Revenue
+            Revenue
           </AppText>
-          <AppText variant="caption" size="text-sm">
-            {formattedDate}
-          </AppText>
+          <AppSelect
+            size="sm"
+            className="flex w-[120px] min-w-0"
+            value={periods.revenue.toString()}
+            items={DASHBOARD_VIEW_DAYS_OPTIONS}
+            onValueChange={(val) =>
+              setPeriods((prev) => ({
+                ...prev,
+                revenue: Number(val) as DashboardViewDays,
+              }))
+            }
+          />
         </div>
 
         {isLoadingRevenue ? (
@@ -96,7 +119,7 @@ export const SummeryCardList = () => {
           </AppText>
         ) : isErrorRevenue ? (
           <AppText variant="caption" size="text-xs" color="destructive">
-            Failed to load revenue data
+            Failed to load revenue data.
           </AppText>
         ) : (
           <>
@@ -104,21 +127,30 @@ export const SummeryCardList = () => {
               Rs: {totalRevenue.toLocaleString()}
             </AppText>
             <AppText variant="caption" size="text-xs">
-              Total revenue generated today.
+              Total revenue generated.
             </AppText>
           </>
         )}
       </Card>
 
-      {/* Today's Profit */}
-      <Card className="min-w-[240px] h-28 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
-        <div className="flex justify-between w-full">
+      {/* Profit */}
+      <Card className="min-w-[240px] h-32 shadow-none justify-center flex flex-col gap-2 p-4 rounded-lg">
+        <div className="flex h-full justify-between w-full">
           <AppText variant="caption" size="text-sm">
-            Today's Profit
+            Profit
           </AppText>
-          <AppText variant="caption" size="text-sm">
-            {formattedDate}
-          </AppText>
+          <AppSelect
+            size="sm"
+            className="flex w-[120px] min-w-0"
+            value={periods.profit.toString()}
+            items={DASHBOARD_VIEW_DAYS_OPTIONS}
+            onValueChange={(val) =>
+              setPeriods((prev) => ({
+                ...prev,
+                profit: Number(val) as DashboardViewDays,
+              }))
+            }
+          />
         </div>
 
         {isLoadingProfit ? (
@@ -127,7 +159,7 @@ export const SummeryCardList = () => {
           </AppText>
         ) : isErrorProfit ? (
           <AppText variant="caption" size="text-xs" color="destructive">
-            Failed to load profit data
+            Failed to load profit data.
           </AppText>
         ) : (
           <>
@@ -135,7 +167,7 @@ export const SummeryCardList = () => {
               Rs: {profit.toLocaleString()}
             </AppText>
             <AppText variant="caption" size="text-xs">
-              Net profit earned today.
+              Total profit earned.
             </AppText>
           </>
         )}
