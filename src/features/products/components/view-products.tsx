@@ -81,7 +81,7 @@ export const ViewProducts = () => {
         cancelText: "No, keep it",
         onSubmit: async () => {
           try {
-            await deleteProduct(productId);
+            await deleteProduct(productId).unwrap();
             toast.success("Product deleted successfully");
           } catch (error) {
             const message = normalizeError(error);
