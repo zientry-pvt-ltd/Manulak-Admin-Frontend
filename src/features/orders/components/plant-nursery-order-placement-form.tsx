@@ -12,6 +12,7 @@ import {
 } from "@/features/orders/constants";
 import { plantNurseryOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
+import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { useCreateOrderMutation } from "@/services/orders";
 import { selectOrderForm } from "@/store/selectors/orderFormSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
@@ -23,6 +24,19 @@ export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
+
+  const { handleInput: handleNumbersInput } = useSanitizedInput({
+    type: "numbers-only",
+  });
+  const { handleInput: handleNumbersWithDecimal } = useSanitizedInput({
+    type: "numbers-with-decimal",
+  });
+  const { handleInput: handleLettersInput } = useSanitizedInput({
+    type: "letters-only",
+  });
+  const { handleInput: handleAlphanumericInput } = useSanitizedInput({
+    type: "alphanumeric",
+  });
 
   const validatePhoneMatch = () => {
     const primaryPhone = form.getValues("orderMetaData.primary_phone_number");
@@ -69,7 +83,7 @@ export const PlantNurseryOrderPlacementForm = () => {
         confirm_phone_number: "",
         status: "PENDING",
         payment_method: "COD",
-        postal_code: 0,
+        postal_code: "",
       },
       paymentData: {
         payment_date: "",
@@ -133,6 +147,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               placeholder="Enter first name"
               fullWidth
               size="sm"
+              onInput={handleLettersInput}
               error={form.formState.errors.orderMetaData?.first_name?.message}
               {...form.register("orderMetaData.first_name")}
             />
@@ -141,6 +156,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               placeholder="Enter last name"
               fullWidth
               size="sm"
+              onInput={handleLettersInput}
               error={form.formState.errors.orderMetaData?.last_name?.message}
               {...form.register("orderMetaData.last_name")}
             />
@@ -185,11 +201,10 @@ export const PlantNurseryOrderPlacementForm = () => {
               placeholder="Enter postal code"
               fullWidth
               size="sm"
-              type="number"
+              type="text"
+              onInput={handleAlphanumericInput}
               error={form.formState.errors.orderMetaData?.postal_code?.message}
-              {...form.register("orderMetaData.postal_code", {
-                valueAsNumber: true,
-              })}
+              {...form.register("orderMetaData.postal_code")}
             />
           </div>
 
@@ -200,6 +215,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               fullWidth
               size="sm"
               type="tel"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.primary_phone_number
                   ?.message
@@ -212,6 +228,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               fullWidth
               size="sm"
               type="tel"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.confirm_phone_number
                   ?.message
@@ -272,6 +289,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               type="number"
               fullWidth
               size="sm"
+              onInput={handleNumbersWithDecimal}
               error={form.formState.errors.paymentData?.paid_amount?.message}
               {...form.register("paymentData.paid_amount", {
                 valueAsNumber: true,

@@ -55,9 +55,6 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
   const { handleInput: handleNumbersInput } = useSanitizedInput({
     type: "numbers-with-decimal",
   });
-  const { handleInput: handleLettersInput } = useSanitizedInput({
-    type: "letters-only",
-  });
 
   const isView = mode === "view";
   const urlImages =
@@ -150,7 +147,6 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
           placeholder="Enter product name"
           fullWidth
           disabled={isView}
-          onInput={handleLettersInput}
           error={form.formState.errors.product_name?.message}
           {...form.register("product_name")}
         />
@@ -179,7 +175,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
 
         <AppInput
           label="Bought Price (Rs)"
-          type="number"
+          type="text"
           size="md"
           placeholder="Enter bought price"
           fullWidth

@@ -20,7 +20,7 @@ export type Order = {
   address_line_1: string;
   address_line_2: string;
   address_line_3: string;
-  postal_code: number;
+  postal_code: string;
   primary_phone_number: string;
   company_name: string | null;
   email: string | null;
@@ -52,7 +52,7 @@ export interface OrderMetaData {
   address_line_1: string;
   address_line_2?: string;
   address_line_3?: string;
-  postal_code: number;
+  postal_code: string;
   primary_phone_number: string;
   status: OrderStatus;
 }

@@ -14,6 +14,7 @@ import {
 } from "@/features/orders/constants";
 import { onlineManualOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
+import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { useAppDialog } from "@/providers";
 import {
   useCreateOrderMutation,
@@ -33,6 +34,22 @@ export const OnlineOrderPlacementForm = () => {
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
 
   const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
+
+  const { handleInput: handleNumbersInput } = useSanitizedInput({
+    type: "numbers-only",
+  });
+  const { handleInput: handleNumbersWithDecimal } = useSanitizedInput({
+    type: "numbers-with-decimal",
+  });
+  const { handleInput: handleLettersInput } = useSanitizedInput({
+    type: "letters-only",
+  });
+  const { handleInput: handleAlphanumericInput } = useSanitizedInput({
+    type: "alphanumeric",
+  });
+  const { handleInput: handleEmailInput } = useSanitizedInput({
+    type: "email",
+  });
 
   const validatePhoneMatch = () => {
     const primaryPhone = form.getValues("orderMetaData.primary_phone_number");
@@ -75,7 +92,7 @@ export const OnlineOrderPlacementForm = () => {
         address_line_1: "",
         address_line_2: "",
         address_line_3: "",
-        postal_code: 0,
+        postal_code: "",
         primary_phone_number: "",
         confirm_phone_number: "",
         status: "PENDING",
@@ -166,6 +183,7 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter first name"
               fullWidth
               size="sm"
+              onInput={handleLettersInput}
               error={form.formState.errors.orderMetaData?.first_name?.message}
               {...form.register("orderMetaData.first_name")}
             />
@@ -174,6 +192,7 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter last name"
               fullWidth
               size="sm"
+              onInput={handleLettersInput}
               error={form.formState.errors.orderMetaData?.last_name?.message}
               {...form.register("orderMetaData.last_name")}
             />
@@ -218,11 +237,9 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter postal code"
               fullWidth
               size="sm"
-              type="number"
+              onInput={handleAlphanumericInput}
               error={form.formState.errors.orderMetaData?.postal_code?.message}
-              {...form.register("orderMetaData.postal_code", {
-                valueAsNumber: true,
-              })}
+              {...form.register("orderMetaData.postal_code")}
             />
           </div>
 
@@ -233,6 +250,7 @@ export const OnlineOrderPlacementForm = () => {
               fullWidth
               size="sm"
               type="tel"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.primary_phone_number
                   ?.message
@@ -245,6 +263,7 @@ export const OnlineOrderPlacementForm = () => {
               fullWidth
               size="sm"
               type="tel"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.confirm_phone_number
                   ?.message
@@ -262,6 +281,7 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter company name"
               fullWidth
               size="sm"
+              onInput={handleLettersInput}
               error={form.formState.errors.orderMetaData?.company_name?.message}
               {...form.register("orderMetaData.company_name")}
             />
@@ -271,6 +291,7 @@ export const OnlineOrderPlacementForm = () => {
               type="email"
               fullWidth
               size="sm"
+              onInput={handleEmailInput}
               error={form.formState.errors.orderMetaData?.email?.message}
               {...form.register("orderMetaData.email")}
             />
@@ -283,6 +304,7 @@ export const OnlineOrderPlacementForm = () => {
               type="tel"
               fullWidth
               size="sm"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.alternate_phone_number_1
                   ?.message
@@ -295,6 +317,7 @@ export const OnlineOrderPlacementForm = () => {
               type="tel"
               fullWidth
               size="sm"
+              onInput={handleNumbersInput}
               error={
                 form.formState.errors.orderMetaData?.alternate_phone_number_2
                   ?.message
@@ -352,9 +375,9 @@ export const OnlineOrderPlacementForm = () => {
             <AppInput
               label="Paid Amount"
               placeholder="Enter paid amount"
-              type="number"
               fullWidth
               size="sm"
+              onInput={handleNumbersWithDecimal}
               error={form.formState.errors.paymentData?.paid_amount?.message}
               {...form.register("paymentData.paid_amount", {
                 valueAsNumber: true,
