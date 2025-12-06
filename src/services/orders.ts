@@ -188,6 +188,16 @@ export const orderApi = api.injectEndpoints({
       invalidatesTags: ["OrderProducts"],
     }),
 
+    deleteFullOrder: builder.mutation<void, string>({
+      query: (orderId) => {
+        return {
+          url: ENDPOINTS.ORDERS.DELETE_ORDER(orderId),
+          method: "PUT",
+        };
+      },
+      invalidatesTags: ["Order", "OrderProducts", "PaymentHistory"],
+    }),
+
     calculateOrderValue: builder.mutation<
       ICalculateOrderValueResponse,
       ICalculateOrderValueRequest
@@ -218,4 +228,5 @@ export const {
   useUpdateOrderItemRecordMutation,
   useDeleteOrderItemRecordMutation,
   useCalculateOrderValueMutation,
+  useDeleteFullOrderMutation,
 } = orderApi;

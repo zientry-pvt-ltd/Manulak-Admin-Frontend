@@ -20,8 +20,8 @@ import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useAppDialog, useConfirmDialog } from "@/providers";
 import {
   orderApi,
+  useDeleteFullOrderMutation,
   useGetOrdersQuery,
-  useUpdateOrderMetaDataMutation,
 } from "@/services/orders";
 import { store } from "@/store";
 import { useAppDispatch } from "@/store/utils";
@@ -32,7 +32,7 @@ export const ViewOrdersTab = () => {
   const dispatch = useAppDispatch();
   const { confirm } = useConfirmDialog();
   const { openAppDialog } = useAppDialog();
-  const [deleteFullOrder] = useUpdateOrderMetaDataMutation();
+  const [deleteFullOrder] = useDeleteFullOrderMutation();
 
   const [filters, setFilters] = useState<ResourceListQueryParams["filters"]>(
     [],
@@ -40,7 +40,7 @@ export const ViewOrdersTab = () => {
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
-  const { data, isLoading, isFetching } = useGetOrdersQuery({
+  const { data, isLoading } = useGetOrdersQuery({
     paging: pagination,
     filters: filters,
     sorting: INITIAL_SORTING,
@@ -49,10 +49,7 @@ export const ViewOrdersTab = () => {
   const handleDeleteOrder = useCallback(
     async (orderId: string) => {
       try {
-        await deleteFullOrder({
-          id: orderId,
-          data: { status: "CANCELLED" },
-        }).unwrap();
+        await deleteFullOrder(orderId).unwrap();
         toast.success("Order deleted successfully");
       } catch (error) {
         const message = normalizeError(error);
@@ -302,7 +299,5 @@ export const ViewOrdersTab = () => {
     },
     customToolBar: OrderPlacementMenu,
   };
-  return (
-    <ConfigurableTable config={config} isFetching={isLoading || isFetching} />
-  );
+  return <ConfigurableTable config={config} isFetching={isLoading} />;
 };
