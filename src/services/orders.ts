@@ -108,7 +108,7 @@ export const orderApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Order", "OrderProducts"],
+      invalidatesTags: ["Order", "OrderProducts", "Product"],
     }),
 
     createOrderByMessage: builder.mutation<
@@ -122,7 +122,7 @@ export const orderApi = api.injectEndpoints({
           body: { orderMessage },
         };
       },
-      invalidatesTags: ["Order"],
+      invalidatesTags: ["Order", "OrderProducts", "Product"],
     }),
 
     updateOrderItemRecord: builder.mutation<
@@ -141,7 +141,7 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["Order", "OrderProducts"],
+      invalidatesTags: ["Order", "OrderProducts", "Product"],
     }),
 
     updateOrderMetaData: builder.mutation<
