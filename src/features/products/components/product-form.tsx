@@ -17,6 +17,7 @@ import AppImage from "@/components/ui/app-image";
 import { CATEGORIES } from "@/features/products/constants";
 import { productSchema } from "@/features/products/schema";
 import { updateSelectedProduct } from "@/features/products/store/product-slice";
+import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { selectProducts } from "@/store/selectors";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
 import type { FormIds } from "@/types";
@@ -50,6 +51,13 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
   const { selectedProduct } = useAppSelector(selectProducts);
   const dispatch = useAppDispatch();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { handleInput: handleNumbersInput } = useSanitizedInput({
+    type: "numbers-with-decimal",
+  });
+  const { handleInput: handleLettersInput } = useSanitizedInput({
+    type: "letters-only",
+  });
 
   const isView = mode === "view";
   const urlImages =
@@ -142,6 +150,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
           placeholder="Enter product name"
           fullWidth
           disabled={isView}
+          onInput={handleLettersInput}
           error={form.formState.errors.product_name?.message}
           {...form.register("product_name")}
         />
@@ -159,11 +168,11 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
 
         <AppInput
           label="Selling Price (Rs)"
-          type="number"
           size="md"
           placeholder="Enter selling price"
           fullWidth
           disabled={isView}
+          onInput={handleNumbersInput}
           error={form.formState.errors.selling_price?.message}
           {...form.register("selling_price", { valueAsNumber: true })}
         />
@@ -175,6 +184,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
           placeholder="Enter bought price"
           fullWidth
           disabled={isView}
+          onInput={handleNumbersInput}
           error={form.formState.errors.bought_price?.message}
           {...form.register("bought_price", { valueAsNumber: true })}
         />
@@ -198,24 +208,24 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
 
         <AppInput
           label="Unit Weight (g)"
-          type="number"
           inputMode="decimal"
           step="0.5"
           size="md"
           placeholder="Enter unit weight"
           fullWidth
           disabled={isView}
+          onInput={handleNumbersInput}
           error={form.formState.errors.unit_weight?.message}
           {...form.register("unit_weight", { valueAsNumber: true })}
         />
 
         <AppInput
           label="Courier Charge for the 1st Kilogram (Rs)"
-          type="number"
           size="md"
           placeholder="Enter charge"
           fullWidth
           disabled={isView}
+          onInput={handleNumbersInput}
           error={form.formState.errors.courier_chargers_1kg?.message}
           {...form.register("courier_chargers_1kg", {
             valueAsNumber: true,
@@ -224,11 +234,11 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
 
         <AppInput
           label="Courier Charge per Kilogram (Excluding 1st Kilogram) (Rs)"
-          type="number"
           size="md"
           placeholder="Enter charge"
           fullWidth
           disabled={isView}
+          onInput={handleNumbersInput}
           error={form.formState.errors.courier_chargers_more_than_1kg?.message}
           {...form.register("courier_chargers_more_than_1kg", {
             valueAsNumber: true,
