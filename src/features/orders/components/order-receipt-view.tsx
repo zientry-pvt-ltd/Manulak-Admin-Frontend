@@ -37,7 +37,7 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
   const receiptData: ReceiptData = {
     companyName: appName || "My Company",
     companyAddress: "123 Main Street, Colombo 00700, Sri Lanka",
-    companyPhone: "+94 11 234 5678",
+    companyPhone: "071 869 14 16",
 
     receiverName: data?.data
       ? `${data.data.first_name} ${data.data.last_name}`
