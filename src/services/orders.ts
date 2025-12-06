@@ -108,7 +108,7 @@ export const orderApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["OrderProducts"],
+      invalidatesTags: ["Order", "OrderProducts"],
     }),
 
     createOrderByMessage: builder.mutation<
@@ -141,7 +141,7 @@ export const orderApi = api.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["OrderProducts"],
+      invalidatesTags: ["Order", "OrderProducts"],
     }),
 
     updateOrderMetaData: builder.mutation<

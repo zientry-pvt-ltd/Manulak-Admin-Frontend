@@ -20,8 +20,7 @@ import {
   useCreateOrderMutation,
   useUploadPaymentSlipMutation,
 } from "@/services/orders";
-import { selectOrderForm } from "@/store/selectors/orderFormSelector";
-import { useAppDispatch, useAppSelector } from "@/store/utils";
+import { useAppDispatch } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
@@ -29,7 +28,6 @@ export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const { closeAppDialog } = useAppDialog();
-  const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
 
@@ -115,7 +113,6 @@ export const OnlineOrderPlacementForm = () => {
 
     const updatedOrderMetaData = {
       ...orderMetaDataWithoutConfirm,
-      order_value: selectedProducts.subtotal,
     };
 
     const updatedData = {

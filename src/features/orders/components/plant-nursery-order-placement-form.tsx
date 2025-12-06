@@ -14,15 +14,13 @@ import { plantNurseryOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
 import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { useCreateOrderMutation } from "@/services/orders";
-import { selectOrderForm } from "@/store/selectors/orderFormSelector";
-import { useAppDispatch, useAppSelector } from "@/store/utils";
+import { useAppDispatch } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof plantNurseryOrderSchema>;
 
 export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
-  const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
 
   const { handleInput: handleNumbersInput } = useSanitizedInput({
@@ -101,7 +99,6 @@ export const PlantNurseryOrderPlacementForm = () => {
 
     const updatedOrderMetaData = {
       ...orderMetaDataWithoutConfirm,
-      order_value: selectedProducts.subtotal,
     };
 
     const updatedData = {
