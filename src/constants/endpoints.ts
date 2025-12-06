@@ -31,7 +31,8 @@ export const ENDPOINTS = {
       `/order/update-order-meta-data-by-id/${id}`,
     UPDATE_ORDER_ITEM_RECORD: (itemId: string) =>
       `/order/update-order-item-record/${itemId}`,
-    DELETE_ORDER: (id: string | number) => `/order/delete-order/${id}`,
+    DELETE_ORDER: (orderId: string | number) =>
+      `/order/delete-full-order/${orderId}`,
     DELETE_ORDER_ITEM_RECORD: (itemId: string) =>
       `/order/delete-single-order-item/${itemId}`,
     GET_ORDER_METADATA: (id: string | number | null) =>
