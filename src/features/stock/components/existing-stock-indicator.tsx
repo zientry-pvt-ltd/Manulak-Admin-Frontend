@@ -10,7 +10,7 @@ export const ExistingStockIndicator = () => {
   return (
     <div className="flex items-center space-x-3">
       {/* Status Display */}
-      <div className="flex items-center space-x-2 w-[240px]">
+      <div className="flex items-center space-x-2">
         {isLoading || isFetching ? (
           <AppText variant="caption" color="muted">
             Loading existing stock net worth...

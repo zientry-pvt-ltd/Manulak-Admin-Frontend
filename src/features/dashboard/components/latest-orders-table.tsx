@@ -17,7 +17,7 @@ export const LatestOrderTable = () => {
   const [pagination, setPagination] =
     useState<ResourceListQueryParams["paging"]>(INITIAL_PAGING);
 
-  const { data, isLoading, isFetching } = useGetOrdersQuery({
+  const { data, isLoading } = useGetOrdersQuery({
     paging: pagination,
     sorting: INITIAL_SORTING,
     filters: [],
@@ -101,7 +101,7 @@ export const LatestOrderTable = () => {
   };
   return (
     <Card className="shadow-none h-auto flex flex-col p-0 pb-2 px-2 rounded-lg">
-      <ConfigurableTable config={config} isFetching={isLoading || isFetching} />
+      <ConfigurableTable config={config} isFetching={isLoading} />
     </Card>
   );
 };
