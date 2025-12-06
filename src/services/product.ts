@@ -60,6 +60,7 @@ export const productApi = api.injectEndpoints({
         method: "POST",
         body: body,
       }),
+      invalidatesTags: ["Product"],
     }),
 
     addProductImage: builder.mutation<
@@ -75,6 +76,7 @@ export const productApi = api.injectEndpoints({
           body: formData,
         };
       },
+      invalidatesTags: ["Product"],
     }),
 
     updateProduct: builder.mutation<IProductResponse, IUpdateProductRequest>({
@@ -91,6 +93,7 @@ export const productApi = api.injectEndpoints({
         url: ENDPOINTS.PRODUCT.DELETE(id),
         method: "PATCH",
       }),
+      invalidatesTags: ["Product"],
     }),
   }),
   overrideExisting: false,
