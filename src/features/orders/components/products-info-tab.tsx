@@ -1,5 +1,5 @@
 import { Package } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AppButton, AppInput, AppText } from "@/components";
@@ -9,6 +9,7 @@ import AppSingleSelectAutoComplete, {
 import { ProductCard } from "@/features/orders/components/product-info-card";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import {
+  useCalculateOrderValueMutation,
   useCreateOrderItemMutation,
   useGetOrderProductsQuery,
 } from "@/services/orders";
@@ -24,6 +25,14 @@ type ProductsInfoTabProps = {
 export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   const { selectedOrderId } = useAppSelector(selectOrder);
 
+  const [
+    calculateOrderValue,
+    {
+      data: calculateOrderValueData,
+      isLoading: isCalculatingOrderValue,
+      isError: isCalculateOrderValueError,
+    },
+  ] = useCalculateOrderValueMutation();
   const [searchProducts] = useSearchProductsMutation();
   const [addOrderProduct, { isLoading: isAdding }] =
     useCreateOrderItemMutation();
@@ -56,11 +65,22 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     [orderProducts],
   );
 
-  const calculateTotalSellingPrice = useCallback(() => {
-    return orderProducts.reduce((total, item) => {
-      return total + item.product.selling_price * item.required_quantity;
-    }, 0);
-  }, [orderProducts]);
+  const calculateTotalPrice = useCallback(async () => {
+    try {
+      await calculateOrderValue({
+        orderItemsArray: orderProducts.map((item) => ({
+          product_id: item.product_id,
+          required_quantity: item.required_quantity,
+        })),
+      }).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [calculateOrderValue, orderProducts]);
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [calculateTotalPrice]);
 
   const handleAddProduct = useCallback(async () => {
     if (!selectedProductId || !selectedOrderId || !quantity || quantity <= 0) {
@@ -167,8 +187,12 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   return (
     <div className="space-y-3 p-2">
       <AppText variant="caption" size="text-sm">
-        Total: Rs. {calculateTotalSellingPrice().toFixed(2)} (
-        {orderProducts.length} items)
+        {`Total Order Value: Rs:${calculateOrderValueData?.data.totalValue.toFixed(2) || "0.00"}`}
+        {isCalculatingOrderValue && " - Calculating..."}
+      </AppText>
+
+      <AppText variant="caption" size="text-sm" color="destructive">
+        {isCalculateOrderValueError && " Failed to calculate"}
       </AppText>
 
       {!isViewMode && (
