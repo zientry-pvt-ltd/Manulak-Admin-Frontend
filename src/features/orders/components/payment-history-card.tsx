@@ -68,7 +68,7 @@ export const PaymentHistoryCard = ({
                     color="muted"
                     className="font-mono"
                   >
-                    {payment.payment_slip_number}
+                    {payment.payment_slip_number || "N/A"}
                   </AppText>
                 </div>
 

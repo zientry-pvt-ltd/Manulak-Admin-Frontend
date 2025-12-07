@@ -22,7 +22,7 @@ export const orderMetaDataSchema = z.object({
   address_line_1: z.string().min(1, "Address line 1 is required"),
   address_line_2: z.string().optional(),
   address_line_3: z.string().optional(),
-  postal_code: z.string().min(1, "Postal code is required"),
+  postal_code: z.string().optional(),
   primary_phone_number: z.string().min(10, "Primary phone number is required"),
   confirm_phone_number: z.string().min(10, "Confirm phone number is required"),
   status: OrderStatusSchema,
@@ -53,28 +53,82 @@ export const orderItemsDataSchema = z
   .min(1, "At least one product is required");
 
 export const paymentDataSchema = z.object({
-  payment_date: z.string().min(1, "Payment date is required"),
-  paid_amount: z.number().min(100, "Paid amount must be at least 100"),
-  payment_slip_number: z.string().optional(),
+  payment_date: z.string().optional().nullable(),
+  paid_amount: z.number().optional().nullable(),
+  payment_slip_number: z.string().optional().nullable(),
 });
 
-export const onlineManualOrderSchema = z.object({
-  orderMetaData: orderMetaDataSchema,
-  orderItemsData: orderItemsDataSchema,
-  paymentData: paymentDataSchema,
-});
+export const onlineManualOrderSchema = z
+  .object({
+    orderMetaData: orderMetaDataSchema,
+    orderItemsData: orderItemsDataSchema,
+    paymentData: paymentDataSchema,
+  })
+  .superRefine((data, ctx) => {
+    const { payment_method } = data.orderMetaData;
 
-export const plantNurseryOrderSchema = z.object({
-  orderMetaData: orderMetaDataSchema.omit({
-    email: true,
-    alternate_phone_number_1: true,
-    alternate_phone_number_2: true,
-    company_name: true,
-  }),
-  orderItemsData: orderItemsDataSchema,
-  paymentData: paymentDataSchema.omit({
-    payment_slip_number: true,
-  }),
-});
+    if (
+      payment_method === PAYMENT_METHODS.FULL_PAYMENT ||
+      payment_method === PAYMENT_METHODS.PARTIAL_PAYMENT
+    ) {
+      if (!data.paymentData.payment_date) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["paymentData", "payment_date"],
+          message: "Payment date is required for this payment method",
+        });
+      }
+      if (
+        data.paymentData.paid_amount === undefined ||
+        data.paymentData.paid_amount === null
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["paymentData", "paid_amount"],
+          message: "Paid amount is required for this payment method",
+        });
+      }
+    }
+  });
+
+export const plantNurseryOrderSchema = z
+  .object({
+    orderMetaData: orderMetaDataSchema.omit({
+      email: true,
+      alternate_phone_number_1: true,
+      alternate_phone_number_2: true,
+      company_name: true,
+    }),
+    orderItemsData: orderItemsDataSchema,
+    paymentData: paymentDataSchema.omit({
+      payment_slip_number: true,
+    }),
+  })
+  .superRefine((data, ctx) => {
+    const { payment_method } = data.orderMetaData;
+
+    if (
+      payment_method === PAYMENT_METHODS.FULL_PAYMENT ||
+      payment_method === PAYMENT_METHODS.PARTIAL_PAYMENT
+    ) {
+      if (!data.paymentData.payment_date) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["paymentData", "payment_date"],
+          message: "Payment date is required for this payment method",
+        });
+      }
+      if (
+        data.paymentData.paid_amount === undefined ||
+        data.paymentData.paid_amount === null
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["paymentData", "paid_amount"],
+          message: "Paid amount is required for this payment method",
+        });
+      }
+    }
+  });
 
 export const paymentRecordSchema = paymentDataSchema;

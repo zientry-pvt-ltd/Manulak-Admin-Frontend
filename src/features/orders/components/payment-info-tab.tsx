@@ -50,7 +50,9 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
   const form = useForm<FormFieldValues>({
     resolver: zodResolver(paymentDataSchema),
     defaultValues: {
-      paid_amount: 0,
+      paid_amount: null,
+      payment_date: null,
+      payment_slip_number: null,
     },
   });
 
@@ -62,7 +64,10 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
     try {
       const result = await createPaymentRecord({
         id: selectedOrderId,
-        data,
+        data: {
+          ...data,
+          paid_amount: Number(data.paid_amount),
+        },
       }).unwrap();
 
       toast.loading("Uploading payment slip...", { id: toastId });
@@ -128,7 +133,7 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           variant="outline"
           placeholder="Select date"
           fullWidth
-          value={form.getValues("payment_date")}
+          value={form.getValues("payment_date") || ""}
           disabled={!isEditMode}
           error={form.formState.errors.payment_date?.message}
           onChange={(value) =>

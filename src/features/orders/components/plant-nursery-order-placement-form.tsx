@@ -14,15 +14,13 @@ import { plantNurseryOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
 import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { useCreateOrderMutation } from "@/services/orders";
-import { selectOrderForm } from "@/store/selectors/orderFormSelector";
-import { useAppDispatch, useAppSelector } from "@/store/utils";
+import { useAppDispatch } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof plantNurseryOrderSchema>;
 
 export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
-  const selectedProducts = useAppSelector(selectOrderForm).selectedProducts;
   const [createOrder] = useCreateOrderMutation();
 
   const { handleInput: handleNumbersInput } = useSanitizedInput({
@@ -73,7 +71,7 @@ export const PlantNurseryOrderPlacementForm = () => {
       orderItemsData: [],
       orderMetaData: {
         first_name: "",
-        last_name: " ",
+        last_name: "",
         selling_method: "PLANT_NURSERY",
         order_value: 0,
         address_line_1: "",
@@ -86,11 +84,14 @@ export const PlantNurseryOrderPlacementForm = () => {
         postal_code: "",
       },
       paymentData: {
-        payment_date: "",
-        paid_amount: 0,
+        payment_date: null,
+        paid_amount: null,
       },
     },
   });
+
+  const paymentMethod = form.watch("orderMetaData.payment_method");
+  const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
     const { orderItemsData, orderMetaData, paymentData } = data;
@@ -101,13 +102,12 @@ export const PlantNurseryOrderPlacementForm = () => {
 
     const updatedOrderMetaData = {
       ...orderMetaDataWithoutConfirm,
-      order_value: selectedProducts.subtotal,
     };
 
     const updatedData = {
       orderMetaData: updatedOrderMetaData,
       orderItemsData: orderItemsData,
-      paymentData: paymentData,
+      paymentData: !isCOD ? paymentData : undefined,
     };
 
     if (!validatePhoneMatch()) return;
@@ -253,7 +253,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,
@@ -261,13 +261,22 @@ export const PlantNurseryOrderPlacementForm = () => {
                     shouldValidate: true,
                     shouldDirty: true,
                   },
-                )
-              }
+                );
+
+                form.setValue("paymentData.payment_date", null, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                form.setValue("paymentData.paid_amount", null, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+              }}
               {...form.register("orderMetaData.payment_method")}
             />
             <AppDateInput
               label="Payment Date"
-              value={form.getValues("paymentData.payment_date")}
+              value={form.getValues("paymentData.payment_date") || ""}
               onChange={(value) =>
                 form.setValue("paymentData.payment_date", value || "", {
                   shouldValidate: true,
@@ -277,6 +286,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               size="sm"
               variant="outline"
               placeholder="Select date"
+              disabled={isCOD}
               error={form.formState.errors.paymentData?.payment_date?.message}
               fullWidth
             />
@@ -286,13 +296,28 @@ export const PlantNurseryOrderPlacementForm = () => {
             <AppInput
               label="Paid Amount"
               placeholder="Enter paid amount"
-              type="number"
+              type="text"
               fullWidth
               size="sm"
+              disabled={isCOD}
               onInput={handleNumbersWithDecimal}
               error={form.formState.errors.paymentData?.paid_amount?.message}
               {...form.register("paymentData.paid_amount", {
                 valueAsNumber: true,
+                onChange: (e) => {
+                  const value = parseFloat(e.target.value);
+                  if (isNaN(value)) {
+                    form.setValue("paymentData.paid_amount", null, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  } else {
+                    form.setValue("paymentData.paid_amount", value, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                },
               })}
             />
           </div>

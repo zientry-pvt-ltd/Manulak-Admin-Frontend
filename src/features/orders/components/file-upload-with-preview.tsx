@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import { toast } from "sonner";
 
 import { AppButton, AppIconButton, AppText } from "@/components";
+import { cn } from "@/lib/utils";
 
 interface FileUploadWithPreviewProps {
   file: File | null;
@@ -86,7 +87,12 @@ export const FileUploadWithPreview = ({
           />
         </div>
       ) : (
-        <div className="h-36 border rounded-lg flex justify-center items-center flex-col">
+        <div
+          className={cn(
+            "h-36 border rounded-lg flex justify-center items-center flex-col",
+            disabled && "opacity-50 cursor-not-allowed",
+          )}
+        >
           <input
             type="file"
             accept={accept}
@@ -95,7 +101,7 @@ export const FileUploadWithPreview = ({
             onChange={handleFileChange}
             disabled={disabled}
           />
-          <AppText variant="caption" size="text-xs">
+          <AppText variant="caption" size="text-xs" color="muted">
             {supportedFormatsText}
           </AppText>
           <AppButton
@@ -104,6 +110,7 @@ export const FileUploadWithPreview = ({
             className="m-2"
             onClick={() => fileInputRef.current?.click()}
             type="button"
+            disabled={disabled}
           >
             Choose File
           </AppButton>
