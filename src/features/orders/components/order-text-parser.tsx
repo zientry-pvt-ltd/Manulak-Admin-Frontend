@@ -55,7 +55,7 @@ export const OrderTextParser = () => {
         fullWidth
         value={textMessage}
         onChange={handleChange}
-        placeholder="Example:&#10;නම: Piyath&#10;ලිපිනය: 22, Read Avenue, Colombo&#10;දුරකථන අංකය: 0712617261&#10;තැපැල් කේතය: 11550&#10;ගෙවූ මුදල: 1776.95&#10;ගෙවූ දිනය: 2025-10-15&#10;SLIP අංකය: SLIP767612&#10;නිෂ්පාදන: 74a9eaee-fd46-4f68-8436-8806fc0cef84 x24"
+        placeholder="Example:&#10;නම: Piyath&#10;ලිපිනය: 22, Read Avenue, Colombo&#10;දුරකථන අංකය: 0712617261&#10;තැපැල් කේතය: 11550&#10;ගෙවූ මුදල: 1776.95&#10;ගෙවූ දිනය: 2025-10-15&#10;SLIP අංකය: SLIP767612&#10;නිෂ්පාදන: 74a9eaee-fd46-4f68-8436-8806fc0cef84 x24&#10;නෙවීම් ක්‍රමය: FULL_PAYMENT | PARTIAL_PAYMENT | COD"
         className="h-64 p-3 resize-none font-mono text-sm"
         label="Enter your order details"
         error={error}
