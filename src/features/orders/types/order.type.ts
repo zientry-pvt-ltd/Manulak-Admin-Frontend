@@ -52,7 +52,7 @@ export interface OrderMetaData {
   address_line_1: string;
   address_line_2?: string;
   address_line_3?: string;
-  postal_code: string;
+  postal_code?: string;
   primary_phone_number: string;
   status: OrderStatus;
 }
@@ -62,8 +62,8 @@ export interface OrderTransactionHistoryItem {
   paid_amount: number;
   payment_date: string;
   payment_id: string;
-  payment_slip_number: string;
-  payment_slip_url: string;
+  payment_slip_number?: string;
+  payment_slip_url?: string;
 }
 
 export interface OrderProductListItem {
@@ -80,15 +80,15 @@ export interface OrderItem {
 }
 
 export interface PaymentData {
-  payment_date: string;
-  paid_amount?: number;
-  payment_slip_number?: string;
+  payment_date?: string | null;
+  paid_amount?: number | null;
+  payment_slip_number?: string | null;
   payment_method?: PaymentMethod;
 }
 
 export interface FullOrder {
   orderMetaData: OrderMetaData;
-  paymentData: PaymentData;
+  paymentData?: PaymentData;
   orderItemsData: OrderItem[];
 }
 
@@ -100,7 +100,9 @@ type UpdatePaymentRecordResponse = Partial<PaymentData> & {
 
 export type ICreateOrderRequest = FullOrder;
 
-export type ICreatePaymentRecordRequest = Partial<PaymentData>;
+export type ICreatePaymentRecordRequest = Partial<
+  Omit<PaymentData, "payment_method">
+>;
 
 export type IUpdateOrderMetaDataRequest = Partial<OrderMetaData>;
 

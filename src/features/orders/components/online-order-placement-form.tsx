@@ -90,19 +90,22 @@ export const OnlineOrderPlacementForm = () => {
         address_line_1: "",
         address_line_2: "",
         address_line_3: "",
-        postal_code: "",
+        postal_code: undefined,
         primary_phone_number: "",
         confirm_phone_number: "",
         status: "PENDING",
         payment_method: "COD",
       },
       paymentData: {
-        paid_amount: 0,
-        payment_date: "",
-        payment_slip_number: "",
+        payment_date: null,
+        paid_amount: null,
+        payment_slip_number: null,
       },
     },
   });
+
+  const paymentMethod = form.watch("orderMetaData.payment_method");
+  const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
     const { orderItemsData, orderMetaData, paymentData } = data;
@@ -118,7 +121,7 @@ export const OnlineOrderPlacementForm = () => {
     const updatedData = {
       orderMetaData: updatedOrderMetaData,
       orderItemsData: orderItemsData,
-      paymentData: paymentData,
+      paymentData: !isCOD ? paymentData : undefined,
     };
 
     if (!validatePhoneMatch()) {
@@ -338,7 +341,7 @@ export const OnlineOrderPlacementForm = () => {
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,
@@ -346,14 +349,28 @@ export const OnlineOrderPlacementForm = () => {
                     shouldValidate: true,
                     shouldDirty: true,
                   },
-                )
-              }
+                );
+
+                form.setValue("paymentData.payment_date", null, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                form.setValue("paymentData.paid_amount", null, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                form.setValue("paymentData.payment_slip_number", null, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                setLocalSlipFile(null);
+              }}
               {...form.register("orderMetaData.payment_method")}
             />
 
             <AppDateInput
               label="Payment Date"
-              value={form.getValues("paymentData.payment_date")}
+              value={form.getValues("paymentData.payment_date") || ""}
               onChange={(value) =>
                 form.setValue("paymentData.payment_date", value || "", {
                   shouldValidate: true,
@@ -365,6 +382,7 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Select date"
               error={form.formState.errors.paymentData?.payment_date?.message}
               fullWidth
+              disabled={isCOD}
             />
           </div>
 
@@ -374,10 +392,25 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter paid amount"
               fullWidth
               size="sm"
+              disabled={isCOD}
               onInput={handleNumbersWithDecimal}
               error={form.formState.errors.paymentData?.paid_amount?.message}
               {...form.register("paymentData.paid_amount", {
                 valueAsNumber: true,
+                onChange: (e) => {
+                  const value = parseFloat(e.target.value);
+                  if (isNaN(value)) {
+                    form.setValue("paymentData.paid_amount", null, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  } else {
+                    form.setValue("paymentData.paid_amount", value, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                },
               })}
             />
             <AppInput
@@ -385,6 +418,7 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Enter payment slip number"
               size="sm"
               fullWidth
+              disabled={isCOD}
               error={
                 form.formState.errors.paymentData?.payment_slip_number?.message
               }
@@ -403,6 +437,7 @@ export const OnlineOrderPlacementForm = () => {
               accept=".pdf,.jpg,.jpeg,.png"
               maxSizeMB={10}
               supportedFormatsText="Supported formats: PDF, JPG, PNG (Max 10MB)"
+              disabled={isCOD}
             />
           </div>
         </div>
