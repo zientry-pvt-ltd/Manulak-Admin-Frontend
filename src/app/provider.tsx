@@ -35,7 +35,13 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                   <AppDialogProvider>{children}</AppDialogProvider>
                 </ConfirmDialogProvider>
               </AuthRefreshProvider>
-              <Toaster expand theme="light" richColors closeButton />
+              <Toaster
+                expand
+                theme="light"
+                richColors
+                closeButton
+                position="top-center"
+              />
               <AppMetadata />
               <ThemeEffect />
               <AppOnlineStatusBanner />
