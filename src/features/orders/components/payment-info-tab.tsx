@@ -48,9 +48,8 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
     data: metadata,
     isLoading: isMetadataLoading,
     isError: isMetadataError,
-  } = useGetOrderMetadataQuery(selectedOrderId, {
-    skip: !selectedOrderId,
-  });
+  } = useGetOrderMetadataQuery(selectedOrderId, shouldSkip);
+
   const paymentHistory = useMemo(() => data?.data, [data]);
 
   const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
@@ -96,6 +95,14 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
       console.error("Error creating payment record:", error);
     }
   };
+
+  if (!selectedOrderId) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <AppText variant="body">No order selected</AppText>
+      </div>
+    );
+  }
 
   if (isMetadataLoading || isLoading)
     return (

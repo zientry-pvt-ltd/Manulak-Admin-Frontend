@@ -259,6 +259,9 @@ export const ViewOrdersTab = () => {
             Icon: Edit,
             tooltip: "Edit Order",
             variant: "outline",
+            disabled: (row) => {
+              return row.status !== "PENDING";
+            },
             onClick: (row) => {
               dispatch(setSelectedOrderId(row.order_id));
               openAppDialog({
@@ -286,6 +289,9 @@ export const ViewOrdersTab = () => {
             Icon: Trash,
             tooltip: "Delete Order",
             variant: "destructive",
+            disabled: (row) => {
+              return row.status === "SHIPPED" || row.status === "DELIVERED";
+            },
             onClick: (row) => handleConfirmDeleteOrder(row.order_id),
           },
         ],

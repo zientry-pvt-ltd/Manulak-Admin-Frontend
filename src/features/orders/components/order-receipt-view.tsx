@@ -10,6 +10,7 @@ import { useGetOrderMetadataQuery } from "@/services/orders";
 import { selectApp } from "@/store/selectors";
 import { selectOrder } from "@/store/selectors/orderSelector";
 import { useAppDispatch, useAppSelector } from "@/store/utils";
+import { formatCurrencyInput } from "@/utils/Formatting";
 
 type OrderReceiptViewProps = {
   orderId: string;
@@ -49,7 +50,8 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
     postalCode: data?.data?.postal_code.toString() || "N/A",
     contactNo: data?.data?.primary_phone_number || "N/A",
     packageDescription: "N/A",
-    packageValue: data?.data?.order_value || "N/A",
+    packageValue:
+      formatCurrencyInput((data?.data?.order_value ?? "").toString()) || "N/A",
     orderId: orderId,
     date: new Date().toLocaleDateString("en-GB"),
   };
@@ -162,7 +164,7 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
                 Value (Rs.):
               </AppText>
               <AppText variant="caption" weight="font-bold">
-                {receiptData.packageValue}
+                {formatCurrencyInput(receiptData.packageValue.toString())}
               </AppText>
             </div>
           </div>
