@@ -144,6 +144,9 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           value={form.getValues("payment_date") || ""}
           disabled={!isEditMode}
           error={form.formState.errors.payment_date?.message}
+          hiddenDates={{
+            futureDates: true,
+          }}
           onChange={(value) =>
             form.setValue("payment_date", value || "", {
               shouldValidate: true,

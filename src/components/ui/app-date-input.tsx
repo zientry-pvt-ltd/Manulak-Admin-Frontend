@@ -28,6 +28,12 @@ export interface AppDateInputProps {
   onChange?: (value: string | undefined) => void;
   disabled?: boolean;
   id?: string;
+  hiddenDates?: {
+    futureDates?: boolean;
+    pastDates?: boolean;
+    // eslint-disable-next-line no-unused-vars
+    customDates?: (date: Date) => boolean;
+  };
 }
 
 const sizeClasses: Record<NonNullable<AppDateInputProps["size"]>, string> = {
@@ -57,6 +63,7 @@ const AppDateInput = React.forwardRef<HTMLButtonElement, AppDateInputProps>(
       onChange,
       disabled = false,
       id,
+      hiddenDates,
     },
     ref,
   ) => {
@@ -144,6 +151,25 @@ const AppDateInput = React.forwardRef<HTMLButtonElement, AppDateInputProps>(
               onSelect={handleSelect}
               captionLayout="dropdown"
               disabled={disabled}
+              hidden={(() => {
+                // eslint-disable-next-line no-unused-vars
+                const matchers: ((date: Date) => boolean)[] = [];
+                if (hiddenDates?.futureDates) {
+                  matchers.push((date: Date) => date > new Date());
+                }
+                if (hiddenDates?.pastDates) {
+                  matchers.push(
+                    (date: Date) =>
+                      date < new Date(new Date().setHours(0, 0, 0, 0)),
+                  );
+                }
+                if (hiddenDates?.customDates) {
+                  matchers.push(hiddenDates.customDates);
+                }
+                if (matchers.length === 0) return undefined;
+                if (matchers.length === 1) return matchers[0];
+                return matchers;
+              })()}
             />
           </PopoverContent>
         </Popover>
