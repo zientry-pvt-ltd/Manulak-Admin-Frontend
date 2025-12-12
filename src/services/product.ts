@@ -9,22 +9,6 @@ import type {
 import { api } from "@/services/api";
 import type { ResourceListQueryParams, ResponseDTO } from "@/types";
 
-export function productToFormData(
-  product: IProductCreateRequest,
-): Record<string, string> {
-  return {
-    product_name: product.product_name,
-    product_desc: product.product_desc,
-    product_category: product.product_category,
-    bought_price: product.bought_price.toString(),
-    selling_price: product.selling_price.toString(),
-    unit_weight: product.unit_weight.toString(),
-    courier_chargers_1kg: product.courier_chargers_1kg.toString(),
-    courier_chargers_more_than_1kg:
-      product.courier_chargers_more_than_1kg.toString(),
-  };
-}
-
 export const productApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query<IProductListResponse, ResourceListQueryParams>({

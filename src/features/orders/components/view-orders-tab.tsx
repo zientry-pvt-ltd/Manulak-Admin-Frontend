@@ -27,6 +27,18 @@ import { store } from "@/store";
 import { useAppDispatch } from "@/store/utils";
 import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
+import { formatCurrencyInput } from "@/utils/Formatting";
+
+type ModifiedTableData = Omit<ModifiedOrder, "order_value"> & {
+  order_value: string;
+};
+
+const transFormOrderData = (orders: ModifiedOrder[]) => {
+  return orders.map((order) => ({
+    ...order,
+    order_value: formatCurrencyInput(order.order_value.toString()),
+  }));
+};
 
 export const ViewOrdersTab = () => {
   const dispatch = useAppDispatch();
@@ -75,8 +87,8 @@ export const ViewOrdersTab = () => {
     [confirm, handleDeleteOrder],
   );
 
-  const config: TableConfig<ModifiedOrder> = {
-    data: data?.data.entities || [],
+  const config: TableConfig<ModifiedTableData> = {
+    data: transFormOrderData(data?.data.entities || []) || [],
     columns: [
       {
         header: "Customer F Name",
@@ -205,7 +217,7 @@ export const ViewOrdersTab = () => {
         accessorKey: "order_value",
         id: "order_value",
         mutationKey: "order_value",
-        type: "number",
+        type: "text",
       },
       {
         header: "Created At",

@@ -11,6 +11,18 @@ import { useAppDialog } from "@/providers";
 import { productApi, useGetProductsQuery } from "@/services/product";
 import { store } from "@/store";
 import type { ResourceListQueryParams } from "@/types";
+import { formatCurrencyInput } from "@/utils/Formatting";
+
+type ModifiedTableData = Omit<IProductInfo, "selling_price"> & {
+  selling_price: string;
+};
+
+const transFormProductData = (products: IProductInfo[]) => {
+  return products.map((product) => ({
+    ...product,
+    selling_price: formatCurrencyInput(product.selling_price.toString()),
+  }));
+};
 
 export const ViewStock = () => {
   const { openAppDialog } = useAppDialog();
@@ -31,9 +43,9 @@ export const ViewStock = () => {
     sorting: INITIAL_SORTING,
   });
 
-  const config: TableConfig<IProductInfo> = useMemo(
+  const config: TableConfig<ModifiedTableData> = useMemo(
     () => ({
-      data: productData?.data.entities || [],
+      data: transFormProductData(productData?.data.entities || []) || [],
       columns: [
         {
           id: "product_name",
@@ -94,7 +106,7 @@ export const ViewStock = () => {
           accessorKey: "selling_price",
           header: "Selling Price (Rs)",
           mutationKey: "selling_price",
-          type: "number",
+          type: "text",
           hideable: true,
         },
         {

@@ -5,19 +5,6 @@ import type {
   SanitizerConfig,
 } from "@/types";
 
-export const formatCurrency = (
-  value: number,
-  currency: CurrencyCode = "LKR",
-): string => {
-  const locale = CurrencyLocaleMap[currency] || "en-US";
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
-
 /**
  * Creates a sanitizer function based on type
  * @param config - Configuration object with type and optional pattern
@@ -46,4 +33,25 @@ export const createInputSanitizer = (config: SanitizerConfig) => {
 
     return sanitized;
   };
+};
+
+export const formatCurrencyInput = (
+  value: string,
+  currency: CurrencyCode = "LKR",
+  hideSymbol = true,
+): string => {
+  const locale = CurrencyLocaleMap[currency] || "en-US";
+  const numberValue = Number(value.replace(/[^0-9.-]+/g, ""));
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numberValue);
+
+  if (hideSymbol) {
+    return formatted.replace(/[^0-9.,-]+/g, "").trim();
+  }
+
+  return formatted;
 };

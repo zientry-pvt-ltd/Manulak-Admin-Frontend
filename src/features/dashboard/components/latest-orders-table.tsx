@@ -12,6 +12,18 @@ import {
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useGetOrdersQuery } from "@/services/orders";
 import type { ResourceListQueryParams } from "@/types";
+import { formatCurrencyInput } from "@/utils/Formatting";
+
+type ModifiedTableData = Omit<ModifiedOrder, "order_value"> & {
+  order_value: string;
+};
+
+const transFormOrderData = (orders: ModifiedOrder[]) => {
+  return orders.map((order) => ({
+    ...order,
+    order_value: formatCurrencyInput(order.order_value.toString()),
+  }));
+};
 
 export const LatestOrderTable = () => {
   const [pagination, setPagination] =
@@ -23,8 +35,8 @@ export const LatestOrderTable = () => {
     filters: [],
   });
 
-  const config: TableConfig<ModifiedOrder> = {
-    data: data?.data.entities || [],
+  const config: TableConfig<ModifiedTableData> = {
+    data: transFormOrderData(data?.data.entities || []) || [],
     columns: [
       {
         header: "Date",
@@ -68,7 +80,7 @@ export const LatestOrderTable = () => {
         accessorKey: "order_value",
         id: "order_value",
         mutationKey: "order_value",
-        type: "number",
+        type: "text",
       },
       {
         header: "Payment Method",

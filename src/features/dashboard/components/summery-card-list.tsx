@@ -14,6 +14,7 @@ import {
   useGetTotalRevenueByTimePeriodQuery,
   useGetTotalSalesByTimePeriodQuery,
 } from "@/services/dashboard";
+import { formatCurrencyInput } from "@/utils/Formatting";
 
 export const SummeryCardList = () => {
   const [periods, setPeriods] = useState<PeriodsState>(
@@ -84,7 +85,7 @@ export const SummeryCardList = () => {
         ) : (
           <>
             <AppText variant="subheading">
-              Rs: {totalSales.toLocaleString()}
+              Rs: {formatCurrencyInput(totalSales.toString())}
             </AppText>
             <AppText variant="caption" size="text-xs">
               A summary of sales performance.
@@ -124,7 +125,7 @@ export const SummeryCardList = () => {
         ) : (
           <>
             <AppText variant="subheading">
-              Rs: {totalRevenue.toLocaleString()}
+              Rs: {formatCurrencyInput(totalRevenue.toString())}
             </AppText>
             <AppText variant="caption" size="text-xs">
               Total revenue generated.
@@ -164,7 +165,7 @@ export const SummeryCardList = () => {
         ) : (
           <>
             <AppText variant="subheading">
-              Rs: {profit.toLocaleString()}
+              Rs: {formatCurrencyInput(profit.toString())}
             </AppText>
             <AppText variant="caption" size="text-xs">
               Total profit earned.
