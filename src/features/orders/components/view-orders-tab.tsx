@@ -96,6 +96,7 @@ export const ViewOrdersTab = () => {
         id: "first_name",
         mutationKey: "first_name",
         type: "text",
+        hideable: true,
         filtering: {
           enabled: true,
           filterType: "auto-complete",
@@ -132,6 +133,7 @@ export const ViewOrdersTab = () => {
         id: "last_name",
         mutationKey: "last_name",
         type: "text",
+        hideable: true,
         filtering: {
           enabled: true,
           filterType: "auto-complete",
@@ -168,6 +170,7 @@ export const ViewOrdersTab = () => {
         id: "primary_phone_number",
         mutationKey: "primary_phone_number",
         type: "text",
+        hideable: true,
         filtering: {
           enabled: true,
           filterType: "text",
@@ -179,6 +182,7 @@ export const ViewOrdersTab = () => {
         id: "selling_method",
         mutationKey: "selling_method",
         type: "single-select",
+        hideable: true,
         options: SELLING_METHODS_OPTIONS,
         filtering: {
           enabled: true,
@@ -192,6 +196,7 @@ export const ViewOrdersTab = () => {
         id: "status",
         mutationKey: "status",
         type: "single-select",
+        hideable: true,
         options: ORDER_STATUS_OPTIONS,
         filtering: {
           enabled: true,
@@ -218,6 +223,7 @@ export const ViewOrdersTab = () => {
         id: "order_value",
         mutationKey: "order_value",
         type: "text",
+        hideable: true,
       },
       {
         header: "Created At",
@@ -225,6 +231,7 @@ export const ViewOrdersTab = () => {
         id: "created_at",
         mutationKey: "created_at",
         type: "date",
+        hideable: true,
       },
       {
         header: "Actions",
@@ -232,6 +239,7 @@ export const ViewOrdersTab = () => {
         id: "actions",
         mutationKey: "order_id",
         type: "icon-buttons",
+        hideable: true,
         iconButtons: [
           {
             Icon: Eye,

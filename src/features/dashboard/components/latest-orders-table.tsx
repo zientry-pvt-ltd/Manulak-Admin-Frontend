@@ -44,6 +44,7 @@ export const LatestOrderTable = () => {
         id: "order_date",
         mutationKey: "created_at",
         type: "date",
+        hideable: true,
       },
       {
         header: "Customer Name",
@@ -51,6 +52,7 @@ export const LatestOrderTable = () => {
         id: "customer_name",
         mutationKey: "full_name",
         type: "text",
+        hideable: true,
       },
       {
         header: "Customer Phone",
@@ -58,6 +60,7 @@ export const LatestOrderTable = () => {
         id: "customer_phone",
         mutationKey: "primary_phone_number",
         type: "text",
+        hideable: true,
       },
       {
         header: "Selling Method",
@@ -66,6 +69,7 @@ export const LatestOrderTable = () => {
         mutationKey: "selling_method",
         type: "single-select",
         options: SELLING_METHODS_OPTIONS,
+        hideable: true,
       },
       {
         header: "Order Status",
@@ -74,6 +78,7 @@ export const LatestOrderTable = () => {
         mutationKey: "status",
         type: "single-select",
         options: ORDER_STATUS_OPTIONS,
+        hideable: true,
       },
       {
         header: "Order Value",
@@ -81,6 +86,7 @@ export const LatestOrderTable = () => {
         id: "order_value",
         mutationKey: "order_value",
         type: "text",
+        hideable: true,
       },
       {
         header: "Payment Method",
@@ -89,6 +95,7 @@ export const LatestOrderTable = () => {
         mutationKey: "payment_method",
         type: "single-select",
         options: PAYMENT_METHOD_OPTIONS,
+        hideable: true,
       },
     ],
     pagination: {
