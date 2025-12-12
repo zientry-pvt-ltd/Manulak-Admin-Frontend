@@ -59,7 +59,7 @@ export const OrderPlacementMenu = () => {
     <div className="w-full flex justify-end ">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <AppButton variant="outline" size="sm">
+          <AppButton variant="default" size="sm">
             Order Placement
           </AppButton>
         </DropdownMenuTrigger>
