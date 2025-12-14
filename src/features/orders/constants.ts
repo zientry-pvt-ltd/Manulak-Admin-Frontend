@@ -1,3 +1,5 @@
+import type { SelectOption } from "@/components/config-table/types";
+
 export const SELLING_METHODS = {
   ONLINE: "ONLINE",
   PLANT_NURSERY: "PLANT_NURSERY",
@@ -24,7 +26,7 @@ export type PaymentMethod = keyof typeof PAYMENT_METHODS;
 
 export const PAYMENT_METHOD_OPTIONS = [
   {
-    label: "CoD",
+    label: "Cash on Delivery",
     value: PAYMENT_METHODS.COD,
   },
   {
@@ -37,30 +39,54 @@ export const PAYMENT_METHOD_OPTIONS = [
   },
 ];
 
-export const ORDER_STATUS_OPTIONS = [
+export const ORDER_STATUS_OPTIONS: SelectOption[] = [
   {
     label: "Pending",
     value: ORDER_STATUSES.PENDING,
+    color: {
+      background: "#FFF3E0",
+      text: "#FF6D00",
+    },
   },
   {
     label: "Confirmed",
     value: ORDER_STATUSES.CONFIRMED,
+    color: {
+      background: "#E3F2FD",
+      text: "#1976D2",
+    },
   },
   {
     label: "Shipped",
     value: ORDER_STATUSES.SHIPPED,
+    color: {
+      background: "#E8F5E9",
+      text: "#388E3C",
+    },
   },
   {
     label: "Delivered",
     value: ORDER_STATUSES.DELIVERED,
+    color: {
+      background: "#F3E5F5",
+      text: "#8E24AA",
+    },
   },
   {
     label: "Cancelled",
     value: ORDER_STATUSES.CANCELLED,
+    color: {
+      background: "#FFEBEE",
+      text: "#D32F2F",
+    },
   },
   {
     label: "Complete",
     value: ORDER_STATUSES.COMPLETE,
+    color: {
+      background: "#E0F2F1",
+      text: "#00796B",
+    },
   },
 ];
 

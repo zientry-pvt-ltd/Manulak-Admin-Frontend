@@ -11,6 +11,7 @@ import { PaymentHistoryCard } from "@/features/orders/components/payment-history
 import { paymentDataSchema } from "@/features/orders/schema";
 import {
   useCreatePaymentRecordMutation,
+  useGetOrderMetadataQuery,
   useGetOrderPaymentHistoryQuery,
   useUploadPaymentSlipMutation,
 } from "@/services/orders";
@@ -43,6 +44,12 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
     selectedOrderId,
     shouldSkip,
   );
+  const {
+    data: metadata,
+    isLoading: isMetadataLoading,
+    isError: isMetadataError,
+  } = useGetOrderMetadataQuery(selectedOrderId, shouldSkip);
+
   const paymentHistory = useMemo(() => data?.data, [data]);
 
   const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
@@ -89,14 +96,22 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
     }
   };
 
-  if (isLoading)
+  if (!selectedOrderId) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <AppText variant="body">No order selected</AppText>
+      </div>
+    );
+  }
+
+  if (isMetadataLoading || isLoading)
     return (
       <div className="flex justify-center items-center p-8">
         <AppText variant="body">Loading payment history...</AppText>
       </div>
     );
 
-  if (isError)
+  if (isError || isMetadataError)
     return (
       <div className="flex justify-center items-center p-8">
         <AppText variant="body" className="text-destructive">
@@ -136,6 +151,9 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
           value={form.getValues("payment_date") || ""}
           disabled={!isEditMode}
           error={form.formState.errors.payment_date?.message}
+          hiddenDates={{
+            futureDates: true,
+          }}
           onChange={(value) =>
             form.setValue("payment_date", value || "", {
               shouldValidate: true,
@@ -181,7 +199,10 @@ export const PaymentInfoTab = ({ mode }: PaymentInfoTabProps) => {
         </AppButton>
       </form>
 
-      <PaymentHistoryCard paymentHistory={paymentHistory} />
+      <PaymentHistoryCard
+        paymentHistory={paymentHistory}
+        paymentMethod={metadata?.data.payment_method}
+      />
     </div>
   );
 };

@@ -28,6 +28,25 @@ import { store } from "@/store";
 import { useAppDispatch } from "@/store/utils";
 import type { ResourceListQueryParams } from "@/types";
 import { normalizeError } from "@/utils/error-handler";
+import { formatCurrencyInput } from "@/utils/Formatting";
+
+type ModifiedTableData = Omit<
+  IProductInfo,
+  "selling_price" | "bought_price" | "unit_weight"
+> & {
+  selling_price: string;
+  bought_price: string;
+  unit_weight: string;
+};
+
+const transFormProductData = (products: IProductInfo[]) => {
+  return products.map((product) => ({
+    ...product,
+    selling_price: formatCurrencyInput(product.selling_price.toString()),
+    bought_price: formatCurrencyInput(product.bought_price.toString()),
+    unit_weight: product.unit_weight.toFixed(2),
+  }));
+};
 
 const getChangedFields = (
   before: IProductInfo,
@@ -281,8 +300,8 @@ export const ViewProducts = () => {
     });
   };
 
-  const config: TableConfig<IProductInfo> = {
-    data: productData?.data.entities || [],
+  const config: TableConfig<ModifiedTableData> = {
+    data: transFormProductData(productData?.data.entities || []) || [],
     tableName: "Product",
     columns: [
       {

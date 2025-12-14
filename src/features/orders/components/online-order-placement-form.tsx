@@ -383,6 +383,9 @@ export const OnlineOrderPlacementForm = () => {
               error={form.formState.errors.paymentData?.payment_date?.message}
               fullWidth
               disabled={isCOD}
+              hiddenDates={{
+                futureDates: true,
+              }}
             />
           </div>
 

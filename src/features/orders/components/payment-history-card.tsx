@@ -2,14 +2,17 @@ import { formatDate } from "date-fns";
 import { Calendar, CreditCard, Image, Mouse } from "lucide-react";
 
 import { AppButton, AppIcon, AppText } from "@/components";
+import { PAYMENT_METHOD_OPTIONS } from "@/features/orders/constants";
 import type { OrderTransactionHistoryItem } from "@/features/orders/types/order.type";
 
 interface PaymentHistoryCardProps {
   paymentHistory?: OrderTransactionHistoryItem[];
+  paymentMethod?: string;
 }
 
 export const PaymentHistoryCard = ({
   paymentHistory,
+  paymentMethod,
 }: PaymentHistoryCardProps) => {
   if (!paymentHistory || paymentHistory.length === 0)
     return (
@@ -40,7 +43,9 @@ export const PaymentHistoryCard = ({
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <AppText variant="caption" className="mb-1">
-                      Partial Payment
+                      {PAYMENT_METHOD_OPTIONS.find(
+                        (option) => option.value === paymentMethod,
+                      )?.label || "Unknown Payment Method"}
                     </AppText>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3 h-3 text-muted-foreground" />

@@ -383,7 +383,6 @@ export const ConfigurableTable = <
       if (config.columnVisibility?.onColumnVisibilityChange) {
         config.columnVisibility.onColumnVisibilityChange(newColumnVisibility);
       }
-      console.log(newColumnVisibility);
       setColumnVisibility(newColumnVisibility);
     },
     [columnVisibility, config.columnVisibility],
@@ -406,6 +405,8 @@ export const ConfigurableTable = <
               table.getIsAllPageRowsSelected() ||
               (table.getIsSomePageRowsSelected() && "indeterminate")
             }
+            // TODO: temporary fix for checkbox
+            disabled
             onCheckedChange={(value) =>
               table.toggleAllPageRowsSelected(!!value)
             }
@@ -435,6 +436,8 @@ export const ConfigurableTable = <
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               aria-label="Select row"
+              //TODO: temporary fix for checkbox
+              disabled
             />
           </div>
         );

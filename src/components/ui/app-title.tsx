@@ -5,8 +5,9 @@ import { cn } from "@/lib/utils";
 import { selectApp } from "@/store/selectors/appSelectors";
 import { useAppSelector } from "@/store/utils";
 
+const appLogo = "https://ik.imagekit.io/xx1okk7c7w/manulak_logo.jpeg";
 const AppTitle = () => {
-  const { appLogo, faviconUrl } = useAppSelector(selectApp);
+  const { faviconUrl } = useAppSelector(selectApp);
   const { state } = useSidebar();
 
   const isCollapsed = state === "collapsed";
@@ -20,7 +21,7 @@ const AppTitle = () => {
     >
       <AppImage
         width={isCollapsed ? 24 : 120}
-        height={isCollapsed ? 24 : 40}
+        height={isCollapsed ? 24 : 100}
         imageUrl={isCollapsed ? faviconUrl : appLogo}
         alt="App Logo"
         rounded="rounded-none"

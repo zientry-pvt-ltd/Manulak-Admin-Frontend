@@ -12,6 +12,18 @@ import {
 import type { ModifiedOrder } from "@/features/orders/types/order.type";
 import { useGetOrdersQuery } from "@/services/orders";
 import type { ResourceListQueryParams } from "@/types";
+import { formatCurrencyInput } from "@/utils/Formatting";
+
+type ModifiedTableData = Omit<ModifiedOrder, "order_value"> & {
+  order_value: string;
+};
+
+const transFormOrderData = (orders: ModifiedOrder[]) => {
+  return orders.map((order) => ({
+    ...order,
+    order_value: formatCurrencyInput(order.order_value.toString()),
+  }));
+};
 
 export const LatestOrderTable = () => {
   const [pagination, setPagination] =
@@ -23,8 +35,8 @@ export const LatestOrderTable = () => {
     filters: [],
   });
 
-  const config: TableConfig<ModifiedOrder> = {
-    data: data?.data.entities || [],
+  const config: TableConfig<ModifiedTableData> = {
+    data: transFormOrderData(data?.data.entities || []) || [],
     columns: [
       {
         header: "Date",
@@ -32,6 +44,7 @@ export const LatestOrderTable = () => {
         id: "order_date",
         mutationKey: "created_at",
         type: "date",
+        hideable: true,
       },
       {
         header: "Customer Name",
@@ -39,6 +52,7 @@ export const LatestOrderTable = () => {
         id: "customer_name",
         mutationKey: "full_name",
         type: "text",
+        hideable: true,
       },
       {
         header: "Customer Phone",
@@ -46,6 +60,7 @@ export const LatestOrderTable = () => {
         id: "customer_phone",
         mutationKey: "primary_phone_number",
         type: "text",
+        hideable: true,
       },
       {
         header: "Selling Method",
@@ -54,6 +69,7 @@ export const LatestOrderTable = () => {
         mutationKey: "selling_method",
         type: "single-select",
         options: SELLING_METHODS_OPTIONS,
+        hideable: true,
       },
       {
         header: "Order Status",
@@ -62,13 +78,15 @@ export const LatestOrderTable = () => {
         mutationKey: "status",
         type: "single-select",
         options: ORDER_STATUS_OPTIONS,
+        hideable: true,
       },
       {
         header: "Order Value",
         accessorKey: "order_value",
         id: "order_value",
         mutationKey: "order_value",
-        type: "number",
+        type: "text",
+        hideable: true,
       },
       {
         header: "Payment Method",
@@ -77,6 +95,7 @@ export const LatestOrderTable = () => {
         mutationKey: "payment_method",
         type: "single-select",
         options: PAYMENT_METHOD_OPTIONS,
+        hideable: true,
       },
     ],
     pagination: {
