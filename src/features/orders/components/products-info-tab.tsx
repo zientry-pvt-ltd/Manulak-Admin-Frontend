@@ -187,7 +187,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   return (
     <div className="space-y-3 p-2">
       <AppText variant="caption" size="text-sm">
-        {`Total Order Value: Rs:${calculateOrderValueData?.data.totalValue.toFixed(2) || "0.00"}`}
+        {`Total with Courier Charges: Rs:${calculateOrderValueData?.data.totalValue.toFixed(2) || "0.00"}`}
         {isCalculatingOrderValue && " - Calculating..."}
       </AppText>
 
