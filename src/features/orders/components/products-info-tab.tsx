@@ -8,6 +8,7 @@ import AppSingleSelectAutoComplete, {
 } from "@/components/ui/app-single-select-autocomplete";
 import { ProductCard } from "@/features/orders/components/product-info-card";
 import type { IProductInfo } from "@/features/products/types/product.type";
+import { useDebounce } from "@/hooks/use-debounce";
 import {
   useCalculateOrderValueMutation,
   useCreateOrderItemMutation,
@@ -17,6 +18,7 @@ import { useSearchProductsMutation } from "@/services/product";
 import { selectOrder } from "@/store/selectors/orderSelector";
 import { useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
+import { formatCurrencyInput } from "@/utils/Formatting";
 
 type ProductsInfoTabProps = {
   mode: "view" | "edit";
@@ -50,6 +52,8 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   const isViewMode = useMemo(() => mode === "view", [mode]);
   const orderProducts = useMemo(() => data?.data || [], [data]);
 
+  const debouncedOrderProducts = useDebounce(orderProducts, 500);
+
   const [quantity, setQuantity] = useState<number | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
@@ -65,22 +69,36 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
     [orderProducts],
   );
 
-  const calculateTotalPrice = useCallback(async () => {
-    try {
-      await calculateOrderValue({
-        orderItemsArray: orderProducts.map((item) => ({
-          product_id: item.product_id,
-          required_quantity: item.required_quantity,
-        })),
-      }).unwrap();
-    } catch (error) {
-      console.log(error);
-    }
-  }, [calculateOrderValue, orderProducts]);
+  const calculateTotalPrice = useCallback(
+    async ({
+      productId,
+      newQuantity,
+    }: {
+      productId?: string;
+      newQuantity?: number;
+    }) => {
+      try {
+        await calculateOrderValue({
+          orderItemsArray: orderProducts.map((item) => ({
+            product_id: item.product_id,
+            required_quantity:
+              item.product_id === productId
+                ? (newQuantity as number)
+                : item.required_quantity,
+          })),
+        }).unwrap();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [calculateOrderValue, orderProducts],
+  );
 
   useEffect(() => {
-    calculateTotalPrice();
-  }, [calculateTotalPrice]);
+    if (debouncedOrderProducts.length > 0) {
+      calculateTotalPrice({});
+    }
+  }, [debouncedOrderProducts, calculateTotalPrice]);
 
   const handleAddProduct = useCallback(async () => {
     if (!selectedProductId || !selectedOrderId || !quantity || quantity <= 0) {
@@ -187,8 +205,11 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
   return (
     <div className="space-y-3 p-2">
       <AppText variant="caption" size="text-sm">
-        {`Total with Courier Charges: Rs:${calculateOrderValueData?.data.totalValue.toFixed(2) || "0.00"}`}
-        {isCalculatingOrderValue && " - Calculating..."}
+        {calculateOrderValueData?.data.totalValue.toFixed(2) &&
+          `Total Order Value with Courier Charges: Rs ${formatCurrencyInput(
+            calculateOrderValueData?.data.totalValue.toString() || "0",
+          )}`}
+        {isCalculatingOrderValue && "Calculating..."}
       </AppText>
 
       <AppText variant="caption" size="text-sm" color="destructive">
@@ -263,6 +284,7 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
                 displayQuantity={displayQuantity}
                 isViewMode={isViewMode}
                 isLastProductItem={isLastProductItem}
+                onQuantityChange={calculateTotalPrice}
               />
             );
           })

@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
 import { Package, Trash2, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppButton, AppIconButton, AppInput, AppText } from "@/components";
 import AppChip from "@/components/ui/app-chip";
 import type { OrderProductListItem } from "@/features/orders/types/order.type";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useConfirmDialog } from "@/providers";
 import {
   useDeleteOrderItemRecordMutation,
@@ -19,6 +21,13 @@ type ProductCardProps = {
   displayQuantity: number;
   isViewMode: boolean;
   isLastProductItem: boolean;
+  onQuantityChange?: ({
+    productId,
+    newQuantity,
+  }: {
+    productId: string;
+    newQuantity: number;
+  }) => void;
 };
 
 export const ProductCard = ({
@@ -28,8 +37,11 @@ export const ProductCard = ({
   displayQuantity,
   isViewMode,
   isLastProductItem,
+  onQuantityChange,
 }: ProductCardProps) => {
   const [newQuantity, setNewQuantity] = useState<number>(displayQuantity);
+
+  const debouncedQuantity = useDebounce(newQuantity, 500);
 
   const { confirm } = useConfirmDialog();
 
@@ -37,6 +49,15 @@ export const ProductCard = ({
     useUpdateOrderItemRecordMutation();
   const [deleteOrderItem, { isLoading: isDeleting }] =
     useDeleteOrderItemRecordMutation();
+
+  useEffect(() => {
+    if (debouncedQuantity !== displayQuantity && onQuantityChange) {
+      onQuantityChange({
+        productId: item.product.id,
+        newQuantity: debouncedQuantity,
+      });
+    }
+  }, [debouncedQuantity, displayQuantity, item.product.id, onQuantityChange]);
 
   const handleUpdateQuantity = useCallback(async () => {
     if (!newQuantity || newQuantity <= 0) return;
