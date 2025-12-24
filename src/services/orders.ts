@@ -202,11 +202,11 @@ export const orderApi = api.injectEndpoints({
       ICalculateOrderValueResponse,
       ICalculateOrderValueRequest
     >({
-      query: ({ orderItemsArray }) => {
+      query: ({ orderItemsArray, paymentMethod }) => {
         return {
           url: ENDPOINTS.ORDERS.CALCULATE_ORDER_VALUE(),
           method: "POST",
-          body: { orderItemsArray },
+          body: { orderItemsArray, paymentMethod },
         };
       },
     }),

@@ -113,6 +113,7 @@ export type ICalculateOrderValueRequest = {
     product_id: string;
     required_quantity: number;
   }>;
+  paymentMethod: PaymentMethod;
 };
 
 export type ICreateOrderItemResponse = ApiResource<OrderProductListItem>;

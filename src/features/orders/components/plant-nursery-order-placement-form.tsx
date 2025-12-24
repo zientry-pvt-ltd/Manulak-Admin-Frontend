@@ -13,7 +13,10 @@ import {
 import { plantNurseryOrderSchema } from "@/features/orders/schema";
 import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
 import { useSanitizedInput } from "@/hooks/use-sanitized-input";
-import { useCreateOrderMutation } from "@/services/orders";
+import {
+  useCalculateOrderValueMutation,
+  useCreateOrderMutation,
+} from "@/services/orders";
 import { useAppDispatch } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
@@ -21,7 +24,12 @@ export type FormFieldValues = z.infer<typeof plantNurseryOrderSchema>;
 
 export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
-  const [createOrder] = useCreateOrderMutation();
+  const [createOrder, { isLoading: isCreatingOrder }] =
+    useCreateOrderMutation();
+  const [
+    calculateOrderValue,
+    { isLoading: isCalculatingOrderValue, isError: isCalculateOrderValueError },
+  ] = useCalculateOrderValueMutation();
 
   const { handleInput: handleNumbersInput } = useSanitizedInput({
     type: "numbers-only",
@@ -94,6 +102,14 @@ export const PlantNurseryOrderPlacementForm = () => {
   const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
+    if (isCreatingOrder)
+      toast.warning("Order is being created, please wait...");
+
+    if (isCalculatingOrderValue)
+      return toast.warning("Please wait until order value is calculated");
+    if (isCalculateOrderValueError)
+      return toast.error("Failed to calculate order value");
+
     const { orderItemsData, orderMetaData, paymentData } = data;
 
     // eslint-disable-next-line no-unused-vars
@@ -253,7 +269,7 @@ export const PlantNurseryOrderPlacementForm = () => {
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
-              onValueChange={(value) => {
+              onValueChange={async (value) => {
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,
@@ -262,6 +278,17 @@ export const PlantNurseryOrderPlacementForm = () => {
                     shouldDirty: true,
                   },
                 );
+
+                // ---------- //
+                const { data } = await calculateOrderValue({
+                  orderItemsArray: form.getValues("orderItemsData"),
+                  paymentMethod: value as PaymentMethod,
+                }).unwrap();
+                form.setValue("orderMetaData.order_value", data.totalValue, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                // ---------- //
 
                 form.setValue("paymentData.payment_date", null, {
                   shouldValidate: true,

@@ -62,6 +62,7 @@ function ProductSelectorCard() {
 
       const { data: totalResult } = await calculateOrderValue({
         orderItemsArray,
+        paymentMethod: getValues().orderMetaData.payment_method,
       }).unwrap();
 
       setOrderValue(totalResult.totalValue);
@@ -98,6 +99,7 @@ function ProductSelectorCard() {
     try {
       const { data: totalResult } = await calculateOrderValue({
         orderItemsArray,
+        paymentMethod: getValues().orderMetaData.payment_method,
       }).unwrap();
 
       setOrderValue(totalResult.totalValue);

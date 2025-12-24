@@ -12,6 +12,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import {
   useCalculateOrderValueMutation,
   useCreateOrderItemMutation,
+  useGetOrderMetadataQuery,
   useGetOrderProductsQuery,
 } from "@/services/orders";
 import { useSearchProductsMutation } from "@/services/product";
@@ -35,6 +36,14 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
       isError: isCalculateOrderValueError,
     },
   ] = useCalculateOrderValueMutation();
+  const {
+    data: orderMetadata,
+    isLoading: isLoadingMetadata,
+    error: metadataError,
+  } = useGetOrderMetadataQuery(selectedOrderId, {
+    skip: !selectedOrderId,
+  });
+
   const [searchProducts] = useSearchProductsMutation();
   const [addOrderProduct, { isLoading: isAdding }] =
     useCreateOrderItemMutation();
@@ -77,6 +86,15 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
       productId?: string;
       newQuantity?: number;
     }) => {
+      if (isLoadingMetadata)
+        return toast.warning("Order metadata is still loading");
+      if (metadataError)
+        return toast.error(
+          "Cannot calculate total price due to metadata error",
+        );
+      if (!orderMetadata?.data.payment_method)
+        return toast.error("Payment method not set");
+
       try {
         await calculateOrderValue({
           orderItemsArray: orderProducts.map((item) => ({
@@ -86,12 +104,19 @@ export const ProductsInfoTab = ({ mode }: ProductsInfoTabProps) => {
                 ? (newQuantity as number)
                 : item.required_quantity,
           })),
+          paymentMethod: orderMetadata.data.payment_method,
         }).unwrap();
       } catch (error) {
         console.log(error);
       }
     },
-    [calculateOrderValue, orderProducts],
+    [
+      calculateOrderValue,
+      isLoadingMetadata,
+      metadataError,
+      orderMetadata,
+      orderProducts,
+    ],
   );
 
   useEffect(() => {
