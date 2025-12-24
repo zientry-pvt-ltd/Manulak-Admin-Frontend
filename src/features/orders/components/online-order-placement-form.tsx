@@ -17,6 +17,7 @@ import { clearSelectedProducts } from "@/features/orders/store/order-form-slice"
 import { useSanitizedInput } from "@/hooks/use-sanitized-input";
 import { useAppDialog } from "@/providers";
 import {
+  useCalculateOrderValueMutation,
   useCreateOrderMutation,
   useUploadPaymentSlipMutation,
 } from "@/services/orders";
@@ -28,8 +29,13 @@ export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const { closeAppDialog } = useAppDialog();
-  const [createOrder] = useCreateOrderMutation();
+  const [createOrder, { isLoading: isCreatingOrder }] =
+    useCreateOrderMutation();
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
+  const [
+    calculateOrderValue,
+    { isLoading: isCalculatingOrderValue, isError: isCalculateOrderValueError },
+  ] = useCalculateOrderValueMutation();
 
   const [localSlipFile, setLocalSlipFile] = useState<File | null>(null);
 
@@ -108,6 +114,14 @@ export const OnlineOrderPlacementForm = () => {
   const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
+    if (isCreatingOrder)
+      toast.warning("Order is being created, please wait...");
+
+    if (isCalculatingOrderValue)
+      return toast.warning("Please wait until order value is calculated");
+    if (isCalculateOrderValueError)
+      return toast.error("Failed to calculate order value");
+
     const { orderItemsData, orderMetaData, paymentData } = data;
 
     // eslint-disable-next-line no-unused-vars
@@ -341,7 +355,7 @@ export const OnlineOrderPlacementForm = () => {
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
-              onValueChange={(value) => {
+              onValueChange={async (value) => {
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,
@@ -350,6 +364,17 @@ export const OnlineOrderPlacementForm = () => {
                     shouldDirty: true,
                   },
                 );
+
+                // ---------- //
+                const { data } = await calculateOrderValue({
+                  orderItemsArray: form.getValues("orderItemsData"),
+                  paymentMethod: value as PaymentMethod,
+                }).unwrap();
+                form.setValue("orderMetaData.order_value", data.totalValue, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                // ---------- //
 
                 form.setValue("paymentData.payment_date", null, {
                   shouldValidate: true,
