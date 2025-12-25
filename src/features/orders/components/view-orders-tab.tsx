@@ -260,7 +260,7 @@ export const ViewOrdersTab = () => {
             tooltip: "Edit Order",
             variant: "outline",
             disabled: (row) => {
-              return row.status !== "PENDING";
+              return row.status === "COMPLETE";
             },
             onClick: (row) => {
               dispatch(setSelectedOrderId(row.order_id));
