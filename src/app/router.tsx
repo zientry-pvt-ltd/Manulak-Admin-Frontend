@@ -77,13 +77,6 @@ export const createAppRouter = (isAuth: boolean) =>
           },
         },
         {
-          path: paths.app.settings.path,
-          lazy: async () => {
-            const mod = await import("./routes/app/settings");
-            return { Component: mod.default };
-          },
-        },
-        {
           path: paths.app.orders.path,
           lazy: async () => {
             const mod = await import("./routes/app/orders");

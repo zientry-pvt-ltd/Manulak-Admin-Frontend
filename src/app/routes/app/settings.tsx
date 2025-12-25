@@ -10,7 +10,7 @@ const Settings = () => {
         allowedRoles={[ROLES.ADMIN]}
         isLoading
         loadingLabel="Fetching..."
-        className="flex items-center justify-center h-full hidden"
+        className="flex items-center justify-center h-full"
       >
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Settings Page</h2>
