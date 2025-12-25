@@ -49,7 +49,7 @@ export const OrderReceiptView = ({ orderId }: OrderReceiptViewProps) => {
       } ${data?.data?.address_line_3 || ""}`.trim() || "N/A",
     postalCode: data?.data?.postal_code.toString() || "N/A",
     contactNo: data?.data?.primary_phone_number || "N/A",
-    packageDescription: "N/A",
+    packageDescription: orderId || "N/A",
     packageValue:
       formatCurrencyInput((data?.data?.order_value ?? "").toString()) || "N/A",
     orderId: orderId,
