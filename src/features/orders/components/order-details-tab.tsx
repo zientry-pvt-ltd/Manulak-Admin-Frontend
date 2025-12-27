@@ -32,7 +32,7 @@ type FormFieldValues = z.infer<typeof orderMetaDataSchema>;
 const getDisabledStatuses = (currentStatus: OrderStatus): OrderStatus[] => {
   const statusRules: Record<OrderStatus, OrderStatus[]> = {
     PENDING: [], // Can transition to any status
-    CONFIRMED: ["PENDING", "CANCELLED"], // Cannot go back to pending
+    CONFIRMED: ["PENDING"], // Cannot go back to pending
     SHIPPED: ["PENDING", "CONFIRMED", "CANCELLED"],
     DELIVERED: ["PENDING", "CONFIRMED", "SHIPPED", "CANCELLED"],
     COMPLETE: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
