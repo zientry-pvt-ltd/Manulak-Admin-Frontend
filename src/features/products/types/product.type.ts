@@ -1,18 +1,12 @@
 import type { FormFieldValues } from "@/features/products/components/product-form";
+import type { ProductCategory } from "@/features/products/constants";
 import type { ApiResource, ApiResourceList } from "@/types";
-
-export type ProductCategoryType =
-  | "flower-seeds"
-  | "vegetable-seeds"
-  | "saplings"
-  | "gardening-tools"
-  | "eco-products";
 
 export type IProductInfo = {
   id: string;
   product_name: string;
   product_desc: string;
-  product_category: string;
+  product_category: ProductCategory;
   bought_price: number;
   selling_price: number;
   unit_weight: number;

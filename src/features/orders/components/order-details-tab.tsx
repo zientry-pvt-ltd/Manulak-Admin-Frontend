@@ -15,6 +15,7 @@ import {
   type OrderStatus,
 } from "@/features/orders/constants";
 import { orderMetaDataSchema } from "@/features/orders/schema";
+import { useAppDialog } from "@/providers";
 import {
   useGetOrderMetadataQuery,
   useUpdateOrderMetaDataMutation,
@@ -43,6 +44,7 @@ const getDisabledStatuses = (currentStatus: OrderStatus): OrderStatus[] => {
 };
 
 export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
+  const { closeAppDialog } = useAppDialog();
   const { selectedOrderId } = useAppSelector(selectOrder);
   const { data, isLoading, error } = useGetOrderMetadataQuery(selectedOrderId, {
     skip: !selectedOrderId,
@@ -117,6 +119,7 @@ export const OrderDetailsTab = ({ mode }: OrderDetailsTabProps) => {
         data: orderMetaDataWithoutConfirmP,
       }).unwrap();
       toast.success("Order details updated successfully");
+      closeAppDialog();
     } catch (error) {
       const message = normalizeError(error);
       toast.error(`Failed to update order: ${message.message}`);

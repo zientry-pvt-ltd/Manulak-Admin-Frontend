@@ -21,7 +21,8 @@ import {
   useCreateOrderMutation,
   useUploadPaymentSlipMutation,
 } from "@/services/orders";
-import { useAppDispatch } from "@/store/utils";
+import { selectOrderForm } from "@/store/selectors/orderFormSelector";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
@@ -29,6 +30,8 @@ export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const { closeAppDialog } = useAppDialog();
+  const { hasPlants } = useAppSelector(selectOrderForm);
+
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
@@ -100,7 +103,7 @@ export const OnlineOrderPlacementForm = () => {
         primary_phone_number: "",
         confirm_phone_number: "",
         status: "PENDING",
-        payment_method: "COD",
+        payment_method: "FULL_PAYMENT",
       },
       paymentData: {
         payment_date: null,
@@ -111,6 +114,7 @@ export const OnlineOrderPlacementForm = () => {
   });
 
   const paymentMethod = form.watch("orderMetaData.payment_method");
+  const watchedList = form.watch("orderItemsData");
   const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
@@ -121,6 +125,11 @@ export const OnlineOrderPlacementForm = () => {
       return toast.warning("Please wait until order value is calculated");
     if (isCalculateOrderValueError)
       return toast.error("Failed to calculate order value");
+
+    if (isCOD && hasPlants)
+      return toast.error(
+        "Cash on Delivery is not available for orders with plants.",
+      );
 
     const { orderItemsData, orderMetaData, paymentData } = data;
 
@@ -182,7 +191,7 @@ export const OnlineOrderPlacementForm = () => {
       <form
         id="online-order-placement-form"
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
+        className="min-w-[60vw] space-y-8 overflow-y-scroll overflow-x-hidden"
       >
         <div className="pr-4">
           <AppText variant="subheading">Order Information</AppText>
@@ -225,7 +234,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Address Line 2"
-              placeholder="Enter address line 2"
+              placeholder="Enter address line 2 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -238,7 +247,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Address Line 3"
-              placeholder="Enter address line 3"
+              placeholder="Enter address line 3 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -248,7 +257,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Postal Code"
-              placeholder="Enter postal code"
+              placeholder="Enter postal code (Optional)"
               fullWidth
               size="sm"
               onInput={handleAlphanumericInput}
@@ -292,7 +301,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Company Name"
-              placeholder="Enter company name"
+              placeholder="Enter company name (Optional)"
               fullWidth
               size="sm"
               onInput={handleLettersInput}
@@ -301,7 +310,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Email"
-              placeholder="Enter email"
+              placeholder="Enter email address (Optional)"
               type="email"
               fullWidth
               size="sm"
@@ -314,7 +323,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Alternate Phone 1"
-              placeholder="Enter alternate phone number 1"
+              placeholder="Enter alternate phone number 1 (Optional)"
               type="tel"
               fullWidth
               size="sm"
@@ -327,7 +336,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Alternate Phone 2"
-              placeholder="Enter alternate phone number 2"
+              placeholder="Enter alternate phone number 2 (Optional)"
               type="tel"
               fullWidth
               size="sm"
@@ -350,12 +359,18 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Select payment method"
               value={form.getValues("orderMetaData.payment_method")}
               items={PAYMENT_METHOD_OPTIONS}
+              disabled={watchedList.length === 0}
               fullWidth
               size="sm"
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
               onValueChange={async (value) => {
+                if (value === "COD" && hasPlants)
+                  return toast.error(
+                    "Cash on Delivery is not available for orders with plants.",
+                  );
+
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,
@@ -443,7 +458,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Payment Slip Number"
-              placeholder="Enter payment slip number"
+              placeholder="Enter payment slip number (Optional)"
               size="sm"
               fullWidth
               disabled={isCOD}
