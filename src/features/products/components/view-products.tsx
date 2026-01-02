@@ -11,7 +11,7 @@ import ProductForm, {
   type ProductFormMode,
   type ProductFormSubmitData,
 } from "@/features/products/components/product-form";
-import { CATEGORIES } from "@/features/products/constants";
+import { CATEGORIES_OPTIONS } from "@/features/products/constants";
 import type { productSchema } from "@/features/products/schema";
 import { selectProduct } from "@/features/products/store/product-slice";
 import type { IProductInfo } from "@/features/products/types/product.type";
@@ -367,7 +367,7 @@ export const ViewProducts = () => {
         mutationKey: "product_category",
         header: "Category",
         type: "single-select",
-        options: CATEGORIES,
+        options: CATEGORIES_OPTIONS,
         hideable: true,
       },
       {

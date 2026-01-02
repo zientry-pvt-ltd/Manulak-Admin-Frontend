@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { ConfigurableTable } from "@/components/config-table/components";
 import type { TableConfig } from "@/components/config-table/types";
 import { INITIAL_PAGING, INITIAL_SORTING } from "@/constants";
-import { CATEGORIES } from "@/features/products/constants";
+import { CATEGORIES_OPTIONS } from "@/features/products/constants";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { ExistingStockIndicator, QuantityForm } from "@/features/stock";
 import { useAppDialog } from "@/providers";
@@ -91,7 +91,7 @@ export const ViewStock = () => {
           mutationKey: "product_category",
           type: "single-select",
           hideable: true,
-          options: CATEGORIES,
+          options: CATEGORIES_OPTIONS,
         },
         {
           id: "quantity",
