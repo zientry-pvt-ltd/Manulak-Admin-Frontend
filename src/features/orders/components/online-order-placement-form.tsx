@@ -234,7 +234,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Address Line 2"
-              placeholder="Enter address line 2"
+              placeholder="Enter address line 2 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -247,7 +247,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Address Line 3"
-              placeholder="Enter address line 3"
+              placeholder="Enter address line 3 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -257,7 +257,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Postal Code"
-              placeholder="Enter postal code"
+              placeholder="Enter postal code (Optional)"
               fullWidth
               size="sm"
               onInput={handleAlphanumericInput}
@@ -301,7 +301,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Company Name"
-              placeholder="Enter company name"
+              placeholder="Enter company name (Optional)"
               fullWidth
               size="sm"
               onInput={handleLettersInput}
@@ -310,7 +310,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Email"
-              placeholder="Enter email"
+              placeholder="Enter email address (Optional)"
               type="email"
               fullWidth
               size="sm"
@@ -323,7 +323,7 @@ export const OnlineOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Alternate Phone 1"
-              placeholder="Enter alternate phone number 1"
+              placeholder="Enter alternate phone number 1 (Optional)"
               type="tel"
               fullWidth
               size="sm"
@@ -336,7 +336,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Alternate Phone 2"
-              placeholder="Enter alternate phone number 2"
+              placeholder="Enter alternate phone number 2 (Optional)"
               type="tel"
               fullWidth
               size="sm"
@@ -458,7 +458,7 @@ export const OnlineOrderPlacementForm = () => {
             />
             <AppInput
               label="Payment Slip Number"
-              placeholder="Enter payment slip number"
+              placeholder="Enter payment slip number (Optional)"
               size="sm"
               fullWidth
               disabled={isCOD}

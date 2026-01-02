@@ -207,7 +207,7 @@ export const PlantNurseryOrderPlacementForm = () => {
             />
             <AppInput
               label="Address Line 2"
-              placeholder="Enter address line 2"
+              placeholder="Enter address line 2 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -220,7 +220,7 @@ export const PlantNurseryOrderPlacementForm = () => {
           <div className="flex flex-row mt-2 justify-center items-end gap-x-4">
             <AppInput
               label="Address Line 3"
-              placeholder="Enter address line 3"
+              placeholder="Enter address line 3 (Optional)"
               fullWidth
               size="sm"
               error={
@@ -230,7 +230,7 @@ export const PlantNurseryOrderPlacementForm = () => {
             />
             <AppInput
               label="Postal Code"
-              placeholder="Enter postal code"
+              placeholder="Enter postal code (Optional)"
               fullWidth
               size="sm"
               type="text"
