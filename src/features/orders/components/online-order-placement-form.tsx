@@ -191,7 +191,7 @@ export const OnlineOrderPlacementForm = () => {
       <form
         id="online-order-placement-form"
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
+        className="min-w-[60vw] space-y-8 overflow-y-scroll overflow-x-hidden"
       >
         <div className="pr-4">
           <AppText variant="subheading">Order Information</AppText>

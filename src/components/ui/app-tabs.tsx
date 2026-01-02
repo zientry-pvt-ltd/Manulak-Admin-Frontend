@@ -25,7 +25,7 @@ export function AppTabs({
       defaultValue={defaultValue ?? items[0]?.value}
       className={`flex flex-col w-full h-full ${className ?? ""}`}
     >
-      <div className="flex-shrink-0 bg-background sticky top-0 py-2 z-10">
+      <div className="flex-shrink-0 bg-background sticky top-0 z-10">
         <TabsList>
           {items.map((item) => (
             <TabsTrigger key={item.value} value={item.value}>

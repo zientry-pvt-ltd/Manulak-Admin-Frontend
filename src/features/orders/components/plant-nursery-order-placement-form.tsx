@@ -162,7 +162,7 @@ export const PlantNurseryOrderPlacementForm = () => {
       <form
         id="plant-nursery-order-placement-form"
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="min-w-[80vw] space-y-8 overflow-y-scroll overflow-x-hidden"
+        className="min-w-[60vw] space-y-8 overflow-y-scroll overflow-x-hidden"
       >
         {/* Order Information Section */}
         <div className="pr-4">
