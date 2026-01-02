@@ -14,7 +14,7 @@ import {
   AppTextarea,
 } from "@/components";
 import AppImage from "@/components/ui/app-image";
-import { CATEGORIES } from "@/features/products/constants";
+import { CATEGORIES_OPTIONS } from "@/features/products/constants";
 import { productSchema } from "@/features/products/schema";
 import { updateSelectedProduct } from "@/features/products/store/product-slice";
 import { useSanitizedInput } from "@/hooks/use-sanitized-input";
@@ -191,7 +191,7 @@ const ProductForm: React.FC<ProductFormProps & { formId?: FormIds }> = ({
           render={({ field }) => (
             <AppSelect
               label="Category"
-              items={CATEGORIES}
+              items={CATEGORIES_OPTIONS}
               placeholder="Select category"
               fullWidth
               disabled={isView}
