@@ -76,6 +76,7 @@ function ProductSelectorCard() {
           productId: pickedProduct.id,
           productName: pickedProduct.product_name,
           productPrice: pickedProduct.selling_price,
+          productCategory: pickedProduct.product_category,
           quantity,
           availableQuantity: pickedProduct.quantity,
         }),

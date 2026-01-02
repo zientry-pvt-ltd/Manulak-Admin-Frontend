@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -17,13 +18,16 @@ import {
   useCalculateOrderValueMutation,
   useCreateOrderMutation,
 } from "@/services/orders";
-import { useAppDispatch } from "@/store/utils";
+import { selectOrderForm } from "@/store/selectors/orderFormSelector";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof plantNurseryOrderSchema>;
 
 export const PlantNurseryOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
+  const { hasPlants } = useAppSelector(selectOrderForm);
+
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
   const [
@@ -88,7 +92,7 @@ export const PlantNurseryOrderPlacementForm = () => {
         primary_phone_number: "",
         confirm_phone_number: "",
         status: "PENDING",
-        payment_method: "COD",
+        payment_method: "FULL_PAYMENT",
         postal_code: "",
       },
       paymentData: {
@@ -99,6 +103,7 @@ export const PlantNurseryOrderPlacementForm = () => {
   });
 
   const paymentMethod = form.watch("orderMetaData.payment_method");
+  const watchedList = form.watch("orderItemsData");
   const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
@@ -109,6 +114,11 @@ export const PlantNurseryOrderPlacementForm = () => {
       return toast.warning("Please wait until order value is calculated");
     if (isCalculateOrderValueError)
       return toast.error("Failed to calculate order value");
+
+    if (isCOD && hasPlants)
+      return toast.error(
+        "Cash on Delivery is not available for orders with plants.",
+      );
 
     const { orderItemsData, orderMetaData, paymentData } = data;
 
@@ -140,6 +150,12 @@ export const PlantNurseryOrderPlacementForm = () => {
       console.error("Order creation failed:", error);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearSelectedProducts());
+    };
+  }, [dispatch]);
 
   return (
     <FormProvider {...form}>
@@ -264,12 +280,18 @@ export const PlantNurseryOrderPlacementForm = () => {
               placeholder="Select payment method"
               value={form.getValues("orderMetaData.payment_method")}
               items={PAYMENT_METHOD_OPTIONS}
+              disabled={watchedList.length === 0}
               fullWidth
               size="sm"
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
               onValueChange={async (value) => {
+                if (value === "COD" && hasPlants)
+                  return toast.error(
+                    "Cash on Delivery is not available for orders with plants.",
+                  );
+
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,

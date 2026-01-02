@@ -4,8 +4,6 @@ import { SLICES } from "@/constants";
 import type { IProductInfo } from "@/features/products/types/product.type";
 import { productApi } from "@/services/product";
 
-export type ProductCategoryType = "electronics" | "clothing" | "home" | "books";
-
 type ProductState = {
   products: IProductInfo[];
   selectedProduct: IProductInfo | null;

@@ -1,11 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import { SLICES } from "@/constants";
+import type { ProductCategory } from "@/features/products/constants";
 
 type SelectedProduct = {
   productId: string;
   productName: string;
   productPrice: number;
+  productCategory: ProductCategory;
   quantity: number;
 };
 
@@ -16,6 +18,7 @@ type SelectedProductsGroup = {
 
 type OrderFormState = {
   selectedProducts: SelectedProductsGroup;
+  hasPlants: boolean;
 };
 
 const initialState: OrderFormState = {
@@ -23,6 +26,7 @@ const initialState: OrderFormState = {
     subtotal: 0,
     list: [],
   },
+  hasPlants: false,
 };
 
 const orderFormSlice = createSlice({
@@ -35,6 +39,7 @@ const orderFormSlice = createSlice({
         productId: string;
         productName: string;
         productPrice: number;
+        productCategory: ProductCategory;
         quantity: number;
         availableQuantity: number;
       }>,
@@ -45,6 +50,7 @@ const orderFormSlice = createSlice({
         productPrice,
         quantity,
         availableQuantity,
+        productCategory,
       } = action.payload;
 
       const existing = state.selectedProducts.list.find(
@@ -63,12 +69,17 @@ const orderFormSlice = createSlice({
           productName,
           productPrice,
           quantity: addQuantity,
+          productCategory,
         });
       }
 
       state.selectedProducts.subtotal = state.selectedProducts.list.reduce(
         (sum, p) => sum + p.productPrice * p.quantity,
         0,
+      );
+
+      state.hasPlants = state.selectedProducts.list.some(
+        (p) => p.productCategory === "PLANTS",
       );
     },
 
@@ -93,6 +104,10 @@ const orderFormSlice = createSlice({
         (sum, p) => sum + p.productPrice * p.quantity,
         0,
       );
+
+      state.hasPlants = state.selectedProducts.list.some(
+        (p) => p.productCategory === "PLANTS",
+      );
     },
 
     removeProductFromList: (state, action: PayloadAction<string>) => {
@@ -104,6 +119,10 @@ const orderFormSlice = createSlice({
         (sum, p) => sum + p.productPrice * p.quantity,
         0,
       );
+
+      state.hasPlants = state.selectedProducts.list.some(
+        (p) => p.productCategory === "PLANTS",
+      );
     },
 
     clearSelectedProducts: (state) => {
@@ -111,6 +130,8 @@ const orderFormSlice = createSlice({
         subtotal: 0,
         list: [],
       };
+
+      state.hasPlants = false;
     },
   },
 });

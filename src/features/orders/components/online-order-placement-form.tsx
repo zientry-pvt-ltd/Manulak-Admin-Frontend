@@ -21,7 +21,8 @@ import {
   useCreateOrderMutation,
   useUploadPaymentSlipMutation,
 } from "@/services/orders";
-import { useAppDispatch } from "@/store/utils";
+import { selectOrderForm } from "@/store/selectors/orderFormSelector";
+import { useAppDispatch, useAppSelector } from "@/store/utils";
 import { normalizeError } from "@/utils/error-handler";
 
 export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
@@ -29,6 +30,8 @@ export type FormFieldValues = z.infer<typeof onlineManualOrderSchema>;
 export const OnlineOrderPlacementForm = () => {
   const dispatch = useAppDispatch();
   const { closeAppDialog } = useAppDialog();
+  const { hasPlants } = useAppSelector(selectOrderForm);
+
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
   const [uploadPaymentSlip] = useUploadPaymentSlipMutation();
@@ -100,7 +103,7 @@ export const OnlineOrderPlacementForm = () => {
         primary_phone_number: "",
         confirm_phone_number: "",
         status: "PENDING",
-        payment_method: "COD",
+        payment_method: "FULL_PAYMENT",
       },
       paymentData: {
         payment_date: null,
@@ -111,6 +114,7 @@ export const OnlineOrderPlacementForm = () => {
   });
 
   const paymentMethod = form.watch("orderMetaData.payment_method");
+  const watchedList = form.watch("orderItemsData");
   const isCOD = paymentMethod === "COD";
 
   const handleSubmit = async (data: FormFieldValues) => {
@@ -121,6 +125,11 @@ export const OnlineOrderPlacementForm = () => {
       return toast.warning("Please wait until order value is calculated");
     if (isCalculateOrderValueError)
       return toast.error("Failed to calculate order value");
+
+    if (isCOD && hasPlants)
+      return toast.error(
+        "Cash on Delivery is not available for orders with plants.",
+      );
 
     const { orderItemsData, orderMetaData, paymentData } = data;
 
@@ -350,12 +359,18 @@ export const OnlineOrderPlacementForm = () => {
               placeholder="Select payment method"
               value={form.getValues("orderMetaData.payment_method")}
               items={PAYMENT_METHOD_OPTIONS}
+              disabled={watchedList.length === 0}
               fullWidth
               size="sm"
               error={
                 form.formState.errors.orderMetaData?.payment_method?.message
               }
               onValueChange={async (value) => {
+                if (value === "COD" && hasPlants)
+                  return toast.error(
+                    "Cash on Delivery is not available for orders with plants.",
+                  );
+
                 form.setValue(
                   "orderMetaData.payment_method",
                   value as PaymentMethod,

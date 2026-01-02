@@ -4,6 +4,7 @@ import { AppTabs, type TabItem } from "@/components/ui/app-tabs";
 import { OrderDetailsTab } from "@/features/orders/components/order-details-tab";
 import { PaymentInfoTab } from "@/features/orders/components/payment-info-tab";
 import { ProductsInfoTab } from "@/features/orders/components/products-info-tab";
+import { clearSelectedProducts } from "@/features/orders/store/order-form-slice";
 import { setSelectedOrderId } from "@/features/orders/store/order-slice";
 import { useAppDispatch } from "@/store/utils";
 
@@ -35,6 +36,7 @@ export const OrderEditViewTabs = ({ mode }: OrderEditTabsProps) => {
   useEffect(() => {
     return () => {
       dispatch(setSelectedOrderId(null));
+      dispatch(clearSelectedProducts());
     };
   }, [dispatch]);
 
